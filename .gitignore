@@ -1,0 +1,10 @@
+data/
+*.parquet
+*.pkl
+*.h5
+__pycache__/
+*.pyc
+.DS_Store
+outputs/models/
+*.egg-info/
+.env
