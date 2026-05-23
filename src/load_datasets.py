@@ -14,10 +14,11 @@ TRADE_REPO = "probly/lsports-trade-dataset"
 
 
 def check_login():
-    from huggingface_hub import whoami
+    from huggingface_hub import HfApi
     try:
-        info = whoami()
-        print(f"Logged in as: {info['name']}")
+        api = HfApi()
+        info = api.whoami()
+        print(f"Logged in as: {info['name']} (orgs: {[o['name'] for o in info.get('orgs', [])]})")
         return True
     except Exception as e:
         print(f"Not logged in: {e}")

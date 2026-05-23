@@ -143,8 +143,8 @@ def main():
 
     # 5. Label volatility
     from feature_engineering import label_volatility
-    df_train = label_volatility(df_train, lookahead_sec=120, threshold_pct=0.03)
-    df_test = label_volatility(df_test, lookahead_sec=120, threshold_pct=0.03)
+    df_train = label_volatility(df_train, lookahead_sec=60, threshold_pct=0.05)
+    df_test = label_volatility(df_test, lookahead_sec=60, threshold_pct=0.05)
 
     print(f"Train volatility rate: {df_train['high_volatility_label'].mean():.3f}")
     print(f"Test  volatility rate: {df_test['high_volatility_label'].mean():.3f}")

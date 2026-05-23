@@ -15,6 +15,11 @@ from typing import Dict, Tuple, Optional
 from feature_engineering import build_markov_state
 
 
+def _nested_dict():
+    return defaultdict(int)
+
+
+
 class MarkovPricingModel:
     """
     Discrete Markov Chain over game states.
@@ -24,7 +29,7 @@ class MarkovPricingModel:
     """
 
     def __init__(self):
-        self.transition_counts: Dict[Tuple, Dict[Tuple, int]] = defaultdict(lambda: defaultdict(int))
+        self.transition_counts: Dict[Tuple, Dict[Tuple, int]] = defaultdict(_nested_dict)
         self.win_counts: Dict[Tuple, int] = defaultdict(int)
         self.state_counts: Dict[Tuple, int] = defaultdict(int)
         self.transition_matrix: Optional[Dict] = None

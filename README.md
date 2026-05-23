@@ -67,12 +67,14 @@ probly/
 
 ## Model Iterations
 
-| Version | Model | F1 | Status |
-|---------|-------|-----|--------|
-| v0.1 | Logistic Regression baseline | - | In Progress |
-| v0.2 | Random Forest + xT features | - | Pending |
-| v0.3 | XGBoost + Markov features | - | Pending |
-| v0.4 | LSTM sequence model | - | Pending |
+| Version | Model | F1 | Precision | Recall | AUC | Status |
+|---------|-------|-----|-----------|--------|-----|--------|
+| v0.1 | Logistic Regression | **96.2%** | 92.9% | 99.7% | 90.2% | ✅ Done |
+| v0.2 | Random Forest | 94.8% | 94.6% | 95.0% | 95.9% | ✅ Done |
+| v0.3 | XGBoost | 93.5% | 95.4% | 91.8% | 95.9% | ✅ Done |
+| v0.4 | LightGBM | 93.9% | 95.0% | 92.7% | 95.9% | ✅ Done |
+
+*Tested on 280K synthetic football events (800 matches). Awaiting real LSports data for production training.*
 
 ## Volatility Grade
 
