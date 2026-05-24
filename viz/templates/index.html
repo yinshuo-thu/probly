@@ -58,13 +58,20 @@ body { background: #0a0e17; color: #e2e8f0; font-family: -apple-system, BlinkMac
 .fixture-btn .price-range { font-size: 11px; color: #10b981; }
 
 /* ── Timeline chart (main feature) ── */
-#timelineChart { height: 460px; }
+#timelineChart { height: 500px; }
 #advanceChart { height: 260px; }
 #incidentChart { height: 280px; }
 #modelChart { height: 260px; }
 #featureChart { height: 280px; }
 #calibrationChart { height: 220px; }
 #confusionChart { height: 200px; }
+
+/* ── Prediction call-out pills ── */
+.pred-callout { display:flex; gap:10px; flex-wrap:wrap; margin:8px 0 4px; }
+.pred-pill { padding:4px 10px; border-radius:12px; font-size:11px; font-weight:600; }
+.pred-pill.hit  { background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.5); color:#10b981; }
+.pred-pill.miss { background:rgba(239,68,68,0.12);  border:1px solid rgba(239,68,68,0.4);  color:#ef4444; }
+.pred-pill.fp   { background:rgba(251,146,60,0.12); border:1px solid rgba(251,146,60,0.4); color:#fb923c; }
 
 /* ── Model table ── */
 .model-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -124,13 +131,16 @@ footer { border-top: 1px solid #1e293b; padding: 20px 32px; color: #475569; font
   <div class="section-title">赔率时序 × 波动预测对比</div>
   <div class="chart-card">
     <h3 id="timelineTitle">请选择一场比赛</h3>
-    <div class="subtitle">橙线 = Polymarket实际赔率 | 蓝色面积 = 模型预测波动概率 | 圆点 = LSports事件标记</div>
-    <div class="legend">
-      <span class="legend-item"><span class="legend-dot" style="background:#f97316"></span>Polymarket 赔率</span>
-      <span class="legend-item"><span class="legend-dot" style="background:rgba(96,165,250,0.6)"></span>预测波动概率</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>实际高波动事件</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span>进球/红牌/点球</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>射正/角球</span>
+    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:10px;">
+      <div class="legend" style="margin:0;gap:14px;">
+        <span class="legend-item"><span style="display:inline-block;width:22px;height:3px;background:#f97316;border-radius:2px;margin-right:4px;vertical-align:middle"></span>Polymarket 赔率</span>
+        <span class="legend-item"><span style="display:inline-block;width:14px;height:10px;background:rgba(96,165,250,0.35);border:1px solid rgba(96,165,250,0.6);border-radius:2px;margin-right:4px;vertical-align:middle"></span>预测波动概率</span>
+        <span class="legend-item"><span style="display:inline-block;width:14px;height:10px;background:rgba(16,185,129,0.25);border:1px solid rgba(16,185,129,0.6);border-radius:2px;margin-right:4px;vertical-align:middle"></span>✅ 成功提前预测</span>
+        <span class="legend-item"><span style="display:inline-block;width:14px;height:10px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.5);border-radius:2px;margin-right:4px;vertical-align:middle"></span>⚡ 实际高波动区间</span>
+        <span class="legend-item"><span style="display:inline-block;width:10px;height:10px;background:#10b981;border-radius:50%;margin-right:4px;vertical-align:middle"></span>⚽/🟥 关键事件</span>
+        <span class="legend-item" style="font-size:10px;color:#334155">— — —&nbsp;</span><span class="legend-item">预测阈值 0.52</span>
+      </div>
+      <div id="predStats" class="pred-callout" style="margin:0;margin-left:auto;"></div>
     </div>
     <div id="timelineChart"></div>
   </div>
@@ -337,13 +347,33 @@ async function loadAdvanceChart(fixture_id) {
     // aggregate across all fixtures
     const data = await fetch('/api/advance_warning').then(r => r.json());
     if (!data.length) return;
-    Plotly.newPlot('advanceChart', [{
-      type:'bar', x: data.map(d=>d.lead_seconds+'s'), y: data.map(d=>d.avg_pred),
-      marker:{color:'#3b82f6'},
-      text: data.map(d=>(d.avg_pred*100).toFixed(1)+'%'), textposition:'outside',
-    }], {
-      ...LAYOUT(), yaxis:{...C.axis,range:[0,0.8],title:'平均预测概率'},
-      xaxis:{...C.axis,title:'价格波动发生前 N 秒'},
+    // Aggregate advance warning
+    const maxPred = Math.max(...data.map(d=>d.avg_pred));
+    const colors  = data.map(d => d.avg_pred >= THRESHOLD ? '#10b981' : '#3b82f6');
+    Plotly.newPlot('advanceChart', [
+      {
+        type:'bar', name:'平均预测概率',
+        x: data.map(d=>d.lead_seconds+'s before'), y: data.map(d=>d.avg_pred),
+        marker:{color: colors},
+        text: data.map(d=>(d.avg_pred*100).toFixed(1)+'%'), textposition:'outside',
+      },
+      {
+        type:'scatter', mode:'lines', name:`阈值 ${THRESHOLD}`,
+        x: [data[0].lead_seconds+'s before', data[data.length-1].lead_seconds+'s before'],
+        y: [THRESHOLD, THRESHOLD],
+        line:{color:'rgba(96,165,250,0.5)', dash:'dot', width:1.5},
+      }
+    ], {
+      ...LAYOUT(),
+      yaxis:{...C.axis, range:[0, Math.min(1, maxPred*1.4)], title:'平均预测概率',
+             tickformat:'.0%'},
+      xaxis:{...C.axis, title:'大幅价格波动发生前 N 秒 (右侧=更早预警)'},
+      annotations:[{
+        x: data[data.length-1].lead_seconds+'s before',
+        y: THRESHOLD, xanchor:'right', yanchor:'bottom',
+        text:'模型决策阈值', showarrow:false,
+        font:{color:'rgba(96,165,250,0.7)', size:9},
+      }],
     });
     return;
   }
@@ -357,13 +387,25 @@ async function loadAdvanceChart(fixture_id) {
   });
   const leads = Object.keys(byLead).map(Number).sort((a,b)=>a-b);
   const avgs  = leads.map(l => byLead[l].reduce((a,b)=>a+b,0)/byLead[l].length);
-  Plotly.newPlot('advanceChart', [{
-    type:'bar', x: leads.map(l=>l+'s'), y: avgs,
-    marker:{color: avgs.map(v => v>0.4?'#10b981':v>0.25?'#3b82f6':'#475569')},
-    text: avgs.map(v=>(v*100).toFixed(1)+'%'), textposition:'outside',
-  }], {
-    ...LAYOUT(), yaxis:{...C.axis,range:[0,1],title:'平均预测概率'},
-    xaxis:{...C.axis,title:'价格大幅波动发生前 N 秒'},
+  const cols  = avgs.map(v => v >= THRESHOLD ? '#10b981' : v > 0.35 ? '#60a5fa' : '#475569');
+  Plotly.newPlot('advanceChart', [
+    {
+      type:'bar', name:'平均预测概率',
+      x: leads.map(l=>l+'s before'), y: avgs,
+      marker:{color: cols},
+      text: avgs.map(v=>(v*100).toFixed(1)+'%'), textposition:'outside',
+    },
+    {
+      type:'scatter', mode:'lines', name:`阈值 ${THRESHOLD}`,
+      x: [leads[0]+'s before', leads[leads.length-1]+'s before'],
+      y: [THRESHOLD, THRESHOLD],
+      line:{color:'rgba(96,165,250,0.5)', dash:'dot', width:1.5},
+    }
+  ], {
+    ...LAYOUT(),
+    yaxis:{...C.axis, range:[0, Math.min(1, Math.max(...avgs)*1.4)],
+           title:'大幅价格波动前 N 秒的平均预测概率', tickformat:'.0%'},
+    xaxis:{...C.axis, title:'提前时间 (绿色=已超过决策阈值)'},
   });
 }
 
@@ -388,8 +430,10 @@ async function loadFixtureList() {
 }
 
 // ── Main timeline (per-fixture) ───────────────────────────────────────────
+const THRESHOLD = 0.52; // RF v4 best threshold (from threshold sweep on test set)
+const ONE_MIN_MS = 60 * 1000; // 1-min candle width in ms
+
 async function selectFixture(fixture_id, btn) {
-  // Update active button
   document.querySelectorAll('.fixture-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   activeFixture = fixture_id;
@@ -398,96 +442,167 @@ async function selectFixture(fixture_id, btn) {
   if (d.error) { alert(d.error); return; }
 
   document.getElementById('timelineTitle').textContent =
-    `${d.home} vs ${d.away}  |  ${d.event_date}  |  ${d.n_events.toLocaleString()} 事件  |  波动率 ${(d.vol_rate*100).toFixed(1)}%`;
+    `${d.home} vs ${d.away}  ·  ${d.event_date}  ·  ${d.n_events.toLocaleString()} 事件  ·  波动率 ${(d.vol_rate*100).toFixed(1)}%`;
 
-  const pl  = d.price_line;
+  const pl  = d.price_line;  // {t, price, vol_pred, actual_vol, n}
   const mks = d.markers;
 
-  // Group markers by incident type
-  const incGroups = {};
-  mks.forEach(m => {
-    const key = m.xt_weight >= 4 ? 'goal_card' :
-                m.xt_weight >= 2 ? 'shot_corner' :
-                m.xt_weight >= 1 ? 'foul_yellow' : 'other';
-    if (!incGroups[key]) incGroups[key] = [];
-    incGroups[key].push(m);
+  // ── Classify each 1-min bucket ──────────────────────────────────────────
+  // pred_high = model fired (≥ threshold); actual_vol = price moved >3c in window
+  const hitTimes = [];    // model fired AND actual high vol → green: maker saved
+  const fpTimes  = [];    // model fired AND no big move → orange: unnecessary hedge
+  const missX = [], missY = [];  // model quiet AND actual vol → red: missed danger
+
+  pl.forEach(p => {
+    const fired = p.vol_pred >= THRESHOLD;
+    const actual = p.actual_vol > 0.5;
+    if (fired && actual)  { hitTimes.push(p.t); }
+    else if (fired && !actual) { fpTimes.push(p.t); }
+    else if (!fired && actual) { missX.push(p.t); missY.push(p.price); }
   });
+
+  // Stats pills
+  const total_actual = pl.filter(p=>p.actual_vol>0.5).length;
+  const stats = document.getElementById('predStats');
+  if (stats) {
+    stats.innerHTML = [
+      `<span class="pred-pill hit">✅ 提前拦截 ${hitTimes.length}/${total_actual} 个高波动区间</span>`,
+      missX.length ? `<span class="pred-pill miss">❌ 遗漏 ${missX.length} 个</span>` : '',
+      fpTimes.length ? `<span class="pred-pill fp">⚠️ 误报 ${fpTimes.length} 个</span>` : '',
+    ].join('');
+  }
 
   const traces = [];
 
-  // Actual vol label (shaded where high_volatility=1)
-  const volTimes  = pl.filter(p => p.actual_vol > 0.5).map(p => p.t);
-  const volPrices = pl.filter(p => p.actual_vol > 0.5).map(p => p.price);
-  if (volPrices.length) {
+  // ── 1. Successful prediction zones (green band) ──────────────────────────
+  // Draw as vertical rectangles via a scatter with fat markers at mid-height
+  if (hitTimes.length) {
     traces.push({
-      type:'scatter', mode:'markers', name:'实际高波动区间',
-      x: volTimes, y: volPrices,
-      marker:{color:'rgba(239,68,68,0.25)', size:20, symbol:'square'},
-      hoverinfo:'skip', showlegend: true,
+      type:'bar', name:'✅ 成功提前预测',
+      x: hitTimes, y: hitTimes.map(()=>1),
+      marker:{color:'rgba(16,185,129,0.18)', line:{width:0}},
+      width: ONE_MIN_MS * 0.92,
+      base: 0, offset: 0,
+      hoverinfo:'skip', showlegend:true,
     });
   }
 
-  // Predicted volatility probability (area fill)
+  // ── 2. Actual high-volatility bands (red, less prominent) ────────────────
+  const volTimes = pl.filter(p=>p.actual_vol>0.5).map(p=>p.t);
+  if (volTimes.length) {
+    traces.push({
+      type:'bar', name:'⚡ 实际高波动区间',
+      x: volTimes, y: volTimes.map(()=>1),
+      marker:{color:'rgba(239,68,68,0.10)', line:{width:0}},
+      width: 55000,
+      base: 0,
+      hoverinfo:'skip', showlegend:true,
+    });
+  }
+
+  // ── 3. Missed danger markers (red X at price level) ──────────────────────
+  if (missX.length) {
+    traces.push({
+      type:'scatter', mode:'markers', name:'❌ 遗漏危险',
+      x: missX, y: missY,
+      marker:{color:'rgba(239,68,68,0.7)', size:9, symbol:'x',
+              line:{color:'#ef4444', width:2}},
+      hovertemplate:'遗漏高波动: 价格 %{y:.3f}<extra>❌ 未预警</extra>',
+      showlegend: missX.length > 0,
+    });
+  }
+
+  // ── 4. Model prediction probability (area, single axis) ─────────────────
   traces.push({
     type:'scatter', mode:'lines', name:'预测波动概率',
     x: pl.map(p=>p.t), y: pl.map(p=>p.vol_pred),
-    yaxis: 'y2',
-    line:{color:'rgba(96,165,250,0.8)', width:1.5},
-    fill:'tozeroy', fillcolor:'rgba(96,165,250,0.08)',
+    line:{color:'rgba(96,165,250,0.9)', width:1.5},
+    fill:'tozeroy', fillcolor:'rgba(96,165,250,0.12)',
+    hovertemplate:'预测概率: %{y:.3f}<extra>模型</extra>',
   });
 
-  // Actual price line (primary axis)
+  // ── 5. Decision threshold line ───────────────────────────────────────────
+  if (pl.length) {
+    traces.push({
+      type:'scatter', mode:'lines', name:`阈值 ${THRESHOLD}`,
+      x: [pl[0].t, pl[pl.length-1].t], y: [THRESHOLD, THRESHOLD],
+      line:{color:'rgba(96,165,250,0.4)', width:1, dash:'dot'},
+      hoverinfo:'skip', showlegend:true,
+    });
+  }
+
+  // ── 6. Actual price line (most prominent) ────────────────────────────────
   traces.push({
     type:'scatter', mode:'lines', name:'Polymarket 赔率',
     x: pl.map(p=>p.t), y: pl.map(p=>p.price),
     line:{color:'#f97316', width:2.5},
-    hovertemplate:'价格: %{y:.3f}<br>%{x}<extra>赔率</extra>',
+    hovertemplate:'赔率: %{y:.3f}<br>%{x}<extra>Polymarket</extra>',
   });
 
-  // Event markers: goals/cards/penalties
+  // ── 7. High-impact event markers (goals, cards, penalties) ───────────────
   const goalMks = mks.filter(m => m.xt_weight >= 4);
   if (goalMks.length) {
+    const icons = {'Score':'⚽','PlayerGoals':'⚽','RedCard':'🟥','PlayerRedCard':'🟥',
+                   'Penalties':'⚡','MissedPenalty':'❌','VAR':'📺'};
     traces.push({
       type:'scatter', mode:'markers+text', name:'进球/红牌/点球',
       x: goalMks.map(m => m.t),
       y: goalMks.map(m => m.price),
-      text: goalMks.map(m => {
-        const icons = {'Score':'⚽','RedCard':'🟥','Penalties':'⚡','MissedPenalty':'❌','VAR':'📺','PlayerGoals':'⚽','PlayerRedCard':'🟥'};
-        return icons[m.incident] || '●';
-      }),
-      textfont: {size: 14},
-      textposition: 'top center',
-      marker:{color: goalMks.map(m => incColor(m.incident)), size:12,
-              line:{color:'#fff',width:1}},
-      customdata: goalMks,
-      hovertemplate:'<b>%{customdata.incident}</b><br>价格: %{y:.3f}<br>预测概率: %{customdata.vol_pred:.2f}<br>实际波动: %{customdata.max_move:.3f}<extra></extra>',
+      text: goalMks.map(m => icons[m.incident] || '●'),
+      textfont:{size:15}, textposition:'top center',
+      marker:{color: goalMks.map(m=>incColor(m.incident)), size:11,
+              line:{color:'#fff', width:1.5}, opacity:0.95},
+      customdata: goalMks.map(m => ({
+        ...m,
+        warned: m.vol_pred >= THRESHOLD ? '✅ 已预警' : '❌ 未预警',
+      })),
+      hovertemplate:'<b>%{customdata.incident}</b>  %{customdata.warned}<br>' +
+                    '赔率: %{y:.3f}  预测概率: %{customdata.vol_pred:.2f}<br>' +
+                    '120s内最大波动: %{customdata.max_move:.3f}<extra></extra>',
     });
   }
 
-  // Medium-importance events
-  const shotMks = mks.filter(m => m.xt_weight >= 1 && m.xt_weight < 4);
+  // ── 8. Medium events (shots, corners, yellow cards) ──────────────────────
+  const shotMks = mks.filter(m => m.xt_weight >= 1.5 && m.xt_weight < 4);
   if (shotMks.length) {
     traces.push({
       type:'scatter', mode:'markers', name:'射正/角球/黄牌',
       x: shotMks.map(m => m.t),
       y: shotMks.map(m => m.price),
-      marker:{color: shotMks.map(m=>incColor(m.incident)), size:7, opacity:0.7,
-              symbol:'diamond', line:{color:'rgba(255,255,255,0.2)',width:0.5}},
+      marker:{color: shotMks.map(m=>incColor(m.incident)), size:6, opacity:0.65,
+              symbol:'diamond', line:{color:'rgba(255,255,255,0.15)',width:0.5}},
       customdata: shotMks,
-      hovertemplate:'<b>%{customdata.incident}</b><br>价格: %{y:.3f}<br>预测概率: %{customdata.vol_pred:.2f}<extra></extra>',
+      hovertemplate:'<b>%{customdata.incident}</b><br>赔率: %{y:.3f}  预测: %{customdata.vol_pred:.2f}<extra></extra>',
     });
   }
 
+  // ── Layout: single unified Y-axis [0,1] ──────────────────────────────────
   Plotly.newPlot('timelineChart', traces, {
     ...LAYOUT(),
-    margin: {t:10, b:50, l:55, r:60},
-    xaxis: { ...C.axis, title:'时间', type:'date' },
-    yaxis: { ...C.axis, title:'Polymarket 赔率', range:[0,1.05] },
-    yaxis2: { overlaying:'y', side:'right', range:[0,1.05], title:'预测概率',
-              showgrid:false, tickfont:{color:'#60a5fa',size:10}, titlefont:{color:'#60a5fa'} },
+    margin: {t:14, b:52, l:52, r:20},
+    barmode: 'overlay',
+    xaxis: {
+      ...C.axis,
+      title: {text:'时间', font:{size:11,color:'#64748b'}},
+      type: 'date',
+    },
+    yaxis: {
+      ...C.axis,
+      title: {text:'赔率 / 预测概率  (统一 0–1 轴)', font:{size:11,color:'#94a3b8'}},
+      range: [0, 1.04],
+      tickformat: '.0%',
+      tickvals: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+      dtick: 0.1,
+    },
     hovermode: 'closest',
-    legend: { ...LAYOUT().legend, x:0, y:1 },
-  });
+    legend: {
+      bgcolor: 'rgba(10,14,23,0.88)',
+      bordercolor: '#1e293b', borderwidth: 1,
+      font: {color:'#94a3b8', size:10},
+      orientation: 'h',
+      x: 0, y: 1.04, xanchor:'left', yanchor:'bottom',
+    },
+  }, {displayModeBar:false});
 
   // Update advance warning for this fixture
   loadAdvanceChart(fixture_id);
