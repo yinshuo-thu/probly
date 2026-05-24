@@ -430,8 +430,8 @@ async function loadFixtureList() {
 }
 
 // ── Main timeline (per-fixture) ───────────────────────────────────────────
-const THRESHOLD = 0.52; // RF v4 best threshold (from threshold sweep on test set)
-const ONE_MIN_MS = 60 * 1000; // 1-min candle width in ms
+const THRESHOLD = 0.52;      // RF v4 best threshold (from threshold sweep on test set)
+const ONE_MIN_MS = 60 * 1000; // 1-min candle in ms — used for shape half-width
 
 async function selectFixture(fixture_id, btn) {
   document.querySelectorAll('.fixture-btn').forEach(b => b.classList.remove('active'));
@@ -472,115 +472,111 @@ async function selectFixture(fixture_id, btn) {
     ].join('');
   }
 
+  // ── Background bands via layout shapes (never touch axis scale) ────────────
+  const HALF_MIN_MS = ONE_MIN_MS / 2;
+  const toShape = (t, color) => ({
+    type: 'rect',
+    xref: 'x', yref: 'paper',   // yref:'paper' = full chart height 0→1
+    x0: new Date(new Date(t).getTime() - HALF_MIN_MS).toISOString(),
+    x1: new Date(new Date(t).getTime() + HALF_MIN_MS).toISOString(),
+    y0: 0, y1: 1,
+    fillcolor: color,
+    line: {width: 0},
+    layer: 'below',
+  });
+
+  const shapes = [
+    // Actual high-volatility: dim red
+    ...pl.filter(p => p.actual_vol > 0.5)
+         .map(p => toShape(p.t, 'rgba(239,68,68,0.09)')),
+    // Successful prediction (model fired + actual vol): bright green
+    ...hitTimes.map(t => toShape(t, 'rgba(16,185,129,0.22)')),
+    // Threshold line as a shape (horizontal rule across full width)
+    pl.length ? {
+      type:'line', xref:'paper', yref:'y',
+      x0:0, x1:1, y0:THRESHOLD, y1:THRESHOLD,
+      line:{color:'rgba(96,165,250,0.45)', width:1, dash:'dot'},
+    } : null,
+  ].filter(Boolean);
+
   const traces = [];
 
-  // ── 1. Successful prediction zones (green band) ──────────────────────────
-  // Draw as vertical rectangles via a scatter with fat markers at mid-height
-  if (hitTimes.length) {
-    traces.push({
-      type:'bar', name:'✅ 成功提前预测',
-      x: hitTimes, y: hitTimes.map(()=>1),
-      marker:{color:'rgba(16,185,129,0.18)', line:{width:0}},
-      width: ONE_MIN_MS * 0.92,
-      base: 0, offset: 0,
-      hoverinfo:'skip', showlegend:true,
-    });
-  }
-
-  // ── 2. Actual high-volatility bands (red, less prominent) ────────────────
-  const volTimes = pl.filter(p=>p.actual_vol>0.5).map(p=>p.t);
-  if (volTimes.length) {
-    traces.push({
-      type:'bar', name:'⚡ 实际高波动区间',
-      x: volTimes, y: volTimes.map(()=>1),
-      marker:{color:'rgba(239,68,68,0.10)', line:{width:0}},
-      width: 55000,
-      base: 0,
-      hoverinfo:'skip', showlegend:true,
-    });
-  }
-
-  // ── 3. Missed danger markers (red X at price level) ──────────────────────
-  if (missX.length) {
-    traces.push({
-      type:'scatter', mode:'markers', name:'❌ 遗漏危险',
-      x: missX, y: missY,
-      marker:{color:'rgba(239,68,68,0.7)', size:9, symbol:'x',
-              line:{color:'#ef4444', width:2}},
-      hovertemplate:'遗漏高波动: 价格 %{y:.3f}<extra>❌ 未预警</extra>',
-      showlegend: missX.length > 0,
-    });
-  }
-
-  // ── 4. Model prediction probability (area, single axis) ─────────────────
+  // ── 1. Model prediction probability (area fill) ──────────────────────────
   traces.push({
     type:'scatter', mode:'lines', name:'预测波动概率',
     x: pl.map(p=>p.t), y: pl.map(p=>p.vol_pred),
-    line:{color:'rgba(96,165,250,0.9)', width:1.5},
-    fill:'tozeroy', fillcolor:'rgba(96,165,250,0.12)',
-    hovertemplate:'预测概率: %{y:.3f}<extra>模型</extra>',
+    line:{color:'rgba(96,165,250,0.85)', width:1.5},
+    fill:'tozeroy', fillcolor:'rgba(96,165,250,0.13)',
+    hovertemplate:'预测概率: <b>%{y:.3f}</b><br>%{x}<extra>模型</extra>',
+    showlegend:false,
   });
 
-  // ── 5. Decision threshold line ───────────────────────────────────────────
-  if (pl.length) {
-    traces.push({
-      type:'scatter', mode:'lines', name:`阈值 ${THRESHOLD}`,
-      x: [pl[0].t, pl[pl.length-1].t], y: [THRESHOLD, THRESHOLD],
-      line:{color:'rgba(96,165,250,0.4)', width:1, dash:'dot'},
-      hoverinfo:'skip', showlegend:true,
-    });
-  }
-
-  // ── 6. Actual price line (most prominent) ────────────────────────────────
+  // ── 2. Actual price line ──────────────────────────────────────────────────
   traces.push({
     type:'scatter', mode:'lines', name:'Polymarket 赔率',
     x: pl.map(p=>p.t), y: pl.map(p=>p.price),
     line:{color:'#f97316', width:2.5},
-    hovertemplate:'赔率: %{y:.3f}<br>%{x}<extra>Polymarket</extra>',
+    hovertemplate:'赔率: <b>%{y:.3f}</b><br>%{x}<extra>Polymarket</extra>',
+    showlegend:false,
   });
 
-  // ── 7. High-impact event markers (goals, cards, penalties) ───────────────
+  // ── 3. Missed danger markers (X at price level) ───────────────────────────
+  if (missX.length) {
+    traces.push({
+      type:'scatter', mode:'markers', name:'遗漏危险',
+      x: missX, y: missY,
+      marker:{color:'rgba(239,68,68,0.75)', size:10, symbol:'x',
+              line:{color:'#ef4444', width:2}},
+      hovertemplate:'❌ 遗漏高波动<br>赔率: %{y:.3f}<extra>未预警</extra>',
+      showlegend:false,
+    });
+  }
+
+  // ── 4. High-impact event markers (goals, cards, penalties) ───────────────
   const goalMks = mks.filter(m => m.xt_weight >= 4);
   if (goalMks.length) {
     const icons = {'Score':'⚽','PlayerGoals':'⚽','RedCard':'🟥','PlayerRedCard':'🟥',
                    'Penalties':'⚡','MissedPenalty':'❌','VAR':'📺'};
     traces.push({
-      type:'scatter', mode:'markers+text', name:'进球/红牌/点球',
+      type:'scatter', mode:'markers+text', name:'关键事件',
       x: goalMks.map(m => m.t),
       y: goalMks.map(m => m.price),
       text: goalMks.map(m => icons[m.incident] || '●'),
-      textfont:{size:15}, textposition:'top center',
+      textfont:{size:14}, textposition:'top center',
       marker:{color: goalMks.map(m=>incColor(m.incident)), size:11,
               line:{color:'#fff', width:1.5}, opacity:0.95},
-      customdata: goalMks.map(m => ({
-        ...m,
-        warned: m.vol_pred >= THRESHOLD ? '✅ 已预警' : '❌ 未预警',
-      })),
-      hovertemplate:'<b>%{customdata.incident}</b>  %{customdata.warned}<br>' +
-                    '赔率: %{y:.3f}  预测概率: %{customdata.vol_pred:.2f}<br>' +
-                    '120s内最大波动: %{customdata.max_move:.3f}<extra></extra>',
+      customdata: goalMks.map(m => [
+        m.incident,
+        m.vol_pred >= THRESHOLD ? '✅ 已预警' : '❌ 未预警',
+        m.vol_pred, m.max_move,
+      ]),
+      hovertemplate:'<b>%{customdata[0]}</b>  %{customdata[1]}<br>' +
+                    '赔率: %{y:.3f}  |  预测概率: %{customdata[2]:.2f}<br>' +
+                    '实际最大波动(120s): %{customdata[3]:.3f}<extra></extra>',
+      showlegend:false,
     });
   }
 
-  // ── 8. Medium events (shots, corners, yellow cards) ──────────────────────
+  // ── 5. Medium events (shots, corners, yellow cards) ──────────────────────
   const shotMks = mks.filter(m => m.xt_weight >= 1.5 && m.xt_weight < 4);
   if (shotMks.length) {
     traces.push({
-      type:'scatter', mode:'markers', name:'射正/角球/黄牌',
+      type:'scatter', mode:'markers', name:'中等事件',
       x: shotMks.map(m => m.t),
       y: shotMks.map(m => m.price),
-      marker:{color: shotMks.map(m=>incColor(m.incident)), size:6, opacity:0.65,
-              symbol:'diamond', line:{color:'rgba(255,255,255,0.15)',width:0.5}},
-      customdata: shotMks,
-      hovertemplate:'<b>%{customdata.incident}</b><br>赔率: %{y:.3f}  预测: %{customdata.vol_pred:.2f}<extra></extra>',
+      marker:{color: shotMks.map(m=>incColor(m.incident)), size:6, opacity:0.6,
+              symbol:'diamond', line:{color:'rgba(255,255,255,0.1)',width:0.5}},
+      customdata: shotMks.map(m => [m.incident, m.vol_pred]),
+      hovertemplate:'<b>%{customdata[0]}</b><br>赔率: %{y:.3f}  预测: %{customdata[1]:.2f}<extra></extra>',
+      showlegend:false,
     });
   }
 
-  // ── Layout: single unified Y-axis [0,1] ──────────────────────────────────
+  // ── Layout ───────────────────────────────────────────────────────────────
   Plotly.newPlot('timelineChart', traces, {
     ...LAYOUT(),
-    margin: {t:14, b:52, l:52, r:20},
-    barmode: 'overlay',
+    shapes,
+    margin: {t:10, b:52, l:52, r:18},
     xaxis: {
       ...C.axis,
       title: {text:'时间', font:{size:11,color:'#64748b'}},
@@ -588,20 +584,14 @@ async function selectFixture(fixture_id, btn) {
     },
     yaxis: {
       ...C.axis,
-      title: {text:'赔率 / 预测概率  (统一 0–1 轴)', font:{size:11,color:'#94a3b8'}},
+      title: {text:'赔率 / 预测概率 (共享 0–1 轴)', font:{size:11,color:'#94a3b8'}},
       range: [0, 1.04],
       tickformat: '.0%',
-      tickvals: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
       dtick: 0.1,
+      fixedrange: true,
     },
     hovermode: 'closest',
-    legend: {
-      bgcolor: 'rgba(10,14,23,0.88)',
-      bordercolor: '#1e293b', borderwidth: 1,
-      font: {color:'#94a3b8', size:10},
-      orientation: 'h',
-      x: 0, y: 1.04, xanchor:'left', yanchor:'bottom',
-    },
+    showlegend: false,   // suppress Plotly legend — we use the custom HTML one above
   }, {displayModeBar:false});
 
   // Update advance warning for this fixture
