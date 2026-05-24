@@ -154,10 +154,12 @@ def api_fixture_timeline(fixture_id):
     price_line = sub.groupby('minute_bucket').agg(
         price=('mid_price', 'mean'),
         vol_pred=('volatility_prob', 'mean'),
+        max_pred=('volatility_prob', 'max'),   # peak prediction within the minute
         actual_vol=('high_volatility', 'mean'),
         n=('mid_price', 'count'),
     ).reset_index()
-    price_line['t'] = price_line['minute_bucket'].astype(str)
+    # Use RFC-3339 'T' separator so JS Date() parses correctly
+    price_line['t'] = price_line['minute_bucket'].dt.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     # Event markers (non-Timer/Period events only, sample to max 300)
     events = sub[~sub['incident_name'].isin({'Timer', 'Period',
@@ -171,7 +173,7 @@ def api_fixture_timeline(fixture_id):
     markers_df = pd.concat([hi_events, lo_events]).sort_values('timestamp')
 
     markers = [{
-        't':          str(r.timestamp),
+        't':          r.timestamp.strftime('%Y-%m-%dT%H:%M:%SZ'),
         'incident':   r.incident_name,
         'xt_weight':  float(r.xt_weight) if pd.notnull(r.xt_weight) else 0.0,
         'price':      float(r.mid_price),
@@ -226,7 +228,7 @@ def api_fixture_timeline(fixture_id):
         'condition_id': str(meta.get('condition_id', '')),
         'n_events':     int(len(sub)),
         'vol_rate':     round(float(sub['high_volatility'].mean()), 3),
-        'price_line':   price_line[['t','price','vol_pred','actual_vol','n']].to_dict(orient='records'),
+        'price_line':   price_line[['t','price','vol_pred','max_pred','actual_vol','n']].to_dict(orient='records'),
         'markers':      markers,
         'advance_data': advance_data,
     })
