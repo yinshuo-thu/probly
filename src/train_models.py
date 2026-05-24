@@ -1,7 +1,8 @@
 """
-Train and evaluate 4 models on real_dataset.parquet.
+Train and evaluate 4 models on real_dataset_v4.parquet (falls back to v3).
 Models: Logistic Regression → Random Forest → XGBoost → LightGBM
-Target: high_volatility (binary: 1 if |price_move| > 3 cents in next 120s)
+Target: high_volatility (binary: |price_move| > 3 cents in next 120s)
+        OR next_60s_high_impact (causal: goal/card/penalty in next 60s) if v4
 """
 
 import sys, json, warnings
@@ -16,28 +17,37 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import (
     classification_report, roc_auc_score, f1_score,
-    precision_score, recall_score, confusion_matrix
+    precision_score, recall_score,
 )
-from sklearn.model_selection import GroupShuffleSplit
 import pickle
 
 BASE = Path('/Volumes/T7/probly')
-DATA_FILE = BASE / 'outputs/real_dataset.parquet'
 OUT_DIR   = BASE / 'outputs'
 MODEL_DIR = OUT_DIR / 'models'
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
-FEATURE_COLS = [
+# Prefer v4 dataset (richer features + causal label)
+DATA_FILE = (BASE / 'outputs/real_dataset_v4.parquet'
+             if (BASE / 'outputs/real_dataset_v4.parquet').exists()
+             else BASE / 'outputs/real_dataset.parquet')
+
+# v3 features (always available)
+FEATURE_COLS_V3 = [
     'confidence_grade', 'conf_trend', 'xt_weight',
     'event_density_30s', 'event_density_60s', 'event_density_120s',
     'risk_event_count_30s', 'risk_event_count_60s',
-    'score_diff', 'minutes_remaining', 'period_id',
-    'mid_price',
-    # Engineered features (added in load_and_split)
+    'score_diff', 'minutes_remaining', 'period_id', 'mid_price',
     'xt_x_conf', 'is_high_impact', 'is_timer_period',
     'risk_density_ratio', 'price_extremeness',
-    # NOTE: max_abs_move_120s excluded — it's the future window (label leakage)
-    # NOTE: spread excluded — hardcoded 0.01, no signal
+]
+
+# v4 additional features
+FEATURE_COLS_V4 = FEATURE_COLS_V3 + [
+    'total_goals', 'is_leading', 'is_drawing', 'game_intensity',
+    'event_density_300s', 'high_impact_60s', 'high_impact_300s',
+    'xt_sum_60s', 'xt_sum_300s',
+    'price_velocity', 'price_realized_vol', 'price_change_1m',
+    'pressure_score',
 ]
 
 TARGET = 'high_volatility'
@@ -48,22 +58,29 @@ HIGH_IMPACT = {'Score', 'PlayerGoals', 'Penalties', 'MissedPenalty',
 
 def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
-    df['xt_x_conf']        = df['xt_weight'] * df['confidence_grade']
-    df['is_high_impact']   = df['incident_name'].isin(HIGH_IMPACT).astype(float)
-    df['is_timer_period']  = df['incident_name'].isin({'Timer', 'Period'}).astype(float)
-    df['risk_density_ratio'] = df['risk_event_count_60s'] / (df['event_density_60s'] + 1)
-    df['price_extremeness']  = (df['mid_price'] - 0.5).abs() * 2
+    if 'xt_x_conf' not in df.columns:
+        df['xt_x_conf'] = df['xt_weight'] * df['confidence_grade']
+    if 'is_high_impact' not in df.columns:
+        df['is_high_impact'] = df['incident_name'].isin(HIGH_IMPACT).astype(float)
+    if 'is_timer_period' not in df.columns:
+        df['is_timer_period'] = df['incident_name'].isin({'Timer', 'Period'}).astype(float)
+    if 'risk_density_ratio' not in df.columns:
+        df['risk_density_ratio'] = df['risk_event_count_60s'] / (df['event_density_60s'] + 1)
+    if 'price_extremeness' not in df.columns:
+        df['price_extremeness'] = (df['mid_price'] - 0.5).abs() * 2
     return df
 
 
 def load_and_split(path: Path):
     df = pd.read_parquet(path)
-    print(f"Dataset: {len(df)} rows, {df['fixture_id'].nunique()} fixtures")
+    is_v4 = 'price_velocity' in df.columns
+    print(f"Dataset: {len(df)} rows, {df['fixture_id'].nunique()} fixtures (v{'4' if is_v4 else '3'})")
     print(f"Volatility rate: {df[TARGET].mean():.3f}")
 
     df = engineer_features(df)
 
-    available_features = [c for c in FEATURE_COLS if c in df.columns]
+    feat_pool = FEATURE_COLS_V4 if is_v4 else FEATURE_COLS_V3
+    available_features = [c for c in feat_pool if c in df.columns]
     print(f"Features ({len(available_features)}): {available_features}")
 
     df = df.dropna(subset=available_features + [TARGET])
