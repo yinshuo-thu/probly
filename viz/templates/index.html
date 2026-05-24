@@ -140,7 +140,7 @@
     <table class="model-table" id="modelTable">
       <thead>
         <tr>
-          <th>Version</th><th>Model</th><th>F1</th><th>Precision</th><th>Recall</th><th>ROC AUC</th><th>Avg Precision</th>
+          <th>Version</th><th>Model</th><th>F1</th><th>Precision</th><th>Recall</th><th>ROC AUC</th><th>Threshold</th>
         </tr>
       </thead>
       <tbody id="modelTableBody"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Loading...</td></tr></tbody>
@@ -195,7 +195,9 @@ const fmtN = v => v != null ? v.toFixed(4) : '—';
 async function loadMetrics() {
   try {
     const res = await fetch('/api/metrics');
-    const data = await res.json();
+    const raw = await res.json();
+    // Support both array format (old) and object format (new)
+    const data = Array.isArray(raw) ? raw : (raw.models || []);
     if (!data.length) return;
 
     const best = data.reduce((a, b) => (a.f1 || 0) > (b.f1 || 0) ? a : b, {});
@@ -204,40 +206,41 @@ async function loadMetrics() {
     document.getElementById('kpiRecall').textContent = fmt(best.recall);
     document.getElementById('kpiAuc').textContent = fmtN(best.roc_auc);
     document.getElementById('kpiBestName').textContent = best.model || '—';
+    if (!Array.isArray(raw) && raw.dataset_rows) {
+      document.getElementById('kpiDataInfo').textContent =
+        `${(raw.dataset_rows/1e6).toFixed(2)}M rows · ${raw.features?.length || 0} features`;
+    }
 
-    // Model progress bar chart
-    const names = data.map(m => m.model?.replace(/v\d+\.\d+_/, '') || '');
-    const f1s = data.map(m => m.f1 || 0);
+    const names = data.map(m => m.model || '');
+    const f1s   = data.map(m => m.f1 || 0);
     const precs = data.map(m => m.precision || 0);
-    const recs = data.map(m => m.recall || 0);
-    const aucs = data.map(m => m.roc_auc || 0);
-    const colors = f1s.map((v, i) => i === f1s.indexOf(Math.max(...f1s)) ? '#3fb950' : '#388bfd');
+    const recs  = data.map(m => m.recall || 0);
+    const aucs  = data.map(m => m.roc_auc || 0);
+    const maxF1 = Math.max(...f1s);
+    const colors = f1s.map(v => v === maxF1 ? '#3fb950' : '#388bfd');
 
     Plotly.newPlot('modelProgressChart', [{
       type: 'bar', x: names, y: f1s, marker: { color: colors },
       text: f1s.map(v => fmt(v)), textposition: 'outside',
       hovertemplate: 'F1: %{y:.4f}<extra>%{x}</extra>',
-    }], { ...PLOTLY_LAYOUT, yaxis: { ...PLOTLY_LAYOUT.yaxis, range: [0, 1.05], title: 'F1 Score' } });
+    }], { ...PLOTLY_LAYOUT, yaxis: { ...PLOTLY_LAYOUT.yaxis, range: [0, 0.7], title: 'F1 Score' } });
 
-    // PR/AUC grouped bar
     Plotly.newPlot('prAucChart', [
       { type: 'bar', name: 'Precision', x: names, y: precs, marker: { color: '#58a6ff' } },
-      { type: 'bar', name: 'Recall', x: names, y: recs, marker: { color: '#3fb950' } },
-      { type: 'bar', name: 'ROC AUC', x: names, y: aucs, marker: { color: '#f0883e' } },
+      { type: 'bar', name: 'Recall',    x: names, y: recs,  marker: { color: '#3fb950' } },
+      { type: 'bar', name: 'ROC AUC',  x: names, y: aucs,  marker: { color: '#f0883e' } },
     ], { ...PLOTLY_LAYOUT, barmode: 'group', yaxis: { ...PLOTLY_LAYOUT.yaxis, range: [0, 1.05] } });
 
-    // Model table
     const tbody = document.getElementById('modelTableBody');
-    const maxF1 = Math.max(...f1s);
     tbody.innerHTML = data.map((m, i) => `
       <tr>
-        <td><span class="tag tag-blue">v0.${i+1}</span></td>
+        <td><span class="tag tag-blue">v${i+1}</span></td>
         <td>${m.model || '—'}</td>
         <td class="${(m.f1||0) === maxF1 ? 'best' : ''}">${fmt(m.f1)}</td>
         <td>${fmt(m.precision)}</td>
         <td>${fmt(m.recall)}</td>
         <td>${fmtN(m.roc_auc)}</td>
-        <td>${fmtN(m.avg_precision)}</td>
+        <td>${m.threshold != null ? m.threshold : '—'}</td>
       </tr>
     `).join('');
   } catch(e) {
@@ -250,17 +253,21 @@ async function loadFeatureImportance() {
     const res = await fetch('/api/feature_importance');
     const data = await res.json();
     if (!data.length) {
-      document.getElementById('featureChart').innerHTML = '<div style="padding:40px;color:#8b949e;text-align:center;">Run pipeline to generate feature importance</div>';
+      document.getElementById('featureChart').innerHTML = '<div style="padding:40px;color:#8b949e;text-align:center;">No feature importance data</div>';
       return;
     }
-    const features = data.map(d => d.index || d[Object.keys(d)[0]]);
-    const values = data.map(d => d.importance);
+    // Normalize importances to [0,1]
+    const rawVals = data.map(d => Math.abs(d.importance || 0));
+    const maxVal = Math.max(...rawVals) || 1;
+    const features = data.map(d => d.feature || d.index || Object.keys(d)[0]);
+    const values   = rawVals.map(v => v / maxVal);
     Plotly.newPlot('featureChart', [{
       type: 'bar', orientation: 'h',
       x: values.slice().reverse(),
       y: features.slice().reverse(),
-      marker: { color: '#58a6ff', colorscale: 'Blues' },
-    }], { ...PLOTLY_LAYOUT, margin: { ...PLOTLY_LAYOUT.margin, l: 180 } });
+      marker: { color: values.slice().reverse().map(v => `rgba(88,166,255,${0.3 + v * 0.7})`), },
+    }], { ...PLOTLY_LAYOUT, margin: { ...PLOTLY_LAYOUT.margin, l: 200 },
+          xaxis: { ...PLOTLY_LAYOUT.xaxis, title: 'Relative Importance' } });
   } catch(e) { console.error('feature importance error', e); }
 }
 
@@ -293,74 +300,70 @@ async function loadPredictions() {
     const data = await res.json();
     if (data.error || !data.length) return;
 
-    // Markov vs Polymarket scatter
-    const markovPrices = data.filter(d => d.markov_win_prob != null && d.polymarket_price != null);
-    if (markovPrices.length) {
+    // Price vs predicted volatility scatter
+    const priceData = data.filter(d => d.polymarket_price != null && d.predicted_volatility_prob != null);
+    if (priceData.length > 100) {
+      const sample = priceData.filter((_, i) => i % 5 === 0).slice(0, 800);
       Plotly.newPlot('markovPriceChart', [{
         type: 'scatter', mode: 'markers',
-        x: markovPrices.map(d => d.markov_win_prob),
-        y: markovPrices.map(d => d.polymarket_price),
+        x: sample.map(d => d.polymarket_price),
+        y: sample.map(d => d.predicted_volatility_prob),
         marker: {
-          size: 4, color: markovPrices.map(d => d.predicted_volatility_prob || 0),
-          colorscale: 'Viridis', showscale: true,
-          colorbar: { title: 'Volatility P', thickness: 12 },
+          size: 4, color: sample.map(d => d.high_volatility_label || 0),
+          colorscale: [[0, '#21262d'], [1, '#f85149']],
+          showscale: true, colorbar: { title: 'Actual', thickness: 12 },
           opacity: 0.6,
         },
-        hovertemplate: 'Markov: %{x:.3f}<br>Market: %{y:.3f}<extra></extra>',
-      }, {
-        type: 'scatter', mode: 'lines', x: [0, 1], y: [0, 1],
-        line: { color: '#30363d', dash: 'dot', width: 1 }, showlegend: false,
+        hovertemplate: 'Price: %{x:.3f}<br>Pred P: %{y:.3f}<extra></extra>',
       }], {
         ...PLOTLY_LAYOUT,
-        xaxis: { ...PLOTLY_LAYOUT.xaxis, title: 'Markov Win Probability' },
-        yaxis: { ...PLOTLY_LAYOUT.yaxis, title: 'Polymarket Price' },
+        xaxis: { ...PLOTLY_LAYOUT.xaxis, title: 'Polymarket Price (mid)' },
+        yaxis: { ...PLOTLY_LAYOUT.yaxis, title: 'Predicted Volatility P' },
       });
     }
 
-    // xT vs volatility
-    const xtData = data.filter(d => d.xt_sum_60s != null && d.predicted_volatility_prob != null);
+    // xT weight vs predicted volatility
+    const xtData = data.filter(d => d.xt_weight != null && d.predicted_volatility_prob != null);
     if (xtData.length > 100) {
-      const sample = xtData.filter((_, i) => i % 3 === 0).slice(0, 1000);
-      Plotly.newPlot('xtScatterChart', [{
-        type: 'scatter', mode: 'markers',
-        x: sample.map(d => d.xt_sum_60s),
-        y: sample.map(d => d.predicted_volatility_prob),
-        marker: {
-          size: 5, color: sample.map(d => d.high_volatility_label || 0),
-          colorscale: [[0, '#21262d'], [1, '#f85149']],
-          showscale: true, colorbar: { title: 'Actual', thickness: 12 },
-          opacity: 0.7,
-        },
-        hovertemplate: 'xT 60s: %{x:.3f}<br>Pred P: %{y:.3f}<extra></extra>',
-      }], {
+      const grp = {};
+      xtData.forEach(d => {
+        const k = d.event_type || 'unknown';
+        if (!grp[k]) grp[k] = { xts: [], probs: [], labels: [] };
+        grp[k].xts.push(d.xt_weight);
+        grp[k].probs.push(d.predicted_volatility_prob);
+        grp[k].labels.push(d.high_volatility_label || 0);
+      });
+      const topTypes = Object.entries(grp).sort((a,b) => b[1].xts.length - a[1].xts.length).slice(0,6);
+      const colors6 = ['#58a6ff','#3fb950','#f0883e','#f85149','#bc8cff','#39d353'];
+      Plotly.newPlot('xtScatterChart', topTypes.map(([name, v], ci) => ({
+        type: 'scatter', mode: 'markers', name: name,
+        x: v.xts.slice(0, 200),
+        y: v.probs.slice(0, 200),
+        marker: { size: 5, color: colors6[ci], opacity: 0.7 },
+        hovertemplate: name + '<br>xT: %{x}<br>Pred P: %{y:.3f}<extra></extra>',
+      })), {
         ...PLOTLY_LAYOUT,
-        xaxis: { ...PLOTLY_LAYOUT.xaxis, title: 'xT Sum (60s window)' },
+        xaxis: { ...PLOTLY_LAYOUT.xaxis, title: 'xT Weight (incident type)' },
         yaxis: { ...PLOTLY_LAYOUT.yaxis, title: 'Predicted Volatility Probability' },
       });
     }
 
-    // Grade distribution
-    const grades = data.map(d => {
-      const m = d.max_price_move_pct || 0;
-      if (m < 0.01) return 'L0';
-      if (m < 0.02) return 'L1';
-      if (m < 0.05) return 'L2';
-      if (m < 0.10) return 'L3';
-      if (m < 0.20) return 'L4';
-      return 'L5';
+    // Grade distribution (minutes_remaining buckets)
+    const minBuckets = ['0-15','15-30','30-45','45-60','60-75','75-90'];
+    const bucketCounts = minBuckets.map(() => ({vol: 0, stable: 0}));
+    data.forEach(d => {
+      const mr = d.minutes_remaining || 0;
+      const bi = Math.min(Math.floor((90 - mr) / 15), 5);
+      if (d.high_volatility_label) bucketCounts[bi].vol++;
+      else bucketCounts[bi].stable++;
     });
-    const counts = {};
-    grades.forEach(g => counts[g] = (counts[g] || 0) + 1);
-    const gLabels = ['L0','L1','L2','L3','L4','L5'];
-    const gColors = ['#21262d','#388bfd','#3fb950','#f0883e','#f85149','#da3633'];
     Plotly.newPlot('gradeChart', [{
-      type: 'bar',
-      x: gLabels, y: gLabels.map(g => counts[g] || 0),
-      marker: { color: gColors },
-      text: gLabels.map(g => counts[g] || 0), textposition: 'outside',
+      type: 'bar', name: 'Volatile', x: minBuckets, y: bucketCounts.map(b => b.vol), marker: { color: '#f85149' },
+    }, {
+      type: 'bar', name: 'Stable', x: minBuckets, y: bucketCounts.map(b => b.stable), marker: { color: '#388bfd' },
     }], {
-      ...PLOTLY_LAYOUT,
-      xaxis: { ...PLOTLY_LAYOUT.xaxis, title: 'Volatility Grade' },
+      ...PLOTLY_LAYOUT, barmode: 'stack',
+      xaxis: { ...PLOTLY_LAYOUT.xaxis, title: 'Game Minute Range' },
       yaxis: { ...PLOTLY_LAYOUT.yaxis, title: 'Event Count' },
     });
 
@@ -371,14 +374,27 @@ async function loadSummary() {
   try {
     const res = await fetch('/api/summary');
     const s = await res.json();
-    if (s.n_train) {
+    if (s.total_rows) {
+      document.getElementById('kpiDataInfo').textContent =
+        `${(s.total_rows/1e6).toFixed(2)}M rows · ${s.fixtures} fixtures`;
+    } else if (s.n_train) {
       document.getElementById('kpiDataInfo').textContent = `Train: ${s.n_train?.toLocaleString()} events`;
     }
   } catch(e) {}
 }
 
+async function loadIncidentStats() {
+  try {
+    const res = await fetch('/api/incident_stats');
+    const data = await res.json();
+    if (!data.length) return;
+    // Add to feature chart section if incident stats available
+    // (shown in console for now, chart slot is feature importance)
+  } catch(e) {}
+}
+
 // Init
-Promise.all([loadMetrics(), loadFeatureImportance(), loadTimeline(), loadPredictions(), loadSummary()]);
+Promise.all([loadMetrics(), loadFeatureImportance(), loadTimeline(), loadPredictions(), loadSummary(), loadIncidentStats()]);
 setInterval(() => Promise.all([loadMetrics(), loadTimeline()]), 30000); // auto-refresh 30s
 </script>
 </body>
