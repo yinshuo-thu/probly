@@ -1,0 +1,49 @@
+{
+  "model": "Markov xT v1",
+  "objective": "recall_first_with_explainability",
+  "data_file": "outputs/real_dataset_v4.parquet",
+  "rows": 1332812,
+  "fixtures": 54,
+  "train_rows": 831329,
+  "val_rows": 213872,
+  "test_rows": 287611,
+  "train_fixtures": 32,
+  "val_fixtures": 10,
+  "test_fixtures": 12,
+  "global_train_volatility_rate": 0.2873,
+  "momentum_edges": [
+    260.0,
+    396.0
+  ],
+  "transition_states": 4173,
+  "valued_states": 4174,
+  "validation_selection": {
+    "precision": 0.3616,
+    "recall": 0.1212,
+    "f1": 0.1815,
+    "f3": 0.1298,
+    "alert_rate": 0.0724
+  },
+  "test": {
+    "threshold": 0.47,
+    "precision": 0.457,
+    "recall": 0.0962,
+    "f1": 0.159,
+    "tp": 8736,
+    "fp": 10378,
+    "fn": 82056,
+    "tn": 186441,
+    "actual_high_volatility_intervals": 90792,
+    "predicted_intervals": 19114,
+    "missed_intervals": 82056,
+    "false_alarm_intervals": 10378,
+    "roc_auc": 0.5805
+  },
+  "outputs": {
+    "predictions": "outputs/markov_xt_predictions.parquet",
+    "metrics": "outputs/markov_xt_metrics.json",
+    "heatmap": "outputs/markov_event_heatmap.json",
+    "top_paths": "outputs/markov_top_paths.json",
+    "state_values": "outputs/markov_state_values.parquet"
+  }
+}

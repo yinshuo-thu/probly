@@ -1,0 +1,212 @@
+[
+  {
+    "path": "goal -> shot -> var_penalty",
+    "n": 39,
+    "hit_rate": 0.641,
+    "avg_move": 0.1817,
+    "path_confidence": 0.12708
+  },
+  {
+    "path": "var_penalty -> shot -> shot_on_target",
+    "n": 31,
+    "hit_rate": 0.9355,
+    "avg_move": 0.2326,
+    "path_confidence": 0.10709
+  },
+  {
+    "path": "shot -> var_penalty -> shot",
+    "n": 26,
+    "hit_rate": 0.8077,
+    "avg_move": 0.22,
+    "path_confidence": 0.06063
+  },
+  {
+    "path": "shot_on_target -> goal -> var_penalty",
+    "n": 76,
+    "hit_rate": 0.5263,
+    "avg_move": 0.0778,
+    "path_confidence": 0.05772
+  },
+  {
+    "path": "shot_on_target -> goal -> shot",
+    "n": 49,
+    "hit_rate": 0.551,
+    "avg_move": 0.141,
+    "path_confidence": 0.0493
+  },
+  {
+    "path": "goal -> var_penalty -> shot",
+    "n": 32,
+    "hit_rate": 0.4688,
+    "avg_move": 0.0991,
+    "path_confidence": 0.03828
+  },
+  {
+    "path": "goal -> score_state -> goal",
+    "n": 63,
+    "hit_rate": 0.6825,
+    "avg_move": 0.142,
+    "path_confidence": 0.03527
+  },
+  {
+    "path": "score_state -> goal -> goal",
+    "n": 83,
+    "hit_rate": 0.4458,
+    "avg_move": 0.1104,
+    "path_confidence": 0.03294
+  },
+  {
+    "path": "score_state -> score_state -> goal",
+    "n": 169,
+    "hit_rate": 0.4497,
+    "avg_move": 0.0853,
+    "path_confidence": 0.03195
+  },
+  {
+    "path": "goal -> goal -> danger",
+    "n": 20,
+    "hit_rate": 0.5,
+    "avg_move": 0.1168,
+    "path_confidence": 0.0318
+  },
+  {
+    "path": "shot -> shot_on_target -> goal",
+    "n": 142,
+    "hit_rate": 0.3873,
+    "avg_move": 0.0863,
+    "path_confidence": 0.0261
+  },
+  {
+    "path": "other -> score_state -> var_penalty",
+    "n": 21,
+    "hit_rate": 0.8095,
+    "avg_move": 0.1673,
+    "path_confidence": 0.02555
+  },
+  {
+    "path": "other -> shot -> var_penalty",
+    "n": 22,
+    "hit_rate": 0.5455,
+    "avg_move": 0.0727,
+    "path_confidence": 0.02487
+  },
+  {
+    "path": "score_state -> goal -> score_state",
+    "n": 123,
+    "hit_rate": 0.5854,
+    "avg_move": 0.1149,
+    "path_confidence": 0.02403
+  },
+  {
+    "path": "other -> score_state -> goal",
+    "n": 146,
+    "hit_rate": 0.5,
+    "avg_move": 0.0912,
+    "path_confidence": 0.02402
+  },
+  {
+    "path": "goal -> goal -> score_state",
+    "n": 58,
+    "hit_rate": 0.4483,
+    "avg_move": 0.0813,
+    "path_confidence": 0.02335
+  },
+  {
+    "path": "score_state -> score_state -> var_penalty",
+    "n": 27,
+    "hit_rate": 0.7037,
+    "avg_move": 0.1074,
+    "path_confidence": 0.02228
+  },
+  {
+    "path": "score_state -> var_penalty -> other",
+    "n": 20,
+    "hit_rate": 0.7,
+    "avg_move": 0.1542,
+    "path_confidence": 0.02155
+  },
+  {
+    "path": "score_state -> goal -> shot_on_target",
+    "n": 31,
+    "hit_rate": 0.6774,
+    "avg_move": 0.156,
+    "path_confidence": 0.02126
+  },
+  {
+    "path": "shot -> goal -> shot_on_target",
+    "n": 25,
+    "hit_rate": 0.72,
+    "avg_move": 0.0814,
+    "path_confidence": 0.01956
+  },
+  {
+    "path": "goal -> score_state -> other",
+    "n": 68,
+    "hit_rate": 0.4706,
+    "avg_move": 0.1129,
+    "path_confidence": 0.01949
+  },
+  {
+    "path": "var_penalty -> score_state -> score_state",
+    "n": 24,
+    "hit_rate": 0.6667,
+    "avg_move": 0.1138,
+    "path_confidence": 0.01853
+  },
+  {
+    "path": "other -> other -> var_penalty",
+    "n": 29,
+    "hit_rate": 0.6897,
+    "avg_move": 0.1581,
+    "path_confidence": 0.01831
+  },
+  {
+    "path": "score_state -> discipline -> score_state",
+    "n": 98,
+    "hit_rate": 0.398,
+    "avg_move": 0.0469,
+    "path_confidence": 0.01613
+  },
+  {
+    "path": "var_penalty -> other -> other",
+    "n": 48,
+    "hit_rate": 0.6458,
+    "avg_move": 0.1229,
+    "path_confidence": 0.01598
+  },
+  {
+    "path": "goal -> score_state -> score_state",
+    "n": 106,
+    "hit_rate": 0.3962,
+    "avg_move": 0.0762,
+    "path_confidence": 0.01511
+  },
+  {
+    "path": "score_state -> substitution -> score_state",
+    "n": 52,
+    "hit_rate": 0.4808,
+    "avg_move": 0.0405,
+    "path_confidence": 0.01493
+  },
+  {
+    "path": "goal -> goal -> other",
+    "n": 58,
+    "hit_rate": 0.4483,
+    "avg_move": 0.0933,
+    "path_confidence": 0.01493
+  },
+  {
+    "path": "shot_on_target -> shot_on_target -> goal",
+    "n": 30,
+    "hit_rate": 0.4667,
+    "avg_move": 0.0723,
+    "path_confidence": 0.01485
+  },
+  {
+    "path": "shot -> goal -> score_state",
+    "n": 23,
+    "hit_rate": 0.6087,
+    "avg_move": 0.1257,
+    "path_confidence": 0.01438
+  }
+]

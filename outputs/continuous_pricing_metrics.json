@@ -1,0 +1,127 @@
+{
+  "model": "Markov v2 + HistGradientBoosting continuous pricing",
+  "objective": "continuous_price_path_forecast",
+  "rows": 1332812,
+  "train_rows": 831329,
+  "val_rows": 213872,
+  "test_rows": 287611,
+  "features": [
+    "confidence_grade",
+    "conf_trend",
+    "xt_weight",
+    "event_density_30s",
+    "event_density_60s",
+    "event_density_120s",
+    "risk_event_count_30s",
+    "risk_event_count_60s",
+    "score_diff",
+    "minutes_remaining",
+    "period_id",
+    "mid_price",
+    "xt_x_conf",
+    "is_high_impact",
+    "is_timer_period",
+    "risk_density_ratio",
+    "price_extremeness",
+    "total_goals",
+    "is_leading",
+    "is_drawing",
+    "game_intensity",
+    "event_density_300s",
+    "high_impact_60s",
+    "high_impact_300s",
+    "xt_sum_60s",
+    "xt_sum_300s",
+    "price_velocity",
+    "price_realized_vol",
+    "pressure_score",
+    "markov_v2_state_abs_move",
+    "markov_v2_event_abs_move",
+    "markov_v2_value_abs_move",
+    "markov_v2_state_signed_move",
+    "markov_v2_event_signed_move",
+    "markov_v2_value_signed_move",
+    "markov_v2_transition_weight",
+    "markov_v2_path_abs_score"
+  ],
+  "markov_v2_features": [
+    "markov_v2_state_abs_move",
+    "markov_v2_event_abs_move",
+    "markov_v2_value_abs_move",
+    "markov_v2_state_signed_move",
+    "markov_v2_event_signed_move",
+    "markov_v2_value_signed_move",
+    "markov_v2_transition_weight",
+    "markov_v2_path_abs_score"
+  ],
+  "markov_v2_states": 12467,
+  "best_abs_validation_model": {
+    "model": "HGB abs poisson-like",
+    "abs_move_mae": 0.0275,
+    "abs_move_rmse": 0.06887,
+    "abs_move_r2": 0.1491,
+    "abs_move_spearman": 0.3855,
+    "abs_move_top_decile_lift": 3.1425
+  },
+  "abs_validation_candidates": [
+    {
+      "model": "HGB abs squared conservative",
+      "abs_move_mae": 0.03029,
+      "abs_move_rmse": 0.0711,
+      "abs_move_r2": 0.0931,
+      "abs_move_spearman": 0.3524,
+      "abs_move_top_decile_lift": 3.0651
+    },
+    {
+      "model": "HGB abs squared deeper",
+      "abs_move_mae": 0.0329,
+      "abs_move_rmse": 0.074,
+      "abs_move_r2": 0.0177,
+      "abs_move_spearman": 0.3216,
+      "abs_move_top_decile_lift": 2.8077
+    },
+    {
+      "model": "HGB abs absolute",
+      "abs_move_mae": 0.02658,
+      "abs_move_rmse": 0.07268,
+      "abs_move_r2": 0.0523,
+      "abs_move_spearman": 0.3505,
+      "abs_move_top_decile_lift": 3.1799
+    },
+    {
+      "model": "HGB abs poisson-like",
+      "abs_move_mae": 0.0275,
+      "abs_move_rmse": 0.06887,
+      "abs_move_r2": 0.1491,
+      "abs_move_spearman": 0.3855,
+      "abs_move_top_decile_lift": 3.1425
+    }
+  ],
+  "signed_validation": {
+    "signed_move_mae": 0.01456,
+    "signed_move_rmse": 0.04279,
+    "signed_move_r2": 0.3896,
+    "signed_move_spearman": 0.611,
+    "signed_move_top_decile_lift": 214.6154
+  },
+  "test": {
+    "abs_move_mae": 0.03596,
+    "abs_move_rmse": 0.07903,
+    "abs_move_r2": 0.0887,
+    "abs_move_spearman": 0.4038,
+    "abs_move_top_decile_lift": 2.6528,
+    "signed_move_mae": 0.0197,
+    "signed_move_rmse": 0.0544,
+    "signed_move_r2": 0.131,
+    "signed_move_spearman": 0.6279,
+    "signed_move_top_decile_lift": -3995.2518,
+    "direction_accuracy_2c": 0.878,
+    "direction_rows_2c": 70289
+  },
+  "promoted_to_test_predictions": true,
+  "outputs": {
+    "predictions": "outputs/continuous_pricing_predictions.parquet",
+    "metrics": "outputs/continuous_pricing_metrics.json",
+    "model": "outputs/models/continuous_pricing_models.pkl"
+  }
+}
