@@ -216,3 +216,22 @@
   - `python -m py_compile src/train_lead_pricing.py viz/app.py` passed.
   - Local `/api/lead_pricing_metrics` returned coverage precision 0.4947, recall 0.7547, high-confidence precision 0.6019.
   - Local `/api/fixture_timeline/<fixture_id>` returned `lead30_pred_abs_peak` and `lead30_intercept_score`.
+
+## 2026-05-26 Frontend Forecast Path Fix
+
+- User feedback:
+  - The frontend appeared to show straight prediction lines that did not follow Polymarket.
+- Diagnosis:
+  - The main timeline mixed probability/risk values and price-move magnitudes on the same right-side prediction axis.
+  - `|Delta P|` values are usually 0.02-0.08 while the axis is 0-1, so they visually look like nearly flat lines.
+  - The main timeline did not show the model's forecast price path on the same axis as Polymarket price.
+- Fix:
+  - Removed `|Delta P|` traces from the main timeline's probability axis.
+  - Kept `|Delta P|` comparison in the dedicated continuous-pricing chart.
+  - Added price-axis forecast paths to the main timeline:
+    - `模型预测价格 +60s`
+    - `提前30s模型价格 +150s`
+  - Shifted forecast-price traces to the timestamp they forecast, so the line can be compared visually against later Polymarket prices.
+- Interpretation:
+  - The model is still a lead-time risk/pricing model, not a pure price tracker.
+  - A forecast path should follow the market state through current price plus expected future move; exact signed movement remains a TODO.

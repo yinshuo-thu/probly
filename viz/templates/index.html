@@ -727,6 +727,7 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
   // API returns T-separated ISO strings; safe to pass directly to Date().
   const msOf = t => new Date(t).getTime();
   const isoOf = ms => new Date(ms).toISOString();
+  const addSec = (t, sec) => isoOf(msOf(t) + sec * 1000);
   const HALF_MIN_MS = ONE_MIN_MS / 2;
 
   // Background colour bands via layout shapes (zero axis impact)
@@ -779,30 +780,6 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
     showlegend:false,
   });
 
-  if ((pr.length ? pr : pl).some(p => p.pred_abs_peak != null || p.pred_abs_move != null)) {
-    traces.push({
-      type:'scatter', mode:'lines', name:'预测 |ΔP| 120s',
-      x: (pr.length ? pr : pl).map(p=>p.t),
-      y: (pr.length ? pr.map(p=>p.pred_abs_peak ?? p.pred_abs_move ?? 0) : pl.map(p=>p.pred_abs_peak ?? p.pred_abs_move ?? 0)),
-      yaxis:'y2',
-      line:{color:'rgba(250,204,21,0.95)', width:1.8, shape:'hv'},
-      hovertemplate:'预测 120s |ΔP|: <b>%{y:.3f}</b><extra>连续模型</extra>',
-      showlegend:false,
-    });
-  }
-
-  if ((pr.length ? pr : pl).some(p => p.lead30_pred_abs_peak != null || p.lead30_pred_abs_move != null)) {
-    traces.push({
-      type:'scatter', mode:'lines', name:'提前30s预测 |ΔP|',
-      x: (pr.length ? pr : pl).map(p=>p.t),
-      y: (pr.length ? pr.map(p=>p.lead30_pred_abs_peak ?? p.lead30_pred_abs_move ?? 0) : pl.map(p=>p.lead30_pred_abs_peak ?? p.lead30_pred_abs_move ?? 0)),
-      yaxis:'y2',
-      line:{color:'rgba(251,113,133,0.95)', width:1.9, shape:'hv', dash:'dot'},
-      hovertemplate:'提前30s预测 |ΔP|: <b>%{y:.3f}</b><extra>lead pricing</extra>',
-      showlegend:false,
-    });
-  }
-
   // ── 3. PMXT bid/ask envelope, then displayed mid-price ─────────────────
   if (pm.length) {
     traces.push({
@@ -833,6 +810,36 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
     hovertemplate:'赔率: <b>%{y:.3f}</b><extra>'+priceName+'</extra>',
     showlegend:false,
   });
+
+  // Forecast price paths belong on the Price axis, not the probability axis.
+  // Shift them to the time they forecast so users can visually compare against
+  // the later Polymarket path without confusing risk magnitude with price.
+  const modelRows = pr.length ? pr : pl;
+  const forecastPriceVals = [];
+  if (modelRows.some(p => p.pred_price_after != null)) {
+    const x1 = modelRows.map(p => addSec(p.t, 60));
+    const y1 = modelRows.map(p => p.pred_price_after ?? null);
+    forecastPriceVals.push(...y1.filter(v => v != null));
+    traces.push({
+      type:'scatter', mode:'lines', name:'模型预测价格 +60s',
+      x:x1, y:y1,
+      line:{color:'#a78bfa', width:1.9, dash:'dot', shape:'hv'},
+      hovertemplate:'模型预测 +60s 价格: <b>%{y:.3f}</b><extra>continuous pricing</extra>',
+      showlegend:false,
+    });
+  }
+  if (modelRows.some(p => p.lead30_pred_price_after != null)) {
+    const x2 = modelRows.map(p => addSec(p.t, 150));
+    const y2p = modelRows.map(p => p.lead30_pred_price_after ?? null);
+    forecastPriceVals.push(...y2p.filter(v => v != null));
+    traces.push({
+      type:'scatter', mode:'lines', name:'提前30s模型价格 +150s',
+      x:x2, y:y2p,
+      line:{color:'#f472b6', width:2.2, dash:'dash', shape:'hv'},
+      hovertemplate:'提前模型预测 +150s 价格: <b>%{y:.3f}</b><extra>lead pricing</extra>',
+      showlegend:false,
+    });
+  }
 
   if (pm.length) {
     traces.push({
@@ -923,8 +930,8 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
       ...C.axis,
       title: {text:'Price', font:{size:11,color:'#f97316'}},
       range: [
-        Math.max(0, Math.min(...priceY.filter(v=>v!=null)) - 0.06),
-        Math.min(1, Math.max(...priceY.filter(v=>v!=null)) + 0.06)
+        Math.max(0, Math.min(...priceY.filter(v=>v!=null), ...forecastPriceVals) - 0.06),
+        Math.min(1, Math.max(...priceY.filter(v=>v!=null), ...forecastPriceVals) + 0.06)
       ],
       tickmode: 'array',
       tickvals: [0, 0.25, 0.5, 0.75, 1],
@@ -985,6 +992,7 @@ function renderContinuousChart(rows) {
     return;
   }
   const x = usable.map(r => r.t);
+  const addSecLocal = (t, sec) => new Date(new Date(t).getTime() + sec * 1000).toISOString();
   const predAbs = usable.map(r => r.pred_abs_peak ?? r.pred_abs_move ?? null);
   const actualAbs = usable.map(r => r.actual_abs_peak ?? r.actual_abs_move ?? null);
   const signed = usable.map(r => r.pred_price_change ?? null);
@@ -992,7 +1000,9 @@ function renderContinuousChart(rows) {
   const leadAbs = usable.map(r => r.lead30_pred_abs_peak ?? r.lead30_pred_abs_move ?? null);
   const leadActual = usable.map(r => r.lead30_actual_abs_peak ?? r.lead30_actual_abs_move ?? null);
   const leadScore = usable.map(r => r.lead30_intercept_score ?? null);
+  const leadAfter = usable.map(r => r.lead30_pred_price_after ?? null);
   const price = usable.map(r => r.price ?? null);
+  const forecastPrices = [...after, ...leadAfter].filter(v => v != null);
   Plotly.newPlot('continuousChart', [
     {type:'scatter', mode:'lines', name:'Price', x, y:price, yaxis:'y2', line:{color:'#f97316', width:1.8, shape:'hv'}, hovertemplate:'Price %{y:.3f}<extra></extra>'},
     {type:'scatter', mode:'lines', name:'预测 |ΔP| 120s', x, y:predAbs, line:{color:'#facc15', width:2.3, shape:'hv'}, hovertemplate:'预测 |ΔP| %{y:.3f}<extra></extra>'},
@@ -1001,15 +1011,16 @@ function renderContinuousChart(rows) {
     {type:'scatter', mode:'lines', name:'提前窗口实际 |ΔP|', x, y:leadActual, line:{color:'rgba(45,212,191,.7)', width:1.5, dash:'dash', shape:'hv'}, hovertemplate:'t+30s后实际 |ΔP| %{y:.3f}<extra></extra>'},
     {type:'scatter', mode:'lines', name:'提前拦截分数', x, y:leadScore, yaxis:'y3', line:{color:'rgba(244,114,182,.55)', width:1, shape:'hv'}, hovertemplate:'提前拦截分数 %{y:.2f}<extra></extra>'},
     {type:'bar', name:'预测 1m signed ΔP', x, y:signed, marker:{color:signed.map(v => (v || 0) >= 0 ? 'rgba(59,130,246,.45)' : 'rgba(239,68,68,.45)')}, hovertemplate:'预测 signed ΔP %{y:.3f}<extra></extra>'},
-    {type:'scatter', mode:'lines', name:'预测 1m 后价格', x, y:after, yaxis:'y2', line:{color:'rgba(167,139,250,.75)', width:1.4, dash:'dot', shape:'hv'}, hovertemplate:'预测价格 %{y:.3f}<extra></extra>'},
+    {type:'scatter', mode:'lines', name:'预测 +60s 价格', x:x.map(t => addSecLocal(t, 60)), y:after, yaxis:'y2', line:{color:'rgba(167,139,250,.85)', width:1.5, dash:'dot', shape:'hv'}, hovertemplate:'+60s 预测价格 %{y:.3f}<extra></extra>'},
+    {type:'scatter', mode:'lines', name:'提前预测 +150s 价格', x:x.map(t => addSecLocal(t, 150)), y:leadAfter, yaxis:'y2', line:{color:'rgba(244,114,182,.9)', width:1.8, dash:'dash', shape:'hv'}, hovertemplate:'+150s 提前预测价格 %{y:.3f}<extra></extra>'},
   ], {
     ...LAYOUT(),
     margin:{t:10,b:42,l:58,r:66},
     xaxis:{...C.axis,type:'date'},
     yaxis:{...C.axis,title:'Price move',rangemode:'tozero',nticks:6},
     yaxis2:{...C.axis,title:'Price',overlaying:'y',side:'right',range:[
-      Math.max(0, Math.min(...price.filter(v=>v!=null), ...after.filter(v=>v!=null)) - 0.06),
-      Math.min(1, Math.max(...price.filter(v=>v!=null), ...after.filter(v=>v!=null)) + 0.06)
+      Math.max(0, Math.min(...price.filter(v=>v!=null), ...forecastPrices) - 0.06),
+      Math.min(1, Math.max(...price.filter(v=>v!=null), ...forecastPrices) + 0.06)
     ],showgrid:false},
     yaxis3:{...C.axis,overlaying:'y',side:'right',position:0.96,range:[0,2],showgrid:false,showticklabels:false},
     legend:{orientation:'h', y:1.12, x:0, font:{size:9,color:'#94a3b8'}, bgcolor:'transparent'},
