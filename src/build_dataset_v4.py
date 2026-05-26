@@ -9,19 +9,19 @@ Improvements over v3:
 - Vectorized O(N log N) throughout
 """
 
-import sys, warnings, requests
+import warnings, requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
-sys.path.insert(0, '/Volumes/T7/probly/src')
 warnings.filterwarnings('ignore')
 
 import numpy as np
 import pandas as pd
 from pathlib import Path
+from project_paths import DATA_DIR, OUTPUTS_DIR, PROJECT_ROOT
 
-BASE     = Path('/Volumes/T7/probly')
-FMM_FILE = BASE / 'data/polymarket/fixture_market_matches.parquet'
-MSGS_DIR = BASE / 'data/hyper/football'
-OUT_FILE = BASE / 'outputs/real_dataset_v4.parquet'
+BASE     = PROJECT_ROOT
+FMM_FILE = DATA_DIR / 'polymarket/fixture_market_matches.parquet'
+MSGS_DIR = DATA_DIR / 'hyper/football'
+OUT_FILE = OUTPUTS_DIR / 'real_dataset_v4.parquet'
 CLOB_API = 'https://clob.polymarket.com'
 MAX_WORKERS = 6
 

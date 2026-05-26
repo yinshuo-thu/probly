@@ -18,9 +18,10 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_score
 
+from project_paths import OUTPUTS_DIR, PROJECT_ROOT
 
-BASE = Path("/Volumes/T7/probly")
-OUT = BASE / "outputs"
+BASE = PROJECT_ROOT
+OUT = OUTPUTS_DIR
 DATA_FILE = OUT / "real_dataset_v4.parquet"
 TARGET = "high_volatility"
 

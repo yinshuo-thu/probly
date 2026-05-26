@@ -5,8 +5,7 @@ Target: high_volatility (binary: |price_move| > 3 cents in next 120s)
         OR next_60s_high_impact (causal: goal/card/penalty in next 60s) if v4
 """
 
-import sys, json, warnings
-sys.path.insert(0, '/Volumes/T7/probly/src')
+import json, warnings
 warnings.filterwarnings('ignore')
 
 import numpy as np
@@ -20,10 +19,11 @@ from sklearn.metrics import (
     precision_score, recall_score,
 )
 import pickle
+from project_paths import MODELS_DIR, OUTPUTS_DIR, PROJECT_ROOT
 
-BASE = Path('/Volumes/T7/probly')
-OUT_DIR   = BASE / 'outputs'
-MODEL_DIR = OUT_DIR / 'models'
+BASE = PROJECT_ROOT
+OUT_DIR   = OUTPUTS_DIR
+MODEL_DIR = MODELS_DIR
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
 # Prefer v4 dataset (richer features + causal label)
