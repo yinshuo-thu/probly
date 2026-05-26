@@ -5,7 +5,7 @@ Run: python viz/app.py
 Then open: http://localhost:5001
 """
 
-import sys, json, math, os
+import sys, json, math, os, re
 import numpy as np
 import pandas as pd
 import requests
@@ -210,6 +210,123 @@ def pricing_threshold(default=0.64) -> float:
         return float(m['test']['high_confidence']['threshold'])
     except Exception:
         return default
+
+
+def _clip01(x: float, lo: float = 0.01, hi: float = 0.99) -> float:
+    try:
+        return float(np.clip(float(x), lo, hi))
+    except Exception:
+        return 0.5
+
+
+def _logit(p: float) -> float:
+    p = _clip01(p)
+    return math.log(p / (1.0 - p))
+
+
+def _sigmoid(x: float) -> float:
+    return float(1.0 / (1.0 + math.exp(-float(np.clip(x, -12, 12)))))
+
+
+def _market_family(market: dict | None) -> str:
+    text = f"{(market or {}).get('market_type', '')} {(market or {}).get('question', '')}".lower()
+    if 'o/u' in text or 'over' in text or 'under' in text:
+        return 'ou'
+    if 'both teams to score' in text or 'btts' in text:
+        return 'btts'
+    return 'market'
+
+
+def _event_hazard_delta(row: pd.Series, family: str) -> float:
+    name = str(row.get('top_incident', row.get('incident_name', '')))
+    conf = _clip01(row.get('avg_confidence', row.get('confidence_grade', 0.5)), 0.05, 1.0)
+    xt = float(pd.to_numeric(pd.Series([row.get('xt_peak', row.get('xt_weight', 0))]), errors='coerce').fillna(0).iloc[0])
+    density = float(pd.to_numeric(pd.Series([row.get('event_density_60s', 0)]), errors='coerce').fillna(0).iloc[0])
+    minutes_remaining = float(pd.to_numeric(pd.Series([row.get('minutes_remaining', 45)]), errors='coerce').fillna(45).iloc[0])
+    late = 1.0 + 0.35 * (1.0 - np.clip(minutes_remaining, 0, 90) / 90.0)
+
+    impact = 0.0
+    # "Score" in LSports often means scoreboard state, not necessarily a goal.
+    # Keep actual hazard changes tied to pressure events unless a clean goal
+    # feed is available.
+    if any(k in name for k in ['Penalt']):
+        impact += 0.45
+    if 'VAR' in name:
+        impact += 0.18
+    if any(k in name for k in ['ShotsOnTarget', 'Shots On Target']):
+        impact += 0.20
+    elif 'Shot' in name:
+        impact += 0.08
+    if any(k in name for k in ['Dangerous', 'Corner', 'FreeKick', 'Free Kick']):
+        impact += 0.05
+    if 'RedCard' in name or 'Red Card' in name:
+        impact += 0.02 if family in {'ou', 'btts'} else 0.0
+    if any(k in name for k in ['Timer', 'Period', 'Passes', 'Minutes Played']):
+        impact -= 0.03
+
+    pressure = 0.10 * np.clip(xt / 5.0, 0, 1) + 0.08 * np.clip(density / 800.0, 0, 1)
+    return float(np.clip((impact + pressure) * conf * late, -0.25, 0.50))
+
+
+def add_rule_pricing_columns(rows: pd.DataFrame, market: dict | None = None, pmxt: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Non-ML fair value layer: market prior + event hazard + Kalman smoothing."""
+    out = rows.copy()
+    if out.empty:
+        return out
+
+    out['timestamp'] = pd.to_datetime(out.get('timestamp', out.get('ten_sec_bucket', out.get('minute_bucket'))), utc=True, errors='coerce')
+    out = out.sort_values('timestamp').reset_index(drop=True)
+
+    market_mid = pd.to_numeric(out.get('price', out.get('mid_price', 0.5)), errors='coerce').ffill().fillna(0.5)
+    spread = pd.Series(np.full(len(out), 0.025), index=out.index, dtype=float)
+    if pmxt is not None and not pmxt.empty:
+        pm = pmxt[['timestamp', 'mid', 'best_bid', 'best_ask']].copy()
+        pm['timestamp'] = pd.to_datetime(pm['timestamp'], utc=True, errors='coerce')
+        pm = pm.dropna(subset=['timestamp']).sort_values('timestamp')
+        left = out[['timestamp']].copy()
+        left['ts_ns'] = left['timestamp'].astype('int64')
+        pm['ts_ns'] = pm['timestamp'].astype('int64')
+        aligned = pd.merge_asof(
+            left.sort_values('ts_ns'),
+            pm.sort_values('ts_ns'),
+            on='ts_ns',
+            direction='nearest',
+            tolerance=int(pd.Timedelta(seconds=8).value),
+        ).sort_index()
+        market_mid = pd.to_numeric(aligned['mid'], errors='coerce').fillna(market_mid).ffill().fillna(0.5)
+        spread = (pd.to_numeric(aligned['best_ask'], errors='coerce') - pd.to_numeric(aligned['best_bid'], errors='coerce')).abs()
+        spread = spread.fillna(0.025).clip(0.005, 0.18)
+
+    family = _market_family(market)
+    fair_raw = []
+    for i, row in out.iterrows():
+        p = _clip01(market_mid.iloc[i])
+        delta = _event_hazard_delta(row, family)
+        fair_raw.append(_sigmoid(_logit(p) + delta))
+
+    kalman = []
+    x = _clip01(market_mid.iloc[0])
+    var = 0.018
+    for i, raw in enumerate(fair_raw):
+        conf = _clip01(out.loc[i].get('avg_confidence', out.loc[i].get('confidence_grade', 0.5)), 0.05, 1.0)
+        process = 0.003 + 0.018 * conf + 0.012 * min(abs(raw - x) / 0.08, 1.0)
+        meas = 0.006 + float(spread.iloc[i]) ** 2 + 0.012 * (1.0 - conf)
+        var += process
+        gain = var / (var + meas)
+        x = _clip01(x + gain * (raw - x))
+        var = (1.0 - gain) * var
+        kalman.append(x)
+
+    out['market_mid'] = market_mid.astype(float)
+    out['rule_fair_price'] = np.asarray(kalman, dtype=float)
+    out['rule_edge'] = out['rule_fair_price'] - out['market_mid']
+    conf_series = pd.to_numeric(out['avg_confidence'], errors='coerce').fillna(0.7) if 'avg_confidence' in out.columns else pd.Series(np.full(len(out), 0.7), index=out.index)
+    out['rule_uncertainty'] = (spread + 0.012 + 0.018 * (1 - conf_series)).clip(0.015, 0.20)
+    edge_gate = (spread + 0.012).clip(0.025, 0.08)
+    out['rule_alert'] = (out['rule_edge'].abs() >= edge_gate).astype(int)
+    out['rule_direction'] = np.select([out['rule_edge'] > 0, out['rule_edge'] < 0], ['buy_yes', 'sell_yes'], default='hold')
+    out['rule_family'] = family
+    return out
 
 
 def add_pricing_signal_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -446,6 +563,11 @@ def api_fixture_timeline(fixture_id):
         'lead30_signed_move': ('lead30_pred_signed_move_120s', 'mean'),
         'lead30_pred_price_after': ('lead30_pred_price_after_150s', 'last'),
         'lead30_intercept_score': ('lead30_intercept_score', 'max'),
+        'minutes_remaining': ('minutes_remaining', 'last'),
+        'avg_confidence': ('confidence_grade', 'mean'),
+        'xt_peak': ('xt_weight', 'max'),
+        'event_density_60s': ('event_density_60s', 'max'),
+        'top_incident': ('incident_name', lambda s: str(s.value_counts().index[0]) if len(s) else ''),
     }
     for out_col, spec in continuous_cols.items():
         if spec[0] in sub.columns:
@@ -467,9 +589,6 @@ def api_fixture_timeline(fixture_id):
         if spec[0] in sub.columns:
             pred_agg[out_col] = spec
     pred_line = sub.groupby('ten_sec_bucket').agg(**pred_agg).reset_index()
-    pred_line = add_pricing_signal_columns(pred_line)
-    pred_line['t'] = pred_line['ten_sec_bucket'].dt.strftime('%Y-%m-%dT%H:%M:%SZ')
-    price_line = add_pricing_signal_columns(price_line)
 
     # Event markers (non-Timer/Period events only, sample to max 300)
     events = sub[~sub['incident_name'].isin({'Timer', 'Period',
@@ -533,6 +652,12 @@ def api_fixture_timeline(fixture_id):
             'mid': float(r.mid),
             'move': float(r.move),
         } for r in jumps.itertuples()]
+
+    pred_line = add_rule_pricing_columns(pred_line, active_market, pmxt_df if 'pmxt_df' in locals() else None)
+    pred_line = add_pricing_signal_columns(pred_line)
+    pred_line['t'] = pred_line['ten_sec_bucket'].dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+    price_line = add_rule_pricing_columns(price_line, active_market, pmxt_df if 'pmxt_df' in locals() else None)
+    price_line = add_pricing_signal_columns(price_line)
 
     # Advance warning analysis: for each actual big move, did model fire early?
     big_moves = sub[sub['max_abs_move_120s'] > 0.05].copy()
@@ -603,6 +728,10 @@ def api_fixture_deepdive(fixture_id):
 
     sub = sub.sort_values('timestamp').reset_index(drop=True)
     threshold = pricing_threshold()
+    markets = fixture_markets(fixture_id)
+    requested_cid = request.args.get('condition_id')
+    active_market = (next((m for m in markets if m['condition_id'] == requested_cid), None)
+                     if requested_cid else next((m for m in markets if m['has_pmxt']), None))
 
     # Multi-signal state line: model risk, price pressure, event pressure, score context.
     sub['minute_bucket'] = sub['timestamp'].dt.floor('1min')
@@ -640,11 +769,16 @@ def api_fixture_deepdive(fixture_id):
         'lead30_signed_move': ('lead30_pred_signed_move_120s', 'mean'),
         'lead30_pred_price_after': ('lead30_pred_price_after_150s', 'last'),
         'lead30_intercept_score': ('lead30_intercept_score', 'max'),
+        'minutes_remaining': ('minutes_remaining', 'last'),
+        'avg_confidence': ('confidence_grade', 'mean'),
+        'xt_peak': ('xt_weight', 'max'),
+        'top_incident': ('incident_name', lambda s: str(s.value_counts().index[0]) if len(s) else ''),
     }
     for out_col, spec in optional_cols.items():
         if spec[0] in sub.columns:
             agg_spec[out_col] = spec
     state = sub.groupby('minute_bucket').agg(**agg_spec).reset_index()
+    state = add_rule_pricing_columns(state, active_market)
     state = add_pricing_signal_columns(state)
     state['t'] = state['minute_bucket'].dt.strftime('%Y-%m-%dT%H:%M:%SZ')
     state_line = state.drop(columns=['minute_bucket']).replace({np.nan: None}).to_dict(orient='records')
@@ -704,10 +838,6 @@ def api_fixture_deepdive(fixture_id):
     windows = sorted(windows, key=lambda x: x['peak_prob'], reverse=True)[:25]
 
     # Price jump alignment: for large PMXT moves, was the model already elevated?
-    markets = fixture_markets(fixture_id)
-    requested_cid = request.args.get('condition_id')
-    active_market = (next((m for m in markets if m['condition_id'] == requested_cid), None)
-                     if requested_cid else next((m for m in markets if m['has_pmxt']), None))
     jump_alignment = []
     if active_market and active_market.get('has_pmxt'):
         pmxt, _ = load_pmxt_prices(

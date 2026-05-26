@@ -200,9 +200,11 @@ footer { border-top: 1px solid #1e293b; padding: 20px 32px; color: #475569; font
     <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:10px;">
       <div class="legend" style="margin:0;gap:14px;">
         <span class="legend-item"><span style="display:inline-block;width:22px;height:3px;background:#f97316;border-radius:2px;margin-right:4px;vertical-align:middle"></span>Polymarket 赔率</span>
+        <span class="legend-item"><span style="display:inline-block;width:22px;height:3px;background:#2dd4bf;border-radius:2px;margin-right:4px;vertical-align:middle"></span>Rule fair value</span>
+        <span class="legend-item"><span style="display:inline-block;width:22px;height:3px;background:rgba(45,212,191,.9);border-radius:2px;margin-right:4px;vertical-align:middle"></span>Fair - Market edge</span>
         <span class="legend-item"><span style="display:inline-block;width:22px;height:3px;background:#fed7aa;border-radius:2px;margin-right:4px;vertical-align:middle"></span>PMXT Bid/Ask</span>
-        <span class="legend-item"><span style="display:inline-block;width:14px;height:10px;background:rgba(96,165,250,0.35);border:1px solid rgba(96,165,250,0.6);border-radius:2px;margin-right:4px;vertical-align:middle"></span>预测波动概率</span>
-        <span class="legend-item"><span style="display:inline-block;width:14px;height:10px;background:rgba(16,185,129,0.25);border:1px solid rgba(16,185,129,0.6);border-radius:2px;margin-right:4px;vertical-align:middle"></span>✅ 成功提前预测</span>
+        <span class="legend-item"><span style="display:inline-block;width:14px;height:10px;background:rgba(96,165,250,0.20);border:1px solid rgba(96,165,250,0.4);border-radius:2px;margin-right:4px;vertical-align:middle"></span>ML coverage参考</span>
+        <span class="legend-item"><span style="display:inline-block;width:14px;height:10px;background:rgba(16,185,129,0.25);border:1px solid rgba(16,185,129,0.6);border-radius:2px;margin-right:4px;vertical-align:middle"></span>✅ Rule edge有效</span>
         <span class="legend-item"><span style="display:inline-block;width:14px;height:10px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.5);border-radius:2px;margin-right:4px;vertical-align:middle"></span>⚡ 实际高波动区间</span>
         <span class="legend-item"><span style="display:inline-block;width:10px;height:10px;background:#10b981;border-radius:50%;margin-right:4px;vertical-align:middle"></span>⚽/🟥 关键事件</span>
         <span class="legend-item" style="font-size:10px;color:#334155">— — —&nbsp;</span><span class="legend-item" id="thresholdLabel">预测阈值 —</span>
@@ -700,23 +702,20 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
   if (d.pricing_threshold != null) {
     PRICING_THRESHOLD = Number(d.pricing_threshold);
     const label = document.getElementById('thresholdLabel');
-    if (label) label.textContent = `pricing阈值 ${PRICING_THRESHOLD.toFixed(2)} · coverage阈值 ${COVERAGE_THRESHOLD.toFixed(2)}`;
+    if (label) label.textContent = `Rule edge band · ML coverage阈值 ${COVERAGE_THRESHOLD.toFixed(2)}`;
   }
 
   // ── Classify each displayed prediction bucket ───────────────────────────
-  // Default signal is stricter pricing_alert, not the recall-first volatility
-  // classifier. This avoids the "everything is high volatility" failure mode.
-  const hitTimes = [];    // pricing alert AND actual move → green: useful signal
-  const fpTimes  = [];    // pricing alert AND no move → orange: false pricing edge
+  // Default signal is the non-ML rule fair-value edge, not the recall-first
+  // volatility classifier. This is a pricing signal, not a broad risk alert.
+  const hitTimes = [];    // rule edge alert AND actual move → useful signal
+  const fpTimes  = [];    // rule edge alert AND no move → false edge
   const missX = [], missY = [];  // model quiet AND actual vol → red: missed danger
 
   const statBase = pr.length ? pr : pl.map(p => ({...p, pred_max:p.max_pred, pred_mean:p.vol_pred, price:p.price}));
   let totalActual = 0;
   statBase.forEach(p => {
-    const pred = asNum(p.pricing_signal, p.lead30_intercept_score ?? p.pred_max ?? p.max_pred ?? p.vol_pred ?? 0);
-    const edge = asNum(p.pricing_edge, Math.abs((p.lead30_pred_price_after ?? p.price) - p.price));
-    const absMove = asNum(p.lead30_pred_abs_peak, p.lead30_pred_abs_move ?? p.pred_abs_peak ?? 0);
-    const fired = Number(p.pricing_alert || 0) === 1 || (pred >= PRICING_THRESHOLD && absMove >= 0.035 && edge >= 0.015);
+    const fired = Number(p.rule_alert || 0) === 1;
     const actualMove = asNum(p.lead30_actual_abs_peak, p.actual_abs_peak ?? p.actual_abs_move ?? 0);
     const actual = actualMove >= 0.05;
     if (actual) totalActual += 1;
@@ -731,10 +730,10 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
     const totalPredicted = hitTimes.length + fpTimes.length;
     stats.innerHTML = [
       `<span class="pred-pill hit">总高波动区间 ${totalActual} 个</span>`,
-      `<span class="pred-pill fp">预测拦截区间 ${totalPredicted} 个</span>`,
-      `<span class="pred-pill hit">准确拦截 ${hitTimes.length} 个</span>`,
+      `<span class="pred-pill fp">Rule edge信号 ${totalPredicted} 个</span>`,
+      `<span class="pred-pill hit">有效edge ${hitTimes.length} 个</span>`,
       `<span class="pred-pill miss">遗漏 ${missX.length} 个</span>`,
-      `<span class="pred-pill fp">错报 ${fpTimes.length} 个</span>`,
+      `<span class="pred-pill fp">无效edge ${fpTimes.length} 个</span>`,
     ].join('');
   }
 
@@ -776,28 +775,21 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
     // Dim red: only larger realized move zones, based on actual |ΔP| not every
     // overlapping high-vol label.
     ...mergeTimesToShapes(statBase.filter(p => asNum(p.lead30_actual_abs_peak, p.actual_abs_peak ?? p.actual_abs_move ?? 0) >= 0.05).map(p => p.t), 'rgba(239,68,68,0.07)'),
-    // Bright green: merged high-confidence pricing signals that were right.
+    // Bright green: merged non-ML fair-value edge signals that were right.
     ...mergeTimesToShapes(hitTimes, 'rgba(16,185,129,0.16)'),
-    // Horizontal threshold line on the prediction axis.
-    ...(pl.length ? [{
-      type:'line', xref:'paper', yref:'y2',
-      x0: 0, x1: 1, y0: PRICING_THRESHOLD, y1: PRICING_THRESHOLD,
-      line: {color:'rgba(96,165,250,0.40)', width:1, dash:'dot'},
-      layer: 'above',
-    }] : []),
   ];
 
   const traces = [];
 
-  // ── 1. Prediction area: mean per 10s (smooth trend baseline) ───────────
+  // ── 1. Non-ML fair-value edge and ML coverage diagnostic ───────────────
   traces.push({
-    type:'scatter', mode:'lines', name:'pricing_signal',
+    type:'scatter', mode:'lines', name:'Rule edge',
     x: (pr.length ? pr : pl).map(p=>p.t),
-    y: (pr.length ? pr.map(p=>p.pricing_signal ?? p.lead30_intercept_score ?? 0) : pl.map(p=>p.pricing_signal ?? p.lead30_intercept_score ?? 0)),
+    y: (pr.length ? pr.map(p=>p.rule_edge ?? 0) : pl.map(p=>p.rule_edge ?? 0)),
     yaxis:'y2',
-    line:{color:'rgba(96,165,250,0.72)', width:1.8, shape:'hv'},
-    fill:'tozeroy', fillcolor:'rgba(96,165,250,0.055)',
-    hovertemplate:'pricing signal: <b>%{y:.2f}</b><extra>高置信定价</extra>',
+    line:{color:'rgba(45,212,191,0.9)', width:1.8, shape:'hv'},
+    fill:'tozeroy', fillcolor:'rgba(45,212,191,0.055)',
+    hovertemplate:'Rule edge: <b>%{y:.3f}</b><extra>fair - market</extra>',
     showlegend:false,
   });
 
@@ -836,6 +828,8 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
   const priceX = pm.length ? pm.map(p=>p.t) : pl.map(p=>p.t);
   const priceY = pm.length ? pm.map(p=>p.mid) : pl.map(p=>p.price);
   const priceName = pm.length ? 'PMXT orderbook mid' : 'CLOB 1-min candle';
+  const modelRows = pr.length ? pr : pl;
+  const forecastPriceVals = [];
   traces.push({
     type:'scatter', mode:'lines', name:'Polymarket 赔率',
     x: priceX, y: priceY,
@@ -844,11 +838,21 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
     showlegend:false,
   });
 
+  if (modelRows.some(p => p.rule_fair_price != null)) {
+    const fairVals = modelRows.map(p => p.rule_fair_price ?? null);
+    forecastPriceVals.push(...fairVals.filter(v => v != null));
+    traces.push({
+      type:'scatter', mode:'lines', name:'Rule fair value',
+      x:modelRows.map(p=>p.t), y:fairVals,
+      line:{color:'#2dd4bf', width:2.4, shape:'hv'},
+      hovertemplate:'Rule fair: <b>%{y:.3f}</b><br>非ML market prior + event hazard + Kalman<extra></extra>',
+      showlegend:false,
+    });
+  }
+
   // Forecast price paths belong on the Price axis, not the probability axis.
   // Shift them to the time they forecast so users can visually compare against
   // the later Polymarket path without confusing risk magnitude with price.
-  const modelRows = pr.length ? pr : pl;
-  const forecastPriceVals = [];
   if (modelRows.some(p => p.pred_price_after != null)) {
     const x1 = modelRows.map(p => addSec(p.t, 60));
     const y1 = modelRows.map(p => p.pred_price_after ?? null);
@@ -973,11 +977,11 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
     },
     yaxis2: {
       ...C.axis,
-      title: {text:'Pred', font:{size:11,color:'#60a5fa'}},
-      range: [0, 1.02],
+      title: {text:'Edge / ML prob', font:{size:11,color:'#2dd4bf'}},
+      range: [-0.20, 1.02],
       tickmode: 'array',
-      tickvals: [0, 0.25, 0.5, 0.75, 1],
-      ticktext: ['0%', '25%', '50%', '75%', '100%'],
+      tickvals: [-0.1, 0, 0.1, 0.5, 1],
+      ticktext: ['-10c', '0', '+10c', '50%', '100%'],
       overlaying: 'y',
       side: 'right',
       showgrid: false,
