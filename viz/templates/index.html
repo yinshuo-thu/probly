@@ -362,6 +362,7 @@ const LAYOUT = () => ({
 const fmt   = v => v != null ? (v * 100).toFixed(1) + '%' : '—';
 const fmtD  = v => v != null ? v.toFixed(4) : '—';
 const fmt1M = v => v != null ? (v/1e6).toFixed(2) + 'M' : '—';
+const asNum = (v, fallback = 0) => Number.isFinite(Number(v)) ? Number(v) : fallback;
 
 // Incident type → color
 const INC_COLOR = {
@@ -399,9 +400,7 @@ async function loadSummaryKpi() {
   document.getElementById('kFixtures').textContent = `${sum.fixtures || 0} 场比赛`;
   document.getElementById('kVol').textContent   = fmt(sum.vol_rate);
   if (best.threshold != null) {
-    THRESHOLD = Number(best.threshold);
-    const label = document.getElementById('thresholdLabel');
-    if (label) label.textContent = `预测阈值 ${THRESHOLD.toFixed(2)}`;
+    COVERAGE_THRESHOLD = Number(best.threshold);
   }
 }
 
@@ -428,6 +427,11 @@ async function loadLeadMetrics() {
   const t = m.test || {};
   const hi = t.high_confidence || {};
   if (!box || !Object.keys(t).length) return;
+  if (hi.threshold != null) {
+    PRICING_THRESHOLD = Number(hi.threshold);
+    const label = document.getElementById('thresholdLabel');
+    if (label) label.textContent = `pricing阈值 ${PRICING_THRESHOLD.toFixed(2)} · coverage阈值 ${COVERAGE_THRESHOLD.toFixed(2)}`;
+  }
   const cells = [
     ['提前窗口', `${m.lead_seconds || 30}s lead / ${m.horizon_seconds || 120}s horizon`],
     ['未来高波动区间', `${(t.total_future_high_volatility_intervals || 0).toLocaleString()} 个`],
@@ -542,7 +546,7 @@ async function loadAdvanceChart(fixture_id) {
     if (!data.length) return;
     // Aggregate advance warning
     const maxPred = Math.max(...data.map(d=>d.avg_pred));
-    const colors  = data.map(d => d.avg_pred >= THRESHOLD ? '#10b981' : '#3b82f6');
+    const colors  = data.map(d => d.avg_pred >= PRICING_THRESHOLD ? '#10b981' : '#3b82f6');
     Plotly.newPlot('advanceChart', [
       {
         type:'bar', name:'平均预测概率',
@@ -551,9 +555,9 @@ async function loadAdvanceChart(fixture_id) {
         text: data.map(d=>(d.avg_pred*100).toFixed(1)+'%'), textposition:'outside',
       },
       {
-        type:'scatter', mode:'lines', name:`阈值 ${THRESHOLD}`,
+        type:'scatter', mode:'lines', name:`阈值 ${PRICING_THRESHOLD}`,
         x: [data[0].lead_seconds+'s before', data[data.length-1].lead_seconds+'s before'],
-        y: [THRESHOLD, THRESHOLD],
+        y: [PRICING_THRESHOLD, PRICING_THRESHOLD],
         line:{color:'rgba(96,165,250,0.5)', dash:'dot', width:1.5},
       }
     ], {
@@ -563,7 +567,7 @@ async function loadAdvanceChart(fixture_id) {
       xaxis:{...C.axis, title:'大幅价格波动发生前 N 秒 (右侧=更早预警)'},
       annotations:[{
         x: data[data.length-1].lead_seconds+'s before',
-        y: THRESHOLD, xanchor:'right', yanchor:'bottom',
+        y: PRICING_THRESHOLD, xanchor:'right', yanchor:'bottom',
         text:'模型决策阈值', showarrow:false,
         font:{color:'rgba(96,165,250,0.7)', size:9},
       }],
@@ -580,7 +584,7 @@ async function loadAdvanceChart(fixture_id) {
   });
   const leads = Object.keys(byLead).map(Number).sort((a,b)=>a-b);
   const avgs  = leads.map(l => byLead[l].reduce((a,b)=>a+b,0)/byLead[l].length);
-  const cols  = avgs.map(v => v >= THRESHOLD ? '#10b981' : v > 0.35 ? '#60a5fa' : '#475569');
+  const cols  = avgs.map(v => v >= PRICING_THRESHOLD ? '#10b981' : v > 0.35 ? '#60a5fa' : '#475569');
   Plotly.newPlot('advanceChart', [
     {
       type:'bar', name:'平均预测概率',
@@ -589,9 +593,9 @@ async function loadAdvanceChart(fixture_id) {
       text: avgs.map(v=>(v*100).toFixed(1)+'%'), textposition:'outside',
     },
     {
-      type:'scatter', mode:'lines', name:`阈值 ${THRESHOLD}`,
+      type:'scatter', mode:'lines', name:`阈值 ${PRICING_THRESHOLD}`,
       x: [leads[0]+'s before', leads[leads.length-1]+'s before'],
-      y: [THRESHOLD, THRESHOLD],
+      y: [PRICING_THRESHOLD, PRICING_THRESHOLD],
       line:{color:'rgba(96,165,250,0.5)', dash:'dot', width:1.5},
     }
   ], {
@@ -625,7 +629,8 @@ async function loadFixtureList() {
 }
 
 // ── Main timeline (per-fixture) ───────────────────────────────────────────
-let THRESHOLD = 0.5;         // Loaded from metrics_history.json; validation-selected threshold.
+let COVERAGE_THRESHOLD = 0.5; // Recall-first classifier threshold, kept for diagnostics.
+let PRICING_THRESHOLD = 0.64; // High-confidence pricing threshold; default chart signal.
 const ONE_MIN_MS = 60 * 1000; // 1-min candle in ms — used for shape half-width
 let selectedRangeMinutes = null;
 let activeTimeExtent = null;
@@ -692,18 +697,28 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
   renderMarketTabs(d);
   renderMarketDiagnostics(d);
 
+  if (d.pricing_threshold != null) {
+    PRICING_THRESHOLD = Number(d.pricing_threshold);
+    const label = document.getElementById('thresholdLabel');
+    if (label) label.textContent = `pricing阈值 ${PRICING_THRESHOLD.toFixed(2)} · coverage阈值 ${COVERAGE_THRESHOLD.toFixed(2)}`;
+  }
+
   // ── Classify each displayed prediction bucket ───────────────────────────
-  // pred_high = model fired (≥ threshold); actual_vol = price moved >3c in window
-  const hitTimes = [];    // model fired AND actual high vol → green: maker saved
-  const fpTimes  = [];    // model fired AND no big move → orange: unnecessary hedge
+  // Default signal is stricter pricing_alert, not the recall-first volatility
+  // classifier. This avoids the "everything is high volatility" failure mode.
+  const hitTimes = [];    // pricing alert AND actual move → green: useful signal
+  const fpTimes  = [];    // pricing alert AND no move → orange: false pricing edge
   const missX = [], missY = [];  // model quiet AND actual vol → red: missed danger
 
   const statBase = pr.length ? pr : pl.map(p => ({...p, pred_max:p.max_pred, pred_mean:p.vol_pred, price:p.price}));
   let totalActual = 0;
   statBase.forEach(p => {
-    const pred = p.pred_max ?? p.max_pred ?? p.vol_pred ?? 0;
-    const fired = pred >= THRESHOLD;
-    const actual = p.actual_vol > 0.5;
+    const pred = asNum(p.pricing_signal, p.lead30_intercept_score ?? p.pred_max ?? p.max_pred ?? p.vol_pred ?? 0);
+    const edge = asNum(p.pricing_edge, Math.abs((p.lead30_pred_price_after ?? p.price) - p.price));
+    const absMove = asNum(p.lead30_pred_abs_peak, p.lead30_pred_abs_move ?? p.pred_abs_peak ?? 0);
+    const fired = Number(p.pricing_alert || 0) === 1 || (pred >= PRICING_THRESHOLD && absMove >= 0.035 && edge >= 0.015);
+    const actualMove = asNum(p.lead30_actual_abs_peak, p.actual_abs_peak ?? p.actual_abs_move ?? 0);
+    const actual = actualMove >= 0.05;
     if (actual) totalActual += 1;
     if (fired && actual)  { hitTimes.push(p.t); }
     else if (fired && !actual) { fpTimes.push(p.t); }
@@ -729,6 +744,24 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
   const isoOf = ms => new Date(ms).toISOString();
   const addSec = (t, sec) => isoOf(msOf(t) + sec * 1000);
   const HALF_MIN_MS = ONE_MIN_MS / 2;
+  const mergeTimesToShapes = (times, color, halfMs = 5500, maxGapMs = 16000) => {
+    const sorted = [...new Set(times.map(t => msOf(t)).filter(Number.isFinite))].sort((a,b)=>a-b);
+    if (!sorted.length) return [];
+    const intervals = [];
+    let start = sorted[0] - halfMs;
+    let end = sorted[0] + halfMs;
+    for (let i = 1; i < sorted.length; i++) {
+      const s = sorted[i] - halfMs;
+      const e = sorted[i] + halfMs;
+      if (s <= end + maxGapMs) end = Math.max(end, e);
+      else { intervals.push([start, end]); start = s; end = e; }
+    }
+    intervals.push([start, end]);
+    return intervals.map(([x0, x1]) => ({
+      type:'rect', xref:'x', yref:'paper', x0:isoOf(x0), x1:isoOf(x1),
+      y0:0, y1:1, fillcolor:color, line:{width:0}, layer:'below',
+    }));
+  };
 
   // Background colour bands via layout shapes (zero axis impact)
   const toShape = (t, color) => ({
@@ -740,15 +773,15 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
   });
 
   const shapes = [
-    // Dim red: actual high-vol minutes (show the "danger zone")
-    ...pl.filter(p => p.actual_vol > 0.5)
-         .map(p => toShape(p.t, 'rgba(239,68,68,0.08)')),
-    // Bright green: model fired AND it was right (maker-saving moment)
-    ...hitTimes.map(t => toShape(t, 'rgba(16,185,129,0.20)')),
+    // Dim red: only larger realized move zones, based on actual |ΔP| not every
+    // overlapping high-vol label.
+    ...mergeTimesToShapes(statBase.filter(p => asNum(p.lead30_actual_abs_peak, p.actual_abs_peak ?? p.actual_abs_move ?? 0) >= 0.05).map(p => p.t), 'rgba(239,68,68,0.07)'),
+    // Bright green: merged high-confidence pricing signals that were right.
+    ...mergeTimesToShapes(hitTimes, 'rgba(16,185,129,0.16)'),
     // Horizontal threshold line on the prediction axis.
     ...(pl.length ? [{
       type:'line', xref:'paper', yref:'y2',
-      x0: 0, x1: 1, y0: THRESHOLD, y1: THRESHOLD,
+      x0: 0, x1: 1, y0: PRICING_THRESHOLD, y1: PRICING_THRESHOLD,
       line: {color:'rgba(96,165,250,0.40)', width:1, dash:'dot'},
       layer: 'above',
     }] : []),
@@ -758,25 +791,25 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
 
   // ── 1. Prediction area: mean per 10s (smooth trend baseline) ───────────
   traces.push({
-    type:'scatter', mode:'lines', name:'avg_pred',
+    type:'scatter', mode:'lines', name:'pricing_signal',
     x: (pr.length ? pr : pl).map(p=>p.t),
-    y: (pr.length ? pr.map(p=>p.pred_mean) : pl.map(p=>p.vol_pred)),
+    y: (pr.length ? pr.map(p=>p.pricing_signal ?? p.lead30_intercept_score ?? 0) : pl.map(p=>p.pricing_signal ?? p.lead30_intercept_score ?? 0)),
     yaxis:'y2',
-    line:{color:'rgba(96,165,250,0.25)', width:1, shape:'hv'},
-    fill:'tozeroy', fillcolor:'rgba(96,165,250,0.07)',
-    hoverinfo:'skip', showlegend:false,
+    line:{color:'rgba(96,165,250,0.72)', width:1.8, shape:'hv'},
+    fill:'tozeroy', fillcolor:'rgba(96,165,250,0.055)',
+    hovertemplate:'pricing signal: <b>%{y:.2f}</b><extra>高置信定价</extra>',
+    showlegend:false,
   });
 
   // ── 2. Prediction line: max per 10s (shows true spikes) ───────────────
   // max_pred reveals moments when at least ONE event in the minute scored high
   traces.push({
-    type:'scatter', mode:'lines', name:'峰值预测概率',
+    type:'scatter', mode:'lines', name:'coverage概率',
     x: (pr.length ? pr : pl).map(p=>p.t),
     y: (pr.length ? pr.map(p=>p.pred_max) : pl.map(p=>p.max_pred ?? p.vol_pred)),
     yaxis:'y2',
-    line:{color:'rgba(96,165,250,0.9)', width:2, shape:'hv'},
-    fill:'tonexty', fillcolor:'rgba(96,165,250,0.10)',
-    hovertemplate:'峰值预测: <b>%{y:.0%}</b><br>%{x}<extra>模型</extra>',
+    line:{color:'rgba(96,165,250,0.28)', width:1, dash:'dot', shape:'hv'},
+    hovertemplate:'coverage概率: <b>%{y:.0%}</b><br>%{x}<extra>召回模型，仅供参考</extra>',
     showlegend:false,
   });
 
@@ -891,7 +924,7 @@ async function selectFixture(fixture_id, btn, condition_id = null) {
               line:{color:'#fff', width:1.5}, opacity:0.95},
       customdata: goalMks.map(m => [
         m.incident,
-        m.vol_pred >= THRESHOLD ? '✅ 已预警' : '❌ 未预警',
+        m.lead30_intercept_score >= PRICING_THRESHOLD ? '✅ pricing信号' : '· 无pricing信号',
         m.vol_pred, m.max_move,
       ]),
       hovertemplate:'<b>%{customdata[0]}</b>  %{customdata[1]}<br>' +

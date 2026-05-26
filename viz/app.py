@@ -202,6 +202,34 @@ def best_threshold(default=0.5) -> float:
         best = max(models, key=lambda x: x.get('recall' if m.get('optimize_for') == 'coverage_recall' else 'f1', 0))
     return float(best.get('threshold', default))
 
+
+def pricing_threshold(default=0.64) -> float:
+    """High-confidence threshold for pricing alerts, not recall-max coverage."""
+    m = load_json_output('lead_pricing_metrics.json', {})
+    try:
+        return float(m['test']['high_confidence']['threshold'])
+    except Exception:
+        return default
+
+
+def add_pricing_signal_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Create stricter, trade-facing pricing signals from lead path forecasts.
+
+    The recall classifier intentionally fires broadly. For the UI default we
+    require a lead score, expected move magnitude, and expected fair-price edge.
+    """
+    out = df.copy()
+    price = pd.to_numeric(out.get('price', out.get('mid_price', 0.5)), errors='coerce').fillna(0.5)
+    score = pd.to_numeric(out.get('lead30_intercept_score', 0), errors='coerce').fillna(0).clip(0, 2)
+    pred_abs = pd.to_numeric(out.get('lead30_pred_abs_peak', out.get('lead30_pred_abs_move', out.get('lead30_pred_abs_move_120s', 0))), errors='coerce').fillna(0)
+    pred_after = pd.to_numeric(out.get('lead30_pred_price_after', out.get('lead30_pred_price_after_150s', np.nan)), errors='coerce')
+    edge = (pred_after - price).abs().fillna(0)
+    th = pricing_threshold()
+    out['pricing_signal'] = score
+    out['pricing_edge'] = edge
+    out['pricing_alert'] = ((score >= th) & (pred_abs >= 0.035) & (edge >= 0.015)).astype(int)
+    return out
+
 def load_summary():
     ds_v4 = OUTPUTS / 'real_dataset_v4.parquet'
     ds_v3 = OUTPUTS / 'real_dataset.parquet'
@@ -439,7 +467,9 @@ def api_fixture_timeline(fixture_id):
         if spec[0] in sub.columns:
             pred_agg[out_col] = spec
     pred_line = sub.groupby('ten_sec_bucket').agg(**pred_agg).reset_index()
+    pred_line = add_pricing_signal_columns(pred_line)
     pred_line['t'] = pred_line['ten_sec_bucket'].dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+    price_line = add_pricing_signal_columns(price_line)
 
     # Event markers (non-Timer/Period events only, sample to max 300)
     events = sub[~sub['incident_name'].isin({'Timer', 'Period',
@@ -548,6 +578,7 @@ def api_fixture_timeline(fixture_id):
         'condition_id': str(meta.get('condition_id', '')),
         'n_events':     int(len(sub)),
         'vol_rate':     round(float(sub['high_volatility'].mean()), 3),
+        'pricing_threshold': pricing_threshold(),
         'markets':      markets,
         'active_market': active_market or {},
         'price_line':   price_line.drop(columns=['minute_bucket']).replace({np.nan: None}).to_dict(orient='records'),
@@ -571,7 +602,7 @@ def api_fixture_deepdive(fixture_id):
         return jsonify({'error': f'fixture {fixture_id} not found'})
 
     sub = sub.sort_values('timestamp').reset_index(drop=True)
-    threshold = best_threshold()
+    threshold = pricing_threshold()
 
     # Multi-signal state line: model risk, price pressure, event pressure, score context.
     sub['minute_bucket'] = sub['timestamp'].dt.floor('1min')
@@ -614,11 +645,13 @@ def api_fixture_deepdive(fixture_id):
         if spec[0] in sub.columns:
             agg_spec[out_col] = spec
     state = sub.groupby('minute_bucket').agg(**agg_spec).reset_index()
+    state = add_pricing_signal_columns(state)
     state['t'] = state['minute_bucket'].dt.strftime('%Y-%m-%dT%H:%M:%SZ')
     state_line = state.drop(columns=['minute_bucket']).replace({np.nan: None}).to_dict(orient='records')
 
     # Consecutive model-fire windows. These are the most actionable units for a trader.
-    fired = sub[sub['volatility_prob'] >= threshold].copy()
+    sub = add_pricing_signal_columns(sub.rename(columns={'mid_price': 'price'}))
+    fired = sub[sub['pricing_alert'] == 1].copy()
     windows = []
     if not fired.empty:
         gaps = fired['timestamp'].diff().dt.total_seconds().fillna(0)
@@ -656,11 +689,11 @@ def api_fixture_deepdive(fixture_id):
                 'start': _iso(start),
                 'end': _iso(end),
                 'duration_s': round(float((end - start).total_seconds()), 1),
-                'peak_prob': round(float(g['volatility_prob'].max()), 4),
-                'avg_prob': round(float(g['volatility_prob'].mean()), 4),
-                'price_start': round(float(g['mid_price'].iloc[0]), 4),
-                'price_end': round(float(g['mid_price'].iloc[-1]), 4),
-                'price_change': round(float(g['mid_price'].iloc[-1] - g['mid_price'].iloc[0]), 4),
+                'peak_prob': round(float(g['pricing_signal'].max()), 4),
+                'avg_prob': round(float(g['pricing_signal'].mean()), 4),
+                'price_start': round(float(g['price'].iloc[0]), 4),
+                'price_end': round(float(g['price'].iloc[-1]), 4),
+                'price_change': round(float(g['price'].iloc[-1] - g['price'].iloc[0]), 4),
                 'max_future_move': round(float(context['max_abs_move_120s'].max()), 4) if not context.empty else 0.0,
                 'actual_high_vol': actual,
                 'label': 'hit' if actual else 'false_alarm',
@@ -681,7 +714,7 @@ def api_fixture_deepdive(fixture_id):
             active_market['condition_id'],
             sub['timestamp'].min() - pd.Timedelta(minutes=10),
             sub['timestamp'].max() + pd.Timedelta(minutes=10),
-            target_mean=float(sub['mid_price'].mean()),
+            target_mean=float(sub['price'].mean()),
             max_points=5000,
         )
         if not pmxt.empty:
@@ -696,7 +729,8 @@ def api_fixture_deepdive(fixture_id):
                            (sub['timestamp'] <= t)]
                 if prev.empty:
                     continue
-                peak_idx = prev['volatility_prob'].idxmax()
+                prev = add_pricing_signal_columns(prev.rename(columns={'mid_price': 'price'}))
+                peak_idx = prev['pricing_signal'].idxmax()
                 peak = prev.loc[peak_idx]
                 key_events = prev[prev['xt_weight'] >= 2.0]
                 event_name = key_events['incident_name'].iloc[-1] if not key_events.empty else ''
@@ -707,9 +741,9 @@ def api_fixture_deepdive(fixture_id):
                     't': _iso(t),
                     'mid': round(float(r.mid), 4),
                     'move': round(float(r.move), 4),
-                    'prior_peak_prob': round(float(peak['volatility_prob']), 4),
+                    'prior_peak_prob': round(float(peak['pricing_signal']), 4),
                     'model_lead_s': round(float((t - peak['timestamp']).total_seconds()), 1),
-                    'was_alerted': bool(float(peak['volatility_prob']) >= threshold),
+                    'was_alerted': bool(int(peak.get('pricing_alert', 0)) == 1),
                     'nearest_event': str(event_name),
                     'event_lead_s': event_lead,
                 })
