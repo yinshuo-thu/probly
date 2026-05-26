@@ -85,22 +85,33 @@ def load_and_split(path: Path):
 
     df = df.dropna(subset=available_features + [TARGET])
 
-    # Time-based group split: train on first 70%, test on last 30% by fixture
-    fixtures = df['fixture_id'].unique()
-    np.random.seed(42)
-    np.random.shuffle(fixtures)
-    n_train = int(len(fixtures) * 0.7)
-    train_fixtures = set(fixtures[:n_train])
-    test_fixtures  = set(fixtures[n_train:])
+    # Chronological group split by fixture. Keep whole fixtures together to avoid
+    # event-level leakage, and reserve validation for threshold selection.
+    df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True, errors='coerce')
+    fixture_order = (df.groupby('fixture_id')['timestamp']
+                       .min()
+                       .sort_values()
+                       .index
+                       .to_numpy())
+    n = len(fixture_order)
+    n_train = max(1, int(n * 0.60))
+    n_val = max(1, int(n * 0.20))
+    train_fixtures = set(fixture_order[:n_train])
+    val_fixtures = set(fixture_order[n_train:n_train + n_val])
+    test_fixtures = set(fixture_order[n_train + n_val:])
 
     train = df[df['fixture_id'].isin(train_fixtures)]
+    val = df[df['fixture_id'].isin(val_fixtures)]
     test  = df[df['fixture_id'].isin(test_fixtures)]
 
     print(f"Train: {len(train)} rows ({train['fixture_id'].nunique()} fixtures)")
+    print(f"Val:   {len(val)} rows ({val['fixture_id'].nunique()} fixtures)")
     print(f"Test:  {len(test)} rows ({test['fixture_id'].nunique()} fixtures)")
-    print(f"Train vol rate: {train[TARGET].mean():.3f}, Test vol rate: {test[TARGET].mean():.3f}")
+    print(f"Train vol rate: {train[TARGET].mean():.3f}, "
+          f"Val vol rate: {val[TARGET].mean():.3f}, "
+          f"Test vol rate: {test[TARGET].mean():.3f}")
 
-    return train, test, available_features
+    return train, val, test, available_features
 
 
 def best_threshold_predict(y_prob, y_true):
@@ -139,14 +150,13 @@ def evaluate(name, model, X_test, y_test, scaler=None, threshold=None):
     return metrics, threshold
 
 
-def train_lr(X_train, y_train, X_test, y_test, features):
+def train_lr(X_train, y_train, X_val, y_val, X_test, y_test, features):
     scaler = StandardScaler()
     X_tr = scaler.fit_transform(X_train)
-    X_te = scaler.transform(X_test)
     model = LogisticRegression(max_iter=1000, class_weight='balanced', C=1.0)
     model.fit(X_tr, y_train)
-    prob = model.predict_proba(X_te)[:, 1]
-    t = best_threshold_predict(prob, y_test)
+    prob_val = model.predict_proba(scaler.transform(X_val))[:, 1]
+    t = best_threshold_predict(prob_val, y_val)
     metrics, _ = evaluate('Logistic Regression', model, X_test, y_test, scaler, threshold=t)
     coef = dict(zip(features, model.coef_[0]))
     metrics['feature_importance'] = {k: round(float(v), 4) for k, v in
@@ -156,14 +166,14 @@ def train_lr(X_train, y_train, X_test, y_test, features):
     return metrics
 
 
-def train_rf(X_train, y_train, X_test, y_test, features):
+def train_rf(X_train, y_train, X_val, y_val, X_test, y_test, features):
     model = RandomForestClassifier(
         n_estimators=300, max_depth=10, min_samples_leaf=5,
         class_weight='balanced', n_jobs=-1, random_state=42
     )
     model.fit(X_train, y_train)
-    prob = model.predict_proba(X_test)[:, 1]
-    t = best_threshold_predict(prob, y_test)
+    prob_val = model.predict_proba(X_val)[:, 1]
+    t = best_threshold_predict(prob_val, y_val)
     metrics, _ = evaluate('Random Forest', model, X_test, y_test, threshold=t)
     imp = dict(zip(features, model.feature_importances_))
     metrics['feature_importance'] = {k: round(float(v), 4) for k, v in
@@ -173,7 +183,7 @@ def train_rf(X_train, y_train, X_test, y_test, features):
     return metrics
 
 
-def train_xgb(X_train, y_train, X_test, y_test, features):
+def train_xgb(X_train, y_train, X_val, y_val, X_test, y_test, features):
     try:
         from xgboost import XGBClassifier
         scale_pos = (y_train == 0).sum() / (y_train == 1).sum()
@@ -184,8 +194,8 @@ def train_xgb(X_train, y_train, X_test, y_test, features):
             eval_metric='logloss', n_jobs=-1, random_state=42
         )
         model.fit(X_train, y_train, verbose=False)
-        prob = model.predict_proba(X_test)[:, 1]
-        t = best_threshold_predict(prob, y_test)
+        prob_val = model.predict_proba(X_val)[:, 1]
+        t = best_threshold_predict(prob_val, y_val)
         metrics, _ = evaluate('XGBoost', model, X_test, y_test, threshold=t)
         imp = dict(zip(features, model.feature_importances_))
         metrics['feature_importance'] = {k: round(float(v), 4) for k, v in
@@ -198,7 +208,7 @@ def train_xgb(X_train, y_train, X_test, y_test, features):
         return None
 
 
-def train_lgbm(X_train, y_train, X_test, y_test, features):
+def train_lgbm(X_train, y_train, X_val, y_val, X_test, y_test, features):
     try:
         import lightgbm as lgb
         model = lgb.LGBMClassifier(
@@ -208,8 +218,8 @@ def train_lgbm(X_train, y_train, X_test, y_test, features):
             verbose=-1, min_child_samples=20,
         )
         model.fit(X_train, y_train)
-        prob = model.predict_proba(X_test)[:, 1]
-        t = best_threshold_predict(prob, y_test)
+        prob_val = model.predict_proba(X_val)[:, 1]
+        t = best_threshold_predict(prob_val, y_val)
         metrics, _ = evaluate('LightGBM', model, X_test, y_test, threshold=t)
         imp = dict(zip(features, model.feature_importances_))
         metrics['feature_importance'] = {k: round(float(v), 4) for k, v in
@@ -228,29 +238,31 @@ def main():
         print("Run build_dataset_v2.py first.")
         return
 
-    train, test, features = load_and_split(DATA_FILE)
+    train, val, test, features = load_and_split(DATA_FILE)
 
     X_train = train[features].values
     y_train = train[TARGET].values
+    X_val   = val[features].values
+    y_val   = val[TARGET].values
     X_test  = test[features].values
     y_test  = test[TARGET].values
 
     all_metrics = []
 
     print("\n--- Training Logistic Regression ---")
-    m1 = train_lr(X_train, y_train, X_test, y_test, features)
+    m1 = train_lr(X_train, y_train, X_val, y_val, X_test, y_test, features)
     all_metrics.append(m1)
 
     print("\n--- Training Random Forest ---")
-    m2 = train_rf(X_train, y_train, X_test, y_test, features)
+    m2 = train_rf(X_train, y_train, X_val, y_val, X_test, y_test, features)
     all_metrics.append(m2)
 
     print("\n--- Training XGBoost ---")
-    m3 = train_xgb(X_train, y_train, X_test, y_test, features)
+    m3 = train_xgb(X_train, y_train, X_val, y_val, X_test, y_test, features)
     if m3: all_metrics.append(m3)
 
     print("\n--- Training LightGBM ---")
-    m4 = train_lgbm(X_train, y_train, X_test, y_test, features)
+    m4 = train_lgbm(X_train, y_train, X_val, y_val, X_test, y_test, features)
     if m4: all_metrics.append(m4)
 
     # Save metrics
@@ -259,7 +271,9 @@ def main():
         'best_f1': max(m['f1'] for m in all_metrics),
         'best_model': max(all_metrics, key=lambda m: m['f1'])['model'],
         'dataset_rows': len(train) + len(test),
+        'validation_rows': len(val),
         'train_vol_rate': round(float(y_train.mean()), 4),
+        'val_vol_rate':   round(float(y_val.mean()), 4),
         'test_vol_rate':  round(float(y_test.mean()), 4),
         'n_features': len(features),
         'features': features,
@@ -291,10 +305,18 @@ def main():
         X = test[feats].values
         if scl: X = scl.transform(X)
         prob = mdl.predict_proba(X)[:, 1]
-        test_out = test[['fixture_id', 'timestamp', 'incident_name',
-                          'mid_price', 'minutes_remaining', 'score_diff',
-                          'xt_weight', 'confidence_grade', 'high_volatility',
-                          'max_abs_move_120s']].copy()
+        viz_cols = [
+            'fixture_id', 'timestamp', 'incident_name',
+            'mid_price', 'minutes_remaining', 'minutes_elapsed',
+            'score_diff', 'total_goals', 'period_id',
+            'xt_weight', 'confidence_grade', 'conf_trend',
+            'event_density_30s', 'event_density_60s', 'event_density_120s',
+            'event_density_300s', 'risk_event_count_30s', 'risk_event_count_60s',
+            'high_impact_60s', 'high_impact_300s', 'xt_sum_60s', 'xt_sum_300s',
+            'price_velocity', 'price_realized_vol', 'price_change_1m',
+            'high_volatility', 'max_abs_move_120s', 'next_60s_high_impact',
+        ]
+        test_out = test[[c for c in viz_cols if c in test.columns]].copy()
         test_out['volatility_prob']    = prob
         test_out['predicted_volatile'] = (prob >= t).astype(int)
         test_out.to_parquet(OUT_DIR / 'test_predictions.parquet', index=False)

@@ -1,0 +1,10 @@
+{
+  "local_hyper_message_files": 195,
+  "local_hyper_fixture_dirs_with_messages": 195,
+  "matched_polymarket_fixtures": 163,
+  "matched_polymarket_markets": 287,
+  "dataset_rows": 1332812,
+  "dataset_fixtures": 54,
+  "test_prediction_rows": 287611,
+  "test_prediction_fixtures": 12
+}

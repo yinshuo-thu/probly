@@ -1,169 +1,215 @@
 # Probly Sports Pricing
 
-> **体育事件实时定价研究 — LSports × Polymarket 跨市场价格发现**
+LSports Hyper x Polymarket sports-pricing research dashboard.
 
-Predict Polymarket high-volatility windows **before** they happen using LSports real-time event stream data.  
-Core: xT (Expected Threat) framework + rolling event density + price velocity + ML classifiers.
+The project studies whether LSports football event streams can price or
+intercept Polymarket sports-market moves before the market has fully adjusted.
+It now includes three layers:
 
----
+- Recall-first high-volatility interception.
+- Markov/xT explainability and state-value features.
+- Continuous and lead-time price-path forecasting.
 
-## Project Goal
+Production dashboard:
 
-Polymarket prediction markets show sharp price swings triggered by in-game events (goals, red cards, VAR reviews). We detect **precursors** from the LSports event stream to:
-- Predict whether the market price will move >3 cents in the next 2 minutes
-- Rank events by expected threat weight (xT framework)
-- Quantify advance-warning capability: how well does the model predict N seconds *before* a big move?
-- Provide real-time signal for trading decisions
+- https://autoalpha.cn/probly/
+
+## Current Result
+
+The strictest deployed test is the lead-time target:
+
+- At event time `t`, only current and past data are available.
+- The target starts after a 30 second gap: `[t+30s, t+150s]`.
+- This avoids counting immediate Polymarket reaction as an "advance" signal.
+
+Test set lead-pricing result:
+
+| Mode | Future High-Vol Intervals | Predicted Intercepts | Accurate Intercepts | Missed | False Alarms | Precision | Recall |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Coverage | 110,597 | 168,711 | 83,465 | 27,132 | 85,246 | 49.47% | 75.47% |
+| High confidence | 110,597 | 66,002 | 39,724 | 70,873 | 26,278 | 60.19% | 35.92% |
+
+Continuous lead metrics:
+
+- Lead absolute-move Spearman: `0.3963`
+- Lead absolute-move top-decile lift: `1.8021`
+- Lead signed-move Spearman: `0.2371`
+
+Interpretation:
+
+- The signal is real enough for early-risk coverage and market-maker protection.
+- The high-confidence mode is cleaner, but still leaves many missed intervals.
+- Directional signed-price forecasting remains the weakest part and needs more
+  Polymarket orderbook/trade-level features.
+
+## Dashboard
+
+The Flask + Plotly dashboard focuses on practical inspection rather than only
+global metrics.
+
+Main views:
+
+- Fixture selector ranked by price range and PMXT availability.
+- Unified time-window controls: full match, 90m, 45m, 15m, 5m.
+- Main timeline:
+  - Polymarket PMXT/CLOB price path.
+  - Prediction probability and hit/miss/false-alarm bands.
+  - Forecast price path on the same Price axis:
+    - model `+60s` price forecast.
+    - lead model `+150s` price forecast generated from `t`.
+  - Key LSports events.
+- Continuous pricing chart:
+  - predicted and realized `|Delta P|`.
+  - lead-window predicted and realized `|Delta P|`.
+  - lead intercept score.
+  - forecast price paths shifted to their forecast time.
+- Markov/xT explainability:
+  - event x remaining-time heatmap.
+  - top paths and state-pressure timeline.
+
+## Data Boundary
+
+The local LSports football universe is much larger than the aligned modelling
+set. Current model training only uses fixtures with a usable Polymarket market
+mapping and price path.
+
+Important files:
+
+- LSports Hyper football events: `data/hyper/football/...`
+- Polymarket fixture matches: `data/polymarket/fixture_market_matches.parquet`
+- PMXT orderbook paths: `data/polymarket/prices/*.parquet`
+- Main modelling table: `outputs/real_dataset_v4.parquet`
+- Dashboard predictions: `outputs/test_predictions.parquet`
+
+Large parquet and model artifacts are intentionally gitignored.
+
+## Pipeline
+
+```text
+LSports Hyper messages
+        +
+Polymarket CLOB/PMXT prices
+        |
+        v
+src/build_dataset_v4.py
+        |
+        v
+outputs/real_dataset_v4.parquet
+        |
+        +--> src/train_models.py
+        |       baseline classifiers
+        |
+        +--> src/markov_xt_model.py
+        |       confidence-weighted Markov/xT state values
+        |
+        +--> src/optimize_markov_augmented_recall.py
+        |       recall-first high-volatility interception
+        |
+        +--> src/train_continuous_pricing.py
+        |       same-window continuous price movement forecast
+        |
+        +--> src/train_lead_pricing.py
+                strict 30s lead-time pricing forecast
+```
+
+## Key Scripts
+
+| Script | Purpose |
+| --- | --- |
+| `src/build_dataset_v4.py` | Build event-price aligned football dataset. |
+| `src/train_models.py` | Chronological baseline classifier training. |
+| `src/markov_xt_model.py` | Markov/xT state, transition, value, path artifacts. |
+| `src/optimize_recall_models.py` | Recall-first model search. |
+| `src/optimize_markov_augmented_recall.py` | Recall model with Markov features and early stopping. |
+| `src/train_continuous_pricing.py` | Continuous `|Delta P|` and signed move forecast. |
+| `src/train_lead_pricing.py` | 30s lead-gap price-move and intercept forecast. |
+| `viz/app.py` | Flask API and dashboard server. |
+| `viz/templates/index.html` | Plotly frontend. |
 
 ## Quick Start
 
 ```bash
-# 1. Clone
-git clone https://github.com/yinshuo-thu/probly.git
-cd probly
-
-# 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Build aligned dataset (v4: price velocity + causal label + game state)
 python src/build_dataset_v4.py
-
-# 4. Train models (auto-detects v4 vs v3)
 python src/train_models.py
+python src/markov_xt_model.py
+python src/optimize_markov_augmented_recall.py
+python src/train_continuous_pricing.py
+python src/train_lead_pricing.py
 
-# 5. Launch interactive dashboard
 python viz/app.py
-# → http://localhost:5001
 ```
 
-## Pipeline Architecture
+Open:
 
-```
-LSports Hyper event stream     Polymarket CLOB API
-(messages.parquet per game)    /prices-history (1-min candles)
-          ↓                            ↓
-   build_dataset_v4.py  ←── fixture_market_matches.parquet
-          ↓                   (163 verified condition_ids)
-   real_dataset_v4.parquet (163 fixtures, 25+ features)
-          │
-          ├── price_velocity, price_realized_vol (5-min rolling)
-          ├── high_impact events (goal/card/penalty counts)
-          ├── game state (score, intensity, period)
-          └── two labels: high_volatility + next_60s_high_impact
-          ↓
-   train_models.py
-   LR → RF → XGBoost → LightGBM (threshold-optimized)
-          ↓
-   outputs/metrics_history.json + test_predictions.parquet
-          ↓
-   viz/app.py (Flask + Plotly interactive dashboard)
-```
+- http://localhost:5001
 
-## Code Structure
+Useful APIs:
 
-```
-probly/
-├── src/
-│   ├── build_dataset_v4.py      # v4: price velocity + causal label + game state
-│   ├── build_dataset_v3.py      # v3: baseline O(N log N) vectorized build
-│   ├── train_models.py          # LR/RF/XGBoost/LightGBM (auto-detects v3/v4)
-│   ├── expand_matches.py        # Gamma API search for more fixture-market matches
-│   ├── match_fixtures.py        # Match LSports fixtures to Polymarket markets
-│   └── download_football.py     # Download LSports football data
-├── viz/
-│   ├── app.py                   # Flask REST API + web server
-│   └── templates/index.html     # Plotly dashboard (dark theme, Chinese UI)
-├── data/
-│   └── polymarket/
-│       └── fixture_market_matches.parquet  # 163 verified fixture-market pairs
-└── outputs/
-    ├── real_dataset_v4.parquet  # 163-fixture dataset (gitignored)
-    ├── test_predictions.parquet # Model predictions (gitignored)
-    └── metrics_history.json     # F1/AUC per model
-```
+- `/api/metrics`
+- `/api/continuous_metrics`
+- `/api/lead_pricing_metrics`
+- `/api/fixture_list`
+- `/api/fixture_timeline/<fixture_id>`
+- `/api/fixture_deepdive/<fixture_id>`
 
-## Model Results
+## Deployment
 
-### v4 dataset (1.33M events, 54 fixtures, 30 features)
+Current production package lives on the server at:
 
-| Model | F1 | Precision | Recall | ROC AUC | Threshold |
-|-------|-----|-----------|--------|---------|-----------|
-| Logistic Regression | 53.0% | 50.0% | 56.4% | 0.730 | 0.48 |
-| **Random Forest** | **58.6%** | **60.4%** | **57.0%** | **0.789** | **0.52** |
-| XGBoost | 54.6% | 53.5% | 55.9% | 0.747 | — |
-| LightGBM | 55.0% | 48.8% | 62.9% | 0.746 | — |
+- `/opt/probly_display`
 
-### vs v3 baseline (17 features)
+Service:
 
-| Metric | v3 | v4 | Improvement |
-|--------|----|----|-------------|
-| F1 (RF) | 48.3% | **58.6%** | **+10.3pp** |
-| AUC (RF) | 0.583 | **0.789** | **+0.206** |
-| Precision | 33.6% | **60.4%** | **+26.8pp** |
+- `probly-display`
+- binds to `127.0.0.1:8085`
+- public paths:
+  - `/probly/`
+  - `/probly-api/`
 
-Key improvements: `price_velocity`, `price_realized_vol`, `xt_sum_60s/300s`, `high_impact_60s`, `game_intensity`
+Deployment needs the Flask app, template, and refreshed output artifacts. Large
+parquet files are transferred outside git.
 
-> **v3 label ceiling**: The 120-second price window labels routine events as volatile from coincidental overlap (~28% base rate). v4 includes `next_60s_high_impact` (causal label) for cleaner training signal.
+## What Is Working
 
-## Features (v4 — 25 total)
+- Chronological fixture split avoids event-level train/test leakage.
+- Validation-selected thresholds are used instead of tuning directly on test.
+- Lead target excludes the first 30 seconds of Polymarket reaction.
+- Dashboard can inspect individual fixtures at multiple time scales.
+- PMXT orderbook paths are used when available; otherwise the dashboard falls
+  back to the CLOB candle path used in training labels.
+- Metrics now report counts in plain language:
+  - total future high-volatility intervals.
+  - predicted intercept intervals.
+  - accurate intercepts.
+  - missed intervals.
+  - false alarms.
 
-### Core event features
-| Feature | Description |
-|---------|-------------|
-| `xt_weight` | xT value for current incident (0=Timer, 5=Goal) |
-| `is_high_impact` | 1 if Goal/RedCard/Penalty/VAR |
-| `risk_event_count_30/60s` | High-risk events in past 30/60s |
-| `event_density_30/60/120/300s` | Total events in rolling windows |
-| `xt_sum_60s`, `xt_sum_300s` | Cumulative xT in past 60s / 5min |
-| `high_impact_60s`, `high_impact_300s` | Goal/card/penalty counts in past windows |
+## TODO / Weak Points
 
-### Market features (new in v4)
-| Feature | Description |
-|---------|-------------|
-| `mid_price` | Current Polymarket price |
-| `price_velocity` | Price slope (5-min linear fit) |
-| `price_realized_vol` | Price std over past 5 minutes |
-| `price_change_1m` | Price delta in last 1-min candle |
-| `price_extremeness` | `|price - 0.5| × 2` |
+- Signed price direction is still not strong enough. It needs orderbook depth,
+  spread, trade flow, maker/taker attribution, and market-type-specific labels.
+- Current PMXT coverage is partial. More Polymarket markets and fixtures should
+  be matched before drawing broad conclusions.
+- Market types are mixed in the aligned dataset. Win/Draw, O/U, BTTS, corners,
+  and spread-like markets need separate target functions.
+- The lead model predicts movement magnitude better than exact fair price.
+  Position sizing should use the high-confidence mode until signed forecasts
+  improve.
+- The chart can show forecast-vs-real paths, but it is not a PnL backtest yet.
+  A fill/slippage/orderbook simulator is still required.
+- Confidence-grade dynamics should be modelled as a path, not just as a point
+  feature.
+- Calibration should be monitored by league, liquidity bucket, and market type.
 
-### Game state features (new in v4)
-| Feature | Description |
-|---------|-------------|
-| `score_diff` | Home minus away goals |
-| `total_goals` | Total goals scored |
-| `is_leading` / `is_drawing` | Binary game state |
-| `game_intensity` | `total_goals × (min_elapsed/90)` |
-| `minutes_remaining` | Time left (clipped at 0) |
-| `period_id` | Match period |
+## Research Notes
 
-### Cross-features
-| Feature | Description |
-|---------|-------------|
-| `xt_x_conf` | `xt_weight × confidence_grade` |
-| `pressure_score` | `xt_sum_60s × confidence_grade` |
-| `risk_density_ratio` | `risk_events / (total_events + 1)` |
+Implementation work and model attempts are recorded in:
 
-## Labels
+- `docs/worklogs/2026-05-25_markov_xt_rewrite.md`
 
-```
-# Price-based (primary)
-high_volatility = 1 if max(|price_t - price_t0|) > 0.03
-                       for t in [t0, t0+120s]
+Reference requirement/spec copies are in:
 
-# Causal (v4, less noisy)
-next_60s_high_impact = 1 if any(Goal/RedCard/Penalty/VAR) in [t0, t0+60s]
-```
+- `docs/hf_docs/`
 
-## Dashboard
-
-The interactive dashboard at `http://localhost:5001` shows:
-- **Live fixture selector**: 17 test fixtures ranked by price range
-- **Main timeline chart**: dual-axis — Polymarket odds (orange) vs model prediction probability (blue area), with emoji event markers (⚽ goals, 🟥 red cards, ⚡ penalties)
-- **Advance warning analysis**: how far in advance the model fires before big price moves
-- **Incident bubble chart**: each event type plotted by actual vol rate vs predicted probability
-- **Model comparison table**: F1/AUC/threshold for all 4 models
-- **Calibration curve**: model probability vs actual volatility rate
-
----
-
-*Research project. LSports Hyper data + Polymarket CLOB API.*
