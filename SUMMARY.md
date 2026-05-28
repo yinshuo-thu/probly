@@ -1,176 +1,252 @@
 # Probly Sports Pricing — 研究进度 Summary
 
-> 目标：用 LSports 实时体育事件流，在 Polymarket 价格调整之前实现合理定价，提前预知高波动窗口。
+> **目标**：用 LSports 实时体育事件流，在 Polymarket 价格调整之前实现合理定价，提前预知高波动窗口。
 
 ---
 
-## 当前状态（2026-05-28）
+## 📌 整体问题定义
 
-### ✅ 完成：Phase 1 — 数据对齐
+### 核心问题
 
-**数据集概览**：
-- 26场足球比赛同时有 LSports 事件流 + Polymarket 价格数据（共54个候选，28个因时间段不重叠排除）
-- 对齐后：**28,847条事件记录**，分布在26场比赛
-- 核心输出：`data/aligned/master.parquet`
+Polymarket 预测市场（O/U goals、Win/Draw、BTTS 等）的价格随赛事进展实时变化。问题是：
 
-**核心数据来源**：
-| 数据 | 规模 | 字段 |
-|------|------|------|
-| LSports Hyper Football | 195个fixtures的事件流 | incident_name, confidence_grade, timestamp_utc, seconds, period_name |
-| Polymarket prices | 58个市场价格文件（微秒级） | best_bid, best_ask, asset_id, timestamp |
-| 对齐匹配表 | 287条 fixture↔condition_id 映射 | fixture_id, condition_id, market_type |
-
-**事件分布**：
-```
-Attacks            6,926   ← 主要噪声
-DangerousAttacks   5,763   ← 关键信号
-Total Shots        2,782
-FreeKicks          2,032
-Fouls              1,804
-Corners            1,754
-Score              1,444   ← 核心标签事件
-Substitutions      1,359
-ShotsOnTarget      1,283
-ShotsOffTarget     1,265
-BlockedShots       1,149
-YellowCard           883
-RedCard              155
-Penalties            130
-Period               118
-```
+1. **定价合理性**：当前 Polymarket 价格是否等于"合理概率"？什么时候会出现偏差？
+2. **提前预测**：能否在 Polymarket 价格大幅调整之前，用 LSports 事件数据识别出即将到来的价格跳变？
+3. **标签定义**：我们的学习目标是什么——预测价格方向？幅度？还是连续的合理价格？
 
 ---
 
-### 🔍 关键发现（初步分析）
+## 🗂 一、之前的机器学习尝试（历史背景）
 
-**案例：FSV Mainz vs Union Berlin，O/U 3.5 市场，第47分钟进球**
+> 参考 `reference/` 和 `docs/worklogs/`。以下是对旧实现的梳理。
 
-```
-时间         LSports事件                          Polymarket价格(O/U 3.5 YES)
-18:06:30    无进球事件                              0.765
-18:07:00    —                                      0.550  ← 价格跳变 (-0.215)
-18:07:09    Score(0-1), confidence=0.14            ← LSports首报
-18:07:11    Score(0-1), confidence=0.29
-18:07:15    Score(0-1), confidence=0.48
-18:07:18    Score(0-1), confidence=0.61
-18:07:21    Score(0-1), confidence=1.00            ← 确认
-18:07:30    —                                      0.570
-```
+### 1.1 旧方法
 
-**发现**：
-1. Polymarket 价格在 18:07:00 bar 内跳变（精度30s），LSports 首报在 18:07:09
-   → 两者几乎同时（待毫秒级精确测量）
-2. **LSports confidence trajectory 是关键信号**：
-   - 0.14 → 0.29 → 0.48 → 0.61 → 1.00 （共12秒从首报到确认）
-   - 价格在这12秒内仍在探寻正确位置
-3. 价格从 0.765 → 0.55 = **-21.5¢** 的跳变（O/U 3.5市场）
+旧代码（在 `/Volumes/T7/probly/src/` 中，本研究包未复制）做的是：
+- **二分类任务**：预测未来 2 分钟内 Polymarket 价格是否变动 >3%（高波动 flag）
+- **特征**：Markov 状态 ID + xT 值 + LSports 事件密度 + 信心度
+- **模型**：Logistic Regression → Random Forest → XGBoost → LSTM
+- **产物**：`outputs/real_dataset_v4.parquet`、多个 dashboard 截图
 
-**方法论确认**：
-- LSports 比分事件总是先以低置信度（~0.1-0.15）报告，然后快速升至1.0
-- **这个置信度上升窗口（约12秒）就是定价优势窗口**
+### 1.2 已知问题
+
+| 问题类型 | 描述 |
+|----------|------|
+| **标签泄漏** | 用"过去已发生"的价格跳变作为标签，但特征可能包含跳变本身的信息 |
+| **时间切分错误** | 没有严格按 fixture 做 train/test 切分，同一场比赛的事件可能同时出现在训练和测试集 |
+| **标签定义模糊** | "高波动"定义为3%，但不同市场（O/U 1.5 vs O/U 4.5）基础波动率差异很大 |
+| **多市场混合** | 把 Win/O/U/BTTS 不同性质的市场混在一起训练，物理含义不统一 |
+| **同步与预测混淆** | 模型实际上是在解释"已发生的价格跳变"，而不是"预测未来的跳变" |
+| **xT 计算无依据** | 缺少位置数据（LSports 数据没有球场坐标），xT 是伪造的 |
+| **马尔可夫状态爆炸** | 状态空间太大（~37,800 个），但实际观测数据只有几千条，转移矩阵极度稀疏 |
+| **旧流程混乱** | `build_dataset_v4.py` 有多个版本，逻辑复杂，中间变量命名模糊 |
+
+### 1.3 旧代码指标
+
+在旧 dashboard 里可见 F1 ≈ 0.65-0.72，但置信度不足，因为验证方式不规范。
 
 ---
 
-### 📐 对齐方法（已实现）
+## ✅ 二、当前已完成工作（从头重建）
 
-```python
-# src/pricing/align_data.py
-# 对每个LSports事件，用searchsorted快速找到：
-# 1. 事件前的最近价格 mid_before
-# 2. 事件后10/30/60/120/300秒的平均价格
-# 3. 计算各窗口的价格变化 delta_p_Xs
+### 2.1 数据整理与对齐（Phase 1）
 
-# 关键修复：timestamp精度对齐
-# LSports: datetime64[ns, UTC]  → int64 nanoseconds
-# Polymarket: datetime64[us, UTC] → int64 nanoseconds (需normalize)
-ev_ts = events["timestamp_utc"].values.astype("datetime64[ns]").astype("int64")
-pr_ts = prices["timestamp"].values.astype("datetime64[ns]").astype("int64")
+**已完成**：
+
+- **26场比赛**同时具有 LSports 事件流 + Polymarket 价格数据（从54个候选筛选）
+- **28,847条事件记录**，对齐后包含各时间窗口（10s/30s/60s/120s/300s）的价格变化
+- 关键修复：LSports 时间戳精度为 ns，Polymarket 为 μs，必须统一转换后才能正确对齐
+- 输出：`data/aligned/master.parquet`
+
+**26场比赛涵盖联赛**：德甲、西甲、英超、法甲、土超、MLS、欧洲杯友谊赛
+
+**事件分布**（28,847行）：
+```
+Attacks             6,926
+DangerousAttacks    5,763
+Total Shots         2,782
+FreeKicks           2,032
+Fouls               1,804
+Corners             1,754
+Score               1,444  ← 核心目标事件
+Substitutions       1,359
+ShotsOnTarget       1,283
+ShotsOffTarget      1,265
+YellowCard            883
+RedCard               155
+Penalties             130
 ```
 
 ---
 
-## 🔄 进行中：Phase 2 — 精细分析
+### 2.2 关键实证发现（Phase 2a：延迟分析）
 
-### 下一步计划
+对所有进球事件做了毫秒级时间戳对比分析（n=59个进球×市场组合）：
 
-**2.1 毫秒级延迟测量**
-- 对每个goal事件，找 Polymarket 价格首次移动的精确时间戳
-- 计算 T_lsports - T_polymarket（正数=LSports领先，负数=市场领先）
+#### 🔑 核心发现 #1：LSports 永远不慢于 Polymarket
 
-**2.2 Confidence Trajectory 定价模型**
-- 当 confidence 从低值上升时，mid-price 应该如何调整
-- `fair_price(t) = price_before + delta_p_expected × confidence(t)`
+```
+Polymarket 价格移动 vs LSports 首报时间（正=PM慢）：
+  中位数延迟：+0.1 秒   （PM 比 LSports 晚 0.1 秒）
+  平均延迟：  +4.3 秒
+  P25:        0.0 秒
+  P75:        0.2 秒
+  
+  PM 比 LSports 更快的比例：0.0%     ← 从未出现
+  PM 在 LSports 首报后 5秒 内移动：89.8%
+  PM 在 LSports 首报后 30秒 内移动：93.2%
+```
 
-**2.3 市场类型分层分析**
-- O/U 2.5 vs O/U 3.5 vs BTTS 对同一进球的价格反应差异
-- Win market 对进球的方向性预测
+**结论：LSports 总是比 Polymarket 市场早或同时报告进球**，不存在 PM 领先的情况。
 
-**2.4 预进球信号（Lead-time）**
-- DangerousAttacks + ShotsOnTarget 序列 → 进球概率升高
-- 目标：进球前30-120秒给出警告信号
+#### 🔑 核心发现 #2：LSports 置信度窗口是定价优势
+
+```
+LSports 进球确认过程（从首报 conf≈0.14 到 conf=1.0）：
+  中位数确认时间：108.8 秒
+  平均确认时间：  260.3 秒
+  
+示例（FSV Mainz vs Union Berlin，第47分钟进球）：
+  18:07:09  conf=0.14  ← 首报（市场价已开始跳）
+  18:07:11  conf=0.29
+  18:07:15  conf=0.48
+  18:07:18  conf=0.61
+  18:07:21  conf=1.00  ← 确认（约12秒后）
+```
+
+**意义**：在 conf=0.14 到 conf=1.0 的这段时间内，市场价格仍在调整中，存在定价偏差窗口。
+
+#### 🔑 核心发现 #3：进球的价格冲击
+
+```
+各市场进球后60秒内价格变动：
+  中位数 |ΔP|：0.011（1.1分）
+  平均   |ΔP|：0.102（10.2分）    ← 高方差，部分市场影响极大
+```
+
+O/U 3.5 市场示例：
+```
+18:06:30  mid = 0.765  （进球前）
+18:07:00  mid = 0.550  （进球后，跌 21.5 分）
+→ 原因：比赛进入第47分钟，单球之后仍需3球才能 OVER 3.5，概率下调
+```
 
 ---
 
-## 📁 文件结构
+### 2.3 文件结构（当前状态）
 
 ```
 probly/
 ├── data/
 │   ├── aligned/
-│   │   └── master.parquet          ← 对齐数据集（28,847行）
+│   │   └── master.parquet          ← 28,847行对齐事件（新建）
 │   ├── hyper/football/             ← LSports事件（195个fixture）
 │   ├── polymarket/prices/          ← 58个市场价格文件
-│   └── fixture_index.parquet       ← fixture元数据
+│   └── fixture_index.parquet
 ├── src/pricing/
-│   └── align_data.py               ← Phase 1 对齐脚本
-├── docs/hf_docs/
-│   ├── REQUIREMENTS_sports_pricing.md
-│   └── MODEL_SPEC_markov_pricing.md
+│   ├── align_data.py               ← Phase 1：数据对齐脚本（新建）
+│   └── latency_analysis.py         ← Phase 2a：延迟分析（新建）
+├── outputs/
+│   ├── latency_analysis.parquet    ← 进球×市场延迟数据（新建）
+│   └── latency_summary.json        ← 汇总统计（新建）
 └── SUMMARY.md                      ← 本文件
 ```
 
 ---
 
-## 📊 模型方向
+## 🔄 三、进行中 / 计划工作
 
-### 定价公式（草稿）
+### 3.1 Phase 2b：公允价格模型（Fair Value）
 
-对于 O/U N.5 市场，基于当前比赛状态的合理价格：
+**思路**：对于 O/U N.5 市场，合理价格可以用泊松过程计算：
 
+```python
+# 当前比分 h:a，剩余时间 T 分钟，当前进球率 λ
+# 需要再进 k = ceil(N+1-h-a) 球才算 OVER
+from scipy.stats import poisson
+def fair_price_ou(h, a, total_line, lambda_per_min, time_remaining_min):
+    goals_needed = max(0, int(total_line) + 1 - h - a)
+    expected_more = lambda_per_min * time_remaining_min
+    return 1 - poisson.cdf(goals_needed - 1, expected_more)
 ```
-fair_price(t) = P(total_goals > N.5 | score_so_far, time_remaining, game_pace)
-```
 
-使用泊松过程估计：
-- `λ(t)` = 当前比赛进球率（基于历史 + 当前比赛节奏）
-- `P(k more goals in t_remaining | current_total)` = Poisson CDF
+**待解决**：`λ`（进球率）如何实时更新？
+- 选项A：用全联赛历史均值（约0.028球/分钟）
+- 选项B：用本场前N分钟进球密度动态调整
+- 选项C：用 DangerousAttacks 密度作为即时进球率代理
 
-关键调整因子：
-- `confidence_grade` → 未确认事件的概率折扣
-- `time_remaining` → 接近终场时事件影响指数级放大
-- `score_diff` → 领先队防守策略导致进球率下降
+### 3.2 Phase 3：预信号检测（Lead-time Signals）
 
-### 信号格式（目标输出）
+目标：在进球发生 30-120 秒前，识别出高风险状态。
 
-```json
-{
-  "fixture_id": 16045142,
-  "timestamp": "2026-05-10T18:07:09Z",
-  "signal_type": "GOAL_LIKELY",
-  "confidence": 0.14,
-  "market_type": "O/U 3.5",
-  "current_price": 0.765,
-  "fair_price_estimate": 0.55,
-  "price_edge": -0.215,
-  "lead_time_s": 12
-}
-```
+**候选特征**：
+- 过去 60 秒 DangerousAttacks 密度
+- 过去 30 秒 ShotsOnTarget 数量
+- 过去 5 分钟 Corners 累计数
+- 当前比分差 × 剩余时间（决定市场价格敏感度）
+
+### 3.3 Phase 4：可视化
+
+- 价格路径 + 事件标注时间轴图（每场比赛）
+- 事件类型 × 剩余时间 → 价格影响热力图
+- 置信度轨迹可视化
 
 ---
 
-## 迭代记录
+## ❓ 四、需要专业判断的核心问题
 
-| 版本 | 日期 | 内容 |
-|------|------|------|
-| v0.1 | 2026-05-28 | Phase 1 数据对齐完成，28,847事件，26场比赛 |
-| v0.2 | 进行中 | 毫秒延迟分析 + 进球信号定价 |
+### Q1：定价任务定义
+
+> **目前我们做的是"overlay 调整"还是"从头预测"？**
+
+两种方向本质不同：
+- **A. Overlay 调整**：以 Polymarket 当前价格为基准，识别"偏离合理值"的时机，仅在置信度上升窗口内下注纠偏
+- **B. 从头预测连续价格**：不依赖 Polymarket 现价，直接用 LSports 事件流推算合理价格，作为独立定价引擎
+
+目前数据支持 A，因为我们能测量 PM 与 LSports 的延迟。B 需要更多历史数据验证泊松假设。
+
+### Q2：标签设计
+
+> **什么是"正确"的 label？**
+
+- **选项1**：`high_vol_flag`（未来60s内价格变动>X%）— 二分类，直接用，但阈值X如何定？
+- **选项2**：`delta_p_60s`（未来60s价格实际变化量）— 回归，连续标签，更丰富
+- **选项3**：`fair_price_deviation`（当前PM价格 - 泊松公允价格）— 需要验证泊松模型准确性
+- **推荐**：先做选项2（连续回归），再根据分布确定阈值做分类
+
+### Q3：市场选择
+
+> **应该分市场类型建模，还是统一模型+市场特征？**
+
+现有数据：O/U 1.5 / 2.5 / 3.5 / 4.5 / 5.5 / BTTS / Win
+- 不同市场对同一进球的反应方向甚至相反（O/U 3.5 vs BTTS）
+- **建议**：先做 O/U 2.5 单独分析（最流动、最通用），再泛化
+
+### Q4：LSports 置信度的含义
+
+> **confidence_grade 是"进球已确认概率"还是"事件分类置信度"？**
+
+从数据看，每个进球首报时 conf≈0.10-0.15，然后快速升到1.0（通常12-30秒），偶尔出现 conf 下降又上升（VAR 审查）。需要确认：
+- conf < 0.5 时，Polymarket 市场应该调整多少？
+- 有没有进球首报后 conf 最终没到 1.0（即进球被取消）的案例？
+
+### Q5：样本量
+
+> **26场比赛够用吗？**
+
+目前有约 50-100 个进球事件。对于统计分析基本够，但如果用机器学习预测 lead-time 信号可能不足。
+- 需要更多历史数据：是否能从 HuggingFace 获取更多 fixture_id 的 Polymarket 价格？
+- 或者：能否直接从 Polymarket API 拉取历史比赛的价格数据？
+
+---
+
+## 📊 迭代记录
+
+| 版本 | 日期 | 内容 | 状态 |
+|------|------|------|------|
+| v0.1（旧实现） | 2026-05-25之前 | ML 二分类（XGBoost+Markov+xT），F1≈0.65 | ❌已放弃，问题多 |
+| **v1.0** | **2026-05-28** | **Phase 1 数据对齐，28,847事件，26场** | ✅已完成 |
+| **v1.1** | **2026-05-28** | **Phase 2a 延迟分析：LSports永远不慢于PM** | ✅已完成 |
+| v1.2 | 计划中 | Phase 2b 泊松公允价格模型 | 🔄进行中 |
+| v2.0 | 计划中 | Phase 3 预信号检测（lead-time） | ⏳待 |
+| v2.1 | 计划中 | Phase 4 可视化 dashboard | ⏳待 |

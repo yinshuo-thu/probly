@@ -1,0 +1,13 @@
+{
+  "n_fixture_goal_market_pairs": 59,
+  "n_fixtures": 24,
+  "pm_latency_median_s": 0.070563,
+  "pm_latency_mean_s": 4.271042389830509,
+  "pm_latency_p25_s": 0.030742,
+  "pm_latency_p75_s": 0.2202885,
+  "pm_faster_pct": 0.0,
+  "pm_within_5s_pct": 0.8983050847457628,
+  "pm_within_30s_pct": 0.9322033898305084,
+  "lsports_confirm_lag_median_s": 108.784925,
+  "mean_abs_price_impact": 0.10193867924528302
+}
