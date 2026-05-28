@@ -1,0 +1,34 @@
+{
+  "n_snapshots": 91325,
+  "n_fixtures": 24,
+  "n_markets": 51,
+  "mean_abs_deviation": 0.2580834128315664,
+  "pct_deviation_gt_5cents": 0.82194360799343,
+  "pct_deviation_gt_10cents": 0.6591513824254038,
+  "by_market_type": {
+    "Both Teams to Score": {
+      "mean_abs_dev": 0.35014353118140534,
+      "n": 15410
+    },
+    "O/U 1.5": {
+      "mean_abs_dev": 0.28512295067200166,
+      "n": 12521
+    },
+    "O/U 2.5": {
+      "mean_abs_dev": 0.2837881875060203,
+      "n": 20692
+    },
+    "O/U 3.5": {
+      "mean_abs_dev": 0.20884889335603354,
+      "n": 21276
+    },
+    "O/U 4.5": {
+      "mean_abs_dev": 0.21388493583705231,
+      "n": 18200
+    },
+    "O/U 5.5": {
+      "mean_abs_dev": 0.12621880955880116,
+      "n": 3226
+    }
+  }
+}
