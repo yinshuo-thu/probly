@@ -38,15 +38,20 @@ def main():
         if fixtures.empty:
             print(f"[{d}] 无 fixture")
             continue
-        # 按 fixture_id 排序后取前 N, 保证可复现
-        fixtures = fixtures.sort_values("fixture_id").head(args.max)
-        print(f"[{d}] 计划下载 {len(fixtures)} 场")
+        # 按 fixture_id 排序后持续尝试, 直到成功下载 N 场; 某些目录可能缺 messages.parquet。
+        fixtures = fixtures.sort_values("fixture_id")
+        print(f"[{d}] 计划成功下载 {args.max} 场 (最多尝试 {len(fixtures)} 个 fixture)")
+        ok_count = 0
         for _, row in fixtures.iterrows():
             res = DL.download_fixture(cfg, d, row["fixture_id"])
             ok = res["messages"] is not None
             index.append({"event_date": d, "fixture_id": row["fixture_id"],
                           "downloaded": ok})
             print(f"  fixture {row['fixture_id']}: {'OK' if ok else 'FAIL'}")
+            if ok:
+                ok_count += 1
+            if ok_count >= args.max:
+                break
 
     idx = pd.DataFrame(index)
     out = resolve_path(cfg["paths"]["data_processed"]) + "/download_index.parquet"
