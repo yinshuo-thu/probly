@@ -167,6 +167,15 @@ def main():
                   "latency / stale window (见 src/latency_analysis.py)。", ""]
 
     lines += ["## 5. 进球前信号建模 (方法 B)", "",
+              "### 关于标签 (label) 的说明 — Polymarket BBO",
+              "- **理想标签**应取 Polymarket 的 **BBO (best bid/ask) 中间价**的显著变动 "
+              "(例如未来窗口内 mid 移动 > 3 分), 这才是\"市场定价反应\"的直接度量。",
+              "- **现状**: 本 HF 数据集不含 Polymarket BBO/价格, 因此本场**暂用 LSports "
+              "进球事件本身作为代理标签** (未来 horizon 秒内是否进球)。这衡量的是"
+              "\"事件可预测性\", 而非\"市场价格可预测性\"。",
+              "- `PolymarketPriceLoader` 的返回 schema 已含 `best_bid` / `best_ask` 列; "
+              "一旦接入 BBO, 把标签替换为 `mid 变动 > 阈值` 即可复用全部特征与模型代码。", ""]
+    lines += ["### 模型结果", "",
               f"- 特征帧: {len(frame)} 个时间步 (步长 {cfg['analysis']['feature_step_sec']}s), "
               f"正样本(未来{cfg['analysis']['hazard_horizon_sec']}s内进球)={int(frame['label_goal_next'].sum())}。",
               f"- 模型: {'logistic 回归' if fit['model'] is not None else '强度基线(正样本过少)'}; "
