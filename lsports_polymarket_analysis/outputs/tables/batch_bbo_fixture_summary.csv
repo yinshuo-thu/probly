@@ -1,0 +1,4 @@
+﻿fixture_id,home,away,n_goals,n_bbo_snapshots,n_bbo_moves,bbo_first_count,lsports_first_count,median_bbo_lag_sec,status
+18746260,Red Bull Bragantino,Carabobo FC,3,2338,3,3,0,-5.600371,ok
+18935052,Saint-Etienne,Nice,6,228,0,0,0,,ok
+18834749,Crystal Palace FC,Rayo Vallecano de Madrid,1,914,1,1,0,-8.011587,ok

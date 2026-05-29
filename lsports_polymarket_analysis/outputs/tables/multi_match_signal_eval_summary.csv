@@ -1,0 +1,4 @@
+﻿fixture_id,event_date,home,away,market_id,n_goals,n_bbo_snapshots,n_bbo_moves,bbo_first_count,lsports_first_count,median_bbo_lag_sec,operating_threshold,alerts,true_alerts,false_alerts,precision,goal_recall,unique_bbo_moves_preempted,mean_goal_lead_sec,status
+18746260,2026-05-28,Red Bull Bragantino,Carabobo FC,2126503,3,2338,3,3,0,-5.600371,0.848,5,4,1,0.8,1.0,3,90.22963675000001,ok
+18935052,2026-05-26,Saint-Etienne,Nice,2347821,6,228,0,0,0,,0.089,6,0,6,0.0,0.0,0,,ok
+18834749,2026-05-27,Crystal Palace FC,Rayo Vallecano de Madrid,2252990,1,914,1,1,0,-8.011587,0.025,9,0,9,0.0,0.0,0,,ok
