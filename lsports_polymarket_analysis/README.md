@@ -33,12 +33,13 @@ stale price detection / adverse selection avoidance / event-driven pricing?
 ## 4. Hugging Face 数据下载
 
 ```bash
-# token 优先环境变量 (推荐); 代码也内置了一个仅供本任务调试的临时 token
+# token 优先环境变量 (推荐); 也可放在未入库的 config/.hf_token
 export HF_TOKEN="<your_hf_token>"
 pip install -r lsports_polymarket_analysis/requirements.txt
 ```
 
 下载只针对所需分区/采样, 不会拉全量 (~25GB)。
+若没有 HF token, 脚本会自动回退到本地已缓存 fixture, 但无法扩展批量样本。
 
 ## 5. 复现实验 (运行顺序)
 

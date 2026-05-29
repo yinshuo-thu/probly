@@ -1,0 +1,2 @@
+﻿fixture_id,event_date,n_live_events,median_event_gap_sec,p90_event_gap_sec,archive_lag_p50_sec,n_goals,polymarket_reaction_latency_sec,stale_window_sec
+18746260,2026-05-28,2755,1.47462705,5.324640090000002,5327.5624744,3,,

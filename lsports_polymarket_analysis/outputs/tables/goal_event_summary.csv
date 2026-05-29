@@ -1,0 +1,4 @@
+﻿fixture_id,event_date,goal_ts,match_seconds,scoring_side,home_score,away_score,lsports_update_time,polymarket_price_reaction_time,lsports_vs_polymarket_latency_sec,price_jump_magnitude,market_stale_window_sec
+18746260,2026-05-28,2026-05-28 00:46:54.967075500+00:00,960,away,0,1,2026-05-28 00:46:54.967075500+00:00,,,,
+18746260,2026-05-28,2026-05-28 02:07:21.622370400+00:00,4562,home,1,1,2026-05-28 02:07:21.622370400+00:00,,,,
+18746260,2026-05-28,2026-05-28 02:24:12.788107900+00:00,5520,home,2,1,2026-05-28 02:24:12.788107900+00:00,,,,

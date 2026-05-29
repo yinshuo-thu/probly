@@ -104,18 +104,18 @@ def main():
     fdir = resolve_path(cfg["paths"]["fig_dir"])
     if not match_df.empty:
         daily_matches = match_df.groupby("event_date").size()
-        V.plot_bar(daily_matches, "每日比赛数量 (采样)", "event_date", "matches",
+        V.plot_bar(daily_matches, "Daily match count (sample)", "event_date", "matches",
                    fdir + "/daily_match_count.png", rotate=0)
         if not goal_df.empty:
             daily_goals = goal_df.groupby("event_date").size()
-            V.plot_bar(daily_goals, "每日进球事件数量", "event_date", "goals",
+            V.plot_bar(daily_goals, "Daily goal event count", "event_date", "goals",
                        fdir + "/daily_goal_count.png", rotate=0)
         gpm = match_df["n_goals"].value_counts().sort_index()
-        V.plot_bar(gpm, "每场进球数量分布", "goals per match", "matches",
+        V.plot_bar(gpm, "Goals per match distribution", "goals per match", "matches",
                    fdir + "/goals_per_match_distribution.png", rotate=0)
     if not lat_df.empty:
         V.plot_hist(lat_df["median_event_gap_sec"],
-                    "LSports 事件更新间隔分布 (每场中位)", "median event gap (s)",
+                    "LSports event cadence (per-match median)", "median event gap (s)",
                     fdir + "/lsports_update_latency_distribution.png", bins=30)
     # stale window: 无 Polymarket 价格 -> 输出明确标注的占位图 (不伪造)
     _stale_placeholder(lat_df, fdir + "/stale_window_distribution.png")
@@ -143,11 +143,12 @@ def _stale_placeholder(lat_df, path):
         ax.hist(vals, bins=30, color="#9467bd", alpha=0.8)
         ax.set_xlabel("stale window (s)")
     else:
-        ax.text(0.5, 0.5, "需要 Polymarket 价格历史才能计算\nstale window 分布\n"
-                "(本数据集不含价格; 已预留 join 接口)",
+        ax.text(0.5, 0.5, "Polymarket price history required\n"
+                "to compute stale-window distribution\n"
+                "(dataset has no prices; join interface is ready)",
                 ha="center", va="center", fontsize=12)
         ax.set_xticks([]); ax.set_yticks([])
-    ax.set_title("Polymarket stale window 分布")
+    ax.set_title("Polymarket stale-window distribution")
     fig.tight_layout(); fig.savefig(path); plt.close(fig)
 
 
@@ -180,6 +181,7 @@ def _fit_grouped(allfr: pd.DataFrame) -> str:
 
 
 def _write_report(cfg, match_df, goal_df, lat_df, model_note, max_per_date, dates):
+    enough_cross_match = len(match_df) >= 4
     lines = ["# 批量赛事统计报告 (2026-05-24 .. 05-28)", "",
              "## 1. 样本范围", "",
              f"- 覆盖日期: {', '.join(dates)}",
@@ -223,8 +225,10 @@ def _write_report(cfg, match_df, goal_df, lat_df, model_note, max_per_date, date
               "![stale](../figures/stale_window_distribution.png)", "",
               "## 7. 结论 (基于当前可验证证据)", "",
               "1. LSports 事件流在批量层面同样保持秒级更新, 时间分辨率足以支撑实时定价。",
-              "2. 进球前事件强度特征具备跨场可分性 (见 held-out AUC), 进球密度高/对抗激烈的"
-              "比赛 (高 xT、危险进攻多) 最可能产生 Polymarket 价格跳变, edge 也最大。",
+              ("2. 当前本地缓存只有 1 场, 无法做跨场泛化; 进球前事件强度在单场层面可作为方法演示。"
+               if not enough_cross_match else
+               "2. 进球前事件强度特征具备跨场可分性 (见 held-out AUC), 进球密度高/对抗激烈的"
+               "比赛 (高 xT、危险进攻多) 最可能产生 Polymarket 价格跳变, edge 也最大。"),
               "3. 是否真正领先 Polymarket、stale window 多长, 仍需价格历史验证; "
               "pipeline 已为该验证完全就绪。"]
     out = resolve_path(cfg["paths"]["report_dir"]) + "/batch_statistics_report.md"

@@ -49,7 +49,16 @@ def list_fixtures(cfg: dict, event_date: str) -> pd.DataFrame:
     Returns:
         DataFrame[fixture_id, event_date, dir_path, messages_bytes]
     """
-    api = _api(cfg)
+    token = get_hf_token(cfg)
+    local = _list_cached_fixtures(cfg, event_date)
+    if token is None:
+        if not local.empty:
+            print(f"[list_fixtures] 未配置 HF token, 使用本地缓存: {len(local)} 场")
+            return local
+        return pd.DataFrame(columns=["fixture_id", "event_date", "dir_path",
+                                     "messages_bytes"])
+
+    api = HfApi(token=token)
     repo = cfg["huggingface"]["repo_id"]
     prefix = cfg["huggingface"]["football_prefix"]
     base = f"{prefix}/event_date={event_date}"
@@ -60,7 +69,6 @@ def list_fixtures(cfg: dict, event_date: str) -> pd.DataFrame:
         ))
     except Exception as e:  # noqa: BLE001
         print(f"[list_fixtures] 无法列出远程 {base}: {e}")
-        local = _list_cached_fixtures(cfg, event_date)
         if not local.empty:
             print(f"[list_fixtures] 回退到本地缓存: {len(local)} 场")
             return local
@@ -87,7 +95,7 @@ def _list_cached_fixtures(cfg: dict, event_date: str) -> pd.DataFrame:
         if not os.path.isdir(path):
             continue
         fid = os.path.basename(path).split("=", 1)[-1]
-        msg = os.path.join(path, "messages.parquet")
+        msg = _find_cached_file(path, "messages.parquet")
         rows.append({
             "fixture_id": fid,
             "event_date": event_date,
@@ -95,6 +103,16 @@ def _list_cached_fixtures(cfg: dict, event_date: str) -> pd.DataFrame:
             "messages_bytes": os.path.getsize(msg) if os.path.exists(msg) else None,
         })
     return pd.DataFrame(rows)
+
+
+def _find_cached_file(fixture_dir: str, fname: str) -> str:
+    """返回 fixture 目录中已存在的文件, 兼容早期 hf_hub_download 嵌套路径。"""
+    direct = os.path.join(fixture_dir, fname)
+    if os.path.exists(direct):
+        return direct
+    hits = glob.glob(os.path.join(fixture_dir, "**", fname), recursive=True)
+    hits = [p for p in hits if ".cache" + os.sep not in p]
+    return hits[0] if hits else direct
 
 
 def download_fixture(cfg: dict, event_date: str, fixture_id: str | int,
@@ -118,15 +136,15 @@ def download_fixture(cfg: dict, event_date: str, fixture_id: str | int,
     targets = {"fixtures": "fixtures.parquet", "manifest": "manifest.json",
                "messages": "messages.parquet"}
     for key, fname in targets.items():
-        local = os.path.join(raw_dir, base.replace("/", os.sep), fname)
+        fixture_dir = os.path.join(raw_dir, base.replace("/", os.sep))
+        local = _find_cached_file(fixture_dir, fname)
         if os.path.exists(local) and not force:
             out[key] = local
             continue
         try:
             p = hf_hub_download(repo, f"{base}/{fname}", repo_type="dataset",
                                 token=token,
-                                local_dir=os.path.join(raw_dir,
-                                                       base.replace("/", os.sep)))
+                                local_dir=fixture_dir)
             # hf_hub_download(local_dir=...) 会把文件放在 local_dir/<filename>
             out[key] = p if os.path.exists(p) else local
         except Exception as e:  # noqa: BLE001
