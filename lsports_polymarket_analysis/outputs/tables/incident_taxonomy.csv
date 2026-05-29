@@ -1,0 +1,73 @@
+﻿incident_name,count,category
+Player Passes,3569,player_stat
+Player Completed Passes (Raw),2888,player_stat
+Timer,2043,timer
+Player Minutes Played,1651,player_stat
+Clearances,1084,other
+Attacks,388,attack
+Player Crosses,342,player_stat
+Player Total Shots (Raw),304,shot
+DangerousAttacks,296,danger
+PlayerFouls,260,foul
+Player Successes Tackles Percentage ,211,player_stat
+PlayerShotsOffTarget,201,shot
+Offsides,196,offside
+ThrowIns,162,throwin
+PassCompletions,159,other
+PlayerShotsOnTarget,158,shot
+Goalkeeper Saves,148,save
+HasPlayed,110,other
+Player Yellow Card,93,card_yellow
+PlayerTackels,90,other
+Total Shots,89,shot
+Player Interceptions,86,player_stat
+Player Blocked Shots,83,shot
+Fouls,80,foul
+PlayerSaves,73,save
+FreeKicks,72,freekick
+Player Offsides,72,offside
+Corners,68,corner
+Player Shots,63,shot
+Score,62,score
+GoalKicks,59,goal_stat
+Tackles (Raw),58,player_stat
+Substitutions,56,sub
+BlockedShots,52,other
+YellowCard,52,card_yellow
+Possession,51,other
+Player Goals,50,goal_stat
+Player Assists,48,player_stat
+Player Extracted Fouls (Raw),47,player_stat
+Player Red Card,44,card_red
+ShotsOffTarget,41,shot
+ShotsOnTarget,41,shot
+Crosses,40,other
+Player Shots On Target From Outside Penalty Area,39,penalty
+Shots inside the box,36,other
+Player Tackles (Raw),32,player_stat
+Player Header Shots On Target,31,shot
+Player Free Kick Goals,31,freekick
+Shots outside the box,27,other
+Tackles Won (Percentage),24,player_stat
+VAR,10,other
+WoodworkShots,8,other
+Team XG ,7,other
+Period,6,other
+Assists,6,other
+StatusDescription,6,other
+Penalties,5,penalty
+FixtureStatus,4,other
+RedCard,4,card_red
+Left foot Goals,4,goal_stat
+Injuries,4,other
+Right Foot Goals,3,goal_stat
+Penalties Saved (Raw),3,penalty
+MissedPenalty,3,penalty
+Free Kick Goals (Raw),3,freekick
+Goals From Outside the Penalty Area,3,penalty
+PassAttempts,3,other
+DangerousFreeKicks,3,freekick
+Header Goals (Raw),3,goal_stat
+Player Goals Inside the Penalty Area (Raw),2,penalty
+Player Left Foot Goal,2,goal_stat
+BreakTime,1,other

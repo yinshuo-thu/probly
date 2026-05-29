@@ -1,0 +1,801 @@
+﻿ts,match_seconds,period_name,incident_name,category,home_value,away_value,player_name,confidence_grade
+2026-05-28 00:15:34.607777600+00:00,0,1st Half,Score,score,0.0,0.0,,1.0
+2026-05-28 00:15:34.607777600+00:00,0,1st Half,Score,score,0.0,0.0,,1.0
+2026-05-28 00:15:34.607777600+00:00,0,1st Half,Score,score,0.0,0.0,,1.0
+2026-05-28 00:15:34.607777600+00:00,0,1st Half,Score,score,0.0,0.0,,1.0
+2026-05-28 00:15:34.607777600+00:00,0,1st Half,Score,score,0.0,0.0,,1.0
+2026-05-28 00:15:34.607777600+00:00,0,1st Half,Score,score,0.0,0.0,,1.0
+2026-05-28 00:15:34.610987+00:00,0,,FixtureStatus,other,,,,1.0
+2026-05-28 00:16:42.093512+00:00,0,1st Half,Period,other,,,,1.0
+2026-05-28 00:16:42.093512+00:00,0,1st Half,Period,other,,,,1.0
+2026-05-28 00:26:01.628082600+00:00,0,,Possession,other,50.0,50.0,,1.0
+2026-05-28 00:30:05.550791900+00:00,0,1st Half,Substitutions,sub,0.0,0.0,,1.0
+2026-05-28 00:30:05.554149500+00:00,0,1st Half,DangerousAttacks,danger,0.0,0.0,,1.0
+2026-05-28 00:30:05.557707+00:00,0,1st Half,Attacks,attack,0.0,0.0,,1.0
+2026-05-28 00:30:05.579015700+00:00,0,1st Half,Penalties,penalty,0.0,0.0,,1.0
+2026-05-28 00:30:05.581668+00:00,0,,FixtureStatus,other,,,,1.0
+2026-05-28 00:30:12.811778200+00:00,8,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:12.818792300+00:00,0,1st Half,ThrowIns,throwin,0.0,0.0,,1.0
+2026-05-28 00:30:12.821861400+00:00,0,1st Half,Total Shots,shot,0.0,0.0,,1.0
+2026-05-28 00:30:12.825319200+00:00,0,1st Half,ShotsOffTarget,shot,0.0,0.0,,1.0
+2026-05-28 00:30:12.830303600+00:00,0,1st Half,GoalKicks,goal_stat,0.0,0.0,,1.0
+2026-05-28 00:30:12.834544600+00:00,0,1st Half,Assists,other,0.0,0.0,,1.0
+2026-05-28 00:30:12.838785800+00:00,0,1st Half,Player Tackles (Raw),player_stat,0.0,0.0,,1.0
+2026-05-28 00:30:12.842326700+00:00,0,1st Half,ShotsOnTarget,shot,0.0,0.0,,1.0
+2026-05-28 00:30:12.846884500+00:00,0,1st Half,Right Foot Goals,goal_stat,0.0,0.0,,1.0
+2026-05-28 00:30:12.850919700+00:00,0,1st Half,Team XG ,other,0.0,0.0,,1.0
+2026-05-28 00:30:12.854193700+00:00,0,1st Half,WoodworkShots,other,0.0,0.0,,1.0
+2026-05-28 00:30:12.857697300+00:00,0,1st Half,BlockedShots,other,0.0,0.0,,1.0
+2026-05-28 00:30:12.861007700+00:00,0,1st Half,YellowCard,card_yellow,0.0,0.0,,1.0
+2026-05-28 00:30:12.861007700+00:00,0,1st Half,YellowCard,card_yellow,0.0,0.0,,0.16666666666666666
+2026-05-28 00:30:12.864455800+00:00,0,1st Half,Fouls,foul,0.0,0.0,,1.0
+2026-05-28 00:30:12.867770900+00:00,0,1st Half,FreeKicks,freekick,0.0,0.0,,1.0
+2026-05-28 00:30:12.874884900+00:00,0,1st Half,Penalties Saved (Raw),penalty,0.0,0.0,,1.0
+2026-05-28 00:30:12.878005500+00:00,0,1st Half,MissedPenalty,penalty,0.0,0.0,,1.0
+2026-05-28 00:30:12.882231100+00:00,0,1st Half,Free Kick Goals (Raw),freekick,0.0,0.0,,1.0
+2026-05-28 00:30:12.984607100+00:00,0,1st Half,WoodworkShots,other,0.0,0.0,,1.0
+2026-05-28 00:30:12.988809200+00:00,0,1st Half,Goals From Outside the Penalty Area,penalty,0.0,0.0,,1.0
+2026-05-28 00:30:12.993065200+00:00,0,1st Half,PassAttempts,other,0.0,0.0,,1.0
+2026-05-28 00:30:12.996158700+00:00,0,1st Half,RedCard,card_red,0.0,0.0,,1.0
+2026-05-28 00:30:13.000194500+00:00,0,1st Half,DangerousFreeKicks,freekick,0.0,0.0,,1.0
+2026-05-28 00:30:13.004109700+00:00,0,1st Half,Left foot Goals,goal_stat,0.0,0.0,,1.0
+2026-05-28 00:30:13.007825200+00:00,0,1st Half,Header Goals (Raw),goal_stat,0.0,0.0,,1.0
+2026-05-28 00:30:13.017521700+00:00,3,1st Half,Attacks,attack,0.0,1.0,,0.32542303512378756
+2026-05-28 00:30:13.022601800+00:00,0,,Possession,other,0.0,100.0,,1.0
+2026-05-28 00:30:15.724691700+00:00,11,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:15.727685900+00:00,9,1st Half,ThrowIns,throwin,1.0,0.0,,1.0
+2026-05-28 00:30:17.489430+00:00,13,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:21.713543900+00:00,14,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:22.268278600+00:00,3,1st Half,Attacks,attack,0.0,1.0,,1.0
+2026-05-28 00:30:22.652215400+00:00,12,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:22.999171600+00:00,0,1st Half,Offsides,offside,0.0,0.0,,1.0
+2026-05-28 00:30:23.011957600+00:00,0,1st Half,Corners,corner,0.0,0.0,,1.0
+2026-05-28 00:30:23.011957600+00:00,0,1st Half,Corners,corner,0.0,0.0,,1.0
+2026-05-28 00:30:24.079220500+00:00,16,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:30.811577300+00:00,17,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:30.897190600+00:00,0,1st Half,Shots outside the box,other,0.0,0.0,,1.0
+2026-05-28 00:30:30.903837600+00:00,0,1st Half,WoodworkShots,other,0.0,0.0,,1.0
+2026-05-28 00:30:30.910520300+00:00,0,1st Half,Shots inside the box,other,0.0,0.0,,1.0
+2026-05-28 00:30:30.924097400+00:00,0,,Player Minutes Played,player_stat,,,Gustavo Marques,1.0
+2026-05-28 00:30:30.926731700+00:00,0,,Player Minutes Played,player_stat,,,Isidro Pitta,1.0
+2026-05-28 00:30:30.929458700+00:00,0,,Player Minutes Played,player_stat,,,Alexander Gonzalez,1.0
+2026-05-28 00:30:30.932135300+00:00,0,,Player Minutes Played,player_stat,,,Jose Maria Herrera,1.0
+2026-05-28 00:30:30.934588500+00:00,0,,Player Minutes Played,player_stat,,,Franco Gabriel,1.0
+2026-05-28 00:30:30.937289200+00:00,0,,Player Minutes Played,player_stat,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:30:30.939958600+00:00,0,,Player Minutes Played,player_stat,,,Jhosuan Berrios,1.0
+2026-05-28 00:30:30.942320500+00:00,0,,Player Minutes Played,player_stat,,,Edson Castillo,1.0
+2026-05-28 00:30:30.944998+00:00,0,,Player Minutes Played,player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:30:30.947604+00:00,0,,Player Minutes Played,player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:30:30.950913700+00:00,0,,Player Minutes Played,player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:30:30.953839+00:00,0,,Player Minutes Played,player_stat,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:30:30.956339+00:00,0,,Player Minutes Played,player_stat,,,Henry Mosquera,1.0
+2026-05-28 00:30:30.958837100+00:00,0,,Player Minutes Played,player_stat,,,Ezequiel Neira,1.0
+2026-05-28 00:30:30.961467400+00:00,0,,Player Minutes Played,player_stat,,,Eric Ramirez,1.0
+2026-05-28 00:30:30.964224100+00:00,0,,Player Minutes Played,player_stat,,,Eric Ramires,1.0
+2026-05-28 00:30:30.966532200+00:00,0,,Player Minutes Played,player_stat,,,Jean Fuentes,1.0
+2026-05-28 00:30:30.969113800+00:00,0,,Player Minutes Played,player_stat,,,Leonardo Aponte,1.0
+2026-05-28 00:30:30.971781100+00:00,0,,Player Minutes Played,player_stat,,,Edson Tortolero,1.0
+2026-05-28 00:30:30.974384100+00:00,0,,Player Minutes Played,player_stat,,,Matias Nunez,1.0
+2026-05-28 00:30:30.977277600+00:00,0,,Player Minutes Played,player_stat,,,Rodriguinho Huendra,1.0
+2026-05-28 00:30:30.980351700+00:00,0,,Player Minutes Played,player_stat,,,Cleiton Schwengber,1.0
+2026-05-28 00:30:30.983132800+00:00,0,,HasPlayed,other,,,Tiago Volpi,1.0
+2026-05-28 00:30:30.985732200+00:00,0,,HasPlayed,other,,,Ignacio Sosa,1.0
+2026-05-28 00:30:30.988581800+00:00,0,,HasPlayed,other,,,Gustavo Marques,1.0
+2026-05-28 00:30:30.997783400+00:00,0,,HasPlayed,other,,,Dimas Meza,1.0
+2026-05-28 00:30:31.000349+00:00,0,,HasPlayed,other,,,Marcel Guaramato,1.0
+2026-05-28 00:30:31.002947100+00:00,0,,HasPlayed,other,,,Isidro Pitta,1.0
+2026-05-28 00:30:31.006514500+00:00,0,,HasPlayed,other,,,Alexander Gonzalez,1.0
+2026-05-28 00:30:31.009140100+00:00,0,,HasPlayed,other,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:30:31.012576300+00:00,0,,HasPlayed,other,,,Sebastian Mendoza,1.0
+2026-05-28 00:30:31.015473500+00:00,0,,HasPlayed,other,,,Abraham Bahachille,1.0
+2026-05-28 00:30:31.018346600+00:00,0,,HasPlayed,other,,,Franco Gabriel,1.0
+2026-05-28 00:30:31.021029400+00:00,0,,HasPlayed,other,,,Jose Maria Herrera,1.0
+2026-05-28 00:30:31.023609+00:00,0,,HasPlayed,other,,,Loureins Martinez,1.0
+2026-05-28 00:30:31.026335200+00:00,0,,HasPlayed,other,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:30:31.028931400+00:00,0,,HasPlayed,other,,,Jhosuan Berrios,1.0
+2026-05-28 00:30:31.031379500+00:00,0,,HasPlayed,other,,,Yohandry Orozco,1.0
+2026-05-28 00:30:31.033809500+00:00,0,,HasPlayed,other,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:30:31.036329100+00:00,0,,HasPlayed,other,,,Edson Castillo,1.0
+2026-05-28 00:30:31.038809700+00:00,0,,HasPlayed,other,,,Eduardo Sasha,1.0
+2026-05-28 00:30:31.041476100+00:00,0,,HasPlayed,other,,,Jose Duran,1.0
+2026-05-28 00:30:31.044170700+00:00,0,,HasPlayed,other,,,Juan Camilo Perez,1.0
+2026-05-28 00:30:31.047207600+00:00,0,,HasPlayed,other,,,Breno de Moraes Souza,1.0
+2026-05-28 00:30:31.049762400+00:00,0,,HasPlayed,other,,,Franyer Oliveros,1.0
+2026-05-28 00:30:31.052296100+00:00,0,,HasPlayed,other,,,Lucas Bruera,1.0
+2026-05-28 00:30:31.054819800+00:00,0,,HasPlayed,other,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:30:31.057489800+00:00,0,,HasPlayed,other,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:30:31.060128200+00:00,0,,HasPlayed,other,,,Vanderlan,1.0
+2026-05-28 00:30:31.063037100+00:00,0,,HasPlayed,other,,,Henry Mosquera,1.0
+2026-05-28 00:30:31.169184300+00:00,0,,HasPlayed,other,,,Ezequiel Neira,1.0
+2026-05-28 00:30:31.171999600+00:00,0,,HasPlayed,other,,,Maurice Cova,1.0
+2026-05-28 00:30:31.174474900+00:00,0,,HasPlayed,other,,,Eric Ramirez,1.0
+2026-05-28 00:30:31.177322300+00:00,0,,HasPlayed,other,,,Eric Ramires,1.0
+2026-05-28 00:30:31.180163500+00:00,0,,HasPlayed,other,,,Leonardo Aponte,1.0
+2026-05-28 00:30:31.182730700+00:00,0,,HasPlayed,other,,,Jean Fuentes,1.0
+2026-05-28 00:30:31.185183500+00:00,0,,HasPlayed,other,,,Cleiton Schwengber,1.0
+2026-05-28 00:30:31.187927100+00:00,0,,HasPlayed,other,,,Edson Tortolero,1.0
+2026-05-28 00:30:31.190739500+00:00,0,,HasPlayed,other,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:30:31.193412500+00:00,0,,HasPlayed,other,,,Keiber Molina,1.0
+2026-05-28 00:30:31.196136600+00:00,0,,HasPlayed,other,,,Henrique Lucas Barbosa,1.0
+2026-05-28 00:30:31.198864800+00:00,0,,HasPlayed,other,,,Matias Nunez,1.0
+2026-05-28 00:30:31.202060700+00:00,0,,HasPlayed,other,,,Jonathan Bilbao,1.0
+2026-05-28 00:30:31.204990300+00:00,0,,HasPlayed,other,,,Pedro Fernando,1.0
+2026-05-28 00:30:31.207852900+00:00,0,,HasPlayed,other,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:30:31.210682700+00:00,0,,HasPlayed,other,,,Rodriguinho Huendra,1.0
+2026-05-28 00:30:34.819112600+00:00,23,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:37.088995700+00:00,28,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:37.474643900+00:00,29,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:37.477602100+00:00,31,1st Half,ThrowIns,throwin,1.0,1.0,,0.04200874420425372
+2026-05-28 00:30:39.456188400+00:00,32,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:45.692340200+00:00,0,1st Half,Attacks,attack,0.0,2.0,,0.6745769648762124
+2026-05-28 00:30:49.317984700+00:00,35,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:52.732783600+00:00,40,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:52.904416500+00:00,45,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:52.908070300+00:00,46,1st Half,Attacks,attack,0.0,2.0,,1.0
+2026-05-28 00:30:55.033917200+00:00,47,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:55.565805400+00:00,48,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:30:58.244064500+00:00,49,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:00.701168+00:00,52,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:03.120542500+00:00,31,1st Half,ThrowIns,throwin,1.0,1.0,,1.0
+2026-05-28 00:31:04.826853500+00:00,54,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:06.860438400+00:00,56,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:06.863857400+00:00,60,1st Half,ThrowIns,throwin,1.0,2.0,,0.04200874420425372
+2026-05-28 00:31:06.866162500+00:00,0,,Possession,other,68.0,32.0,,1.0
+2026-05-28 00:31:09.602758200+00:00,57,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:10.386885400+00:00,58,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:13.648236400+00:00,61,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:14.498965200+00:00,62,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:14.899744700+00:00,61,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:19.776838100+00:00,63,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:23.570584200+00:00,65,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:24.789536900+00:00,67,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:24.792614600+00:00,78,1st Half,Attacks,attack,0.0,3.0,,0.32542303512378756
+2026-05-28 00:31:25.928560300+00:00,68,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:28.614125200+00:00,74,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:28.622564900+00:00,0,1st Half,Player Interceptions,player_stat,0.0,0.0,,1.0
+2026-05-28 00:31:28.632271200+00:00,0,1st Half,Clearances,other,0.0,0.0,,1.0
+2026-05-28 00:31:28.649696800+00:00,0,1st Half,PlayerSaves,save,0.0,0.0,,1.0
+2026-05-28 00:31:28.667329900+00:00,0,1st Half,Shots inside the box,other,0.0,0.0,,1.0
+2026-05-28 00:31:28.676494800+00:00,0,1st Half,Total Shots,shot,0.0,0.0,,1.0
+2026-05-28 00:31:28.678642600+00:00,0,1st Half,Shots outside the box,other,0.0,0.0,,1.0
+2026-05-28 00:31:28.689846+00:00,0,,Clearances,other,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.693212700+00:00,0,,Player Assists,player_stat,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.696289400+00:00,0,,PlayerShotsOffTarget,shot,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.703419200+00:00,0,,Player Blocked Shots,shot,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.706297700+00:00,0,,PlayerFouls,foul,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.709173600+00:00,0,,Player Passes,player_stat,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.713610600+00:00,0,,Offsides,offside,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.718105600+00:00,0,,Player Completed Passes (Raw),player_stat,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.721484100+00:00,0,,Player Crosses,player_stat,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.725824200+00:00,0,,Player Interceptions,player_stat,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.729246800+00:00,0,,PlayerShotsOnTarget,shot,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.732125900+00:00,0,,Player Yellow Card,card_yellow,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.735069400+00:00,0,,Player Goals,goal_stat,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.738012500+00:00,0,,Player Minutes Played,player_stat,,,Goncalves Pedro Henrique,0.5
+2026-05-28 00:31:28.740503+00:00,0,,Clearances,other,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.744116900+00:00,0,,PlayerShotsOffTarget,shot,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.746860200+00:00,0,,Player Assists,player_stat,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.749639+00:00,0,,PlayerFouls,foul,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.752294700+00:00,0,,Player Blocked Shots,shot,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.755169600+00:00,0,,Player Interceptions,player_stat,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.757876100+00:00,0,,Player Passes,player_stat,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.762353600+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.765368900+00:00,0,,Offsides,offside,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.768227600+00:00,0,,Player Red Card,card_red,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.770747500+00:00,0,,Player Crosses,player_stat,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.773306200+00:00,0,,Player Completed Passes (Raw),player_stat,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.776213600+00:00,0,,Player Total Shots (Raw),shot,,,Goncalves Pedro Henrique,1.0
+2026-05-28 00:31:28.778934500+00:00,0,,Player Total Shots (Raw),shot,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.781604600+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.784559400+00:00,0,,Player Red Card,card_red,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.787025400+00:00,0,,PlayerShotsOnTarget,shot,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.789716600+00:00,0,,Player Goals,goal_stat,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.792348+00:00,0,,Player Minutes Played,player_stat,,,Franner Xavier Lopez Castillo,0.5
+2026-05-28 00:31:28.794653+00:00,0,,Clearances,other,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.797274400+00:00,0,,Player Assists,player_stat,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.800403+00:00,0,,PlayerShotsOffTarget,shot,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.803090100+00:00,0,,Player Blocked Shots,shot,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.805724+00:00,0,,PlayerFouls,foul,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.808200400+00:00,0,,Player Interceptions,player_stat,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.811208600+00:00,0,,Offsides,offside,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.813823300+00:00,0,,Player Yellow Card,card_yellow,,,Franner Xavier Lopez Castillo,1.0
+2026-05-28 00:31:28.816394300+00:00,0,,Player Crosses,player_stat,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.818928400+00:00,0,,Player Total Shots (Raw),shot,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.821672200+00:00,0,,Player Yellow Card,card_yellow,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.824280500+00:00,0,,PlayerShotsOnTarget,shot,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.827099400+00:00,0,,Player Red Card,card_red,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.829563700+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.832213300+00:00,0,,Player Goals,goal_stat,,,Jean Fuentes,1.0
+2026-05-28 00:31:28.840620100+00:00,0,,Clearances,other,,,Vanderlan,1.0
+2026-05-28 00:31:28.843141300+00:00,0,,PlayerShotsOffTarget,shot,,,Vanderlan,1.0
+2026-05-28 00:31:28.845607100+00:00,0,,Player Assists,player_stat,,,Vanderlan,1.0
+2026-05-28 00:31:28.848138100+00:00,0,,Player Blocked Shots,shot,,,Vanderlan,1.0
+2026-05-28 00:31:28.850777500+00:00,0,,Player Passes,player_stat,,,Vanderlan,1.0
+2026-05-28 00:31:28.853374100+00:00,0,,Player Interceptions,player_stat,,,Vanderlan,1.0
+2026-05-28 00:31:28.856650600+00:00,0,,PlayerFouls,foul,,,Vanderlan,1.0
+2026-05-28 00:31:28.859547100+00:00,0,,Offsides,offside,,,Vanderlan,1.0
+2026-05-28 00:31:28.862696+00:00,0,,Player Completed Passes (Raw),player_stat,,,Vanderlan,1.0
+2026-05-28 00:31:28.865652400+00:00,0,,Player Crosses,player_stat,,,Vanderlan,1.0
+2026-05-28 00:31:28.868551500+00:00,0,,Player Yellow Card,card_yellow,,,Vanderlan,1.0
+2026-05-28 00:31:28.871163300+00:00,0,,PlayerShotsOnTarget,shot,,,Vanderlan,1.0
+2026-05-28 00:31:28.873939600+00:00,0,,Player Total Shots (Raw),shot,,,Vanderlan,1.0
+2026-05-28 00:31:28.876715+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Vanderlan,1.0
+2026-05-28 00:31:28.879221400+00:00,0,,Player Red Card,card_red,,,Vanderlan,1.0
+2026-05-28 00:31:28.881828200+00:00,0,,Player Goals,goal_stat,,,Vanderlan,1.0
+2026-05-28 00:31:28.885135900+00:00,0,,Player Minutes Played,player_stat,,,Vanderlan,0.5
+2026-05-28 00:31:28.887498800+00:00,0,,PlayerShotsOffTarget,shot,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.890409100+00:00,0,,Clearances,other,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.892918300+00:00,0,,Player Assists,player_stat,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.895687100+00:00,0,,PlayerFouls,foul,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.898078500+00:00,0,,Player Blocked Shots,shot,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.900685900+00:00,0,,Player Passes,player_stat,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.903530700+00:00,0,,Player Interceptions,player_stat,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.906170100+00:00,0,,Offsides,offside,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.909080300+00:00,0,,Player Crosses,player_stat,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.912376400+00:00,0,,Player Completed Passes (Raw),player_stat,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.914997500+00:00,0,,Player Total Shots (Raw),shot,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.917451+00:00,0,,Player Yellow Card,card_yellow,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.920013900+00:00,0,,PlayerShotsOnTarget,shot,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.922838+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.925385300+00:00,0,,Player Red Card,card_red,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.927885800+00:00,0,,Player Goals,goal_stat,,,Isidro Pitta,1.0
+2026-05-28 00:31:28.933407700+00:00,0,,Clearances,other,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.936233300+00:00,0,,PlayerShotsOffTarget,shot,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.938889400+00:00,0,,Player Blocked Shots,shot,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.941627700+00:00,0,,Player Assists,player_stat,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.944130800+00:00,0,,PlayerFouls,foul,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.946785700+00:00,0,,Player Passes,player_stat,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.949487600+00:00,0,,Player Interceptions,player_stat,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.952413800+00:00,0,,Offsides,offside,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.955338300+00:00,0,,Player Completed Passes (Raw),player_stat,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.957984900+00:00,0,,Player Crosses,player_stat,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.961356+00:00,0,,Player Yellow Card,card_yellow,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.967948+00:00,0,,Player Total Shots (Raw),shot,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.971210300+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.973793500+00:00,0,,PlayerShotsOnTarget,shot,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.976847300+00:00,0,,Player Red Card,card_red,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.979789300+00:00,0,,Player Goals,goal_stat,,,Sebastian Mendoza,1.0
+2026-05-28 00:31:28.982595300+00:00,0,,Player Minutes Played,player_stat,,,Sebastian Mendoza,0.5
+2026-05-28 00:31:28.985502300+00:00,0,,Clearances,other,,,Ignacio Sosa,1.0
+2026-05-28 00:31:28.988595200+00:00,0,,PlayerShotsOffTarget,shot,,,Ignacio Sosa,1.0
+2026-05-28 00:31:28.991470900+00:00,0,,Player Assists,player_stat,,,Ignacio Sosa,1.0
+2026-05-28 00:31:28.994361800+00:00,0,,Player Blocked Shots,shot,,,Ignacio Sosa,1.0
+2026-05-28 00:31:28.997300100+00:00,0,,PlayerFouls,foul,,,Ignacio Sosa,1.0
+2026-05-28 00:31:29.000009900+00:00,0,,Player Passes,player_stat,,,Ignacio Sosa,1.0
+2026-05-28 00:31:29.002727400+00:00,0,,Player Interceptions,player_stat,,,Ignacio Sosa,1.0
+2026-05-28 00:31:29.005480800+00:00,0,,Offsides,offside,,,Ignacio Sosa,1.0
+2026-05-28 00:31:29.008188600+00:00,0,,Player Completed Passes (Raw),player_stat,,,Ignacio Sosa,1.0
+2026-05-28 00:31:29.011030300+00:00,0,,Player Crosses,player_stat,,,Ignacio Sosa,1.0
+2026-05-28 00:31:29.013790500+00:00,0,,Player Total Shots (Raw),shot,,,Ignacio Sosa,1.0
+2026-05-28 00:31:29.016518100+00:00,0,,Player Yellow Card,card_yellow,,,Ignacio Sosa,1.0
+2026-05-28 00:31:29.019237300+00:00,0,,PlayerShotsOnTarget,shot,,,Ignacio Sosa,1.0
+2026-05-28 00:31:29.021991+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Ignacio Sosa,1.0
+2026-05-28 00:31:29.024459400+00:00,0,,Player Goals,goal_stat,,,Ignacio Sosa,1.0
+2026-05-28 00:31:29.027552500+00:00,0,,Player Red Card,card_red,,,Ignacio Sosa,1.0
+2026-05-28 00:31:29.030138300+00:00,0,,Player Minutes Played,player_stat,,,Ignacio Sosa,0.5
+2026-05-28 00:31:29.032634700+00:00,0,,Clearances,other,,,Edson Castillo,1.0
+2026-05-28 00:31:29.035578200+00:00,0,,Player Assists,player_stat,,,Edson Castillo,1.0
+2026-05-28 00:31:29.039668600+00:00,0,,PlayerShotsOffTarget,shot,,,Edson Castillo,1.0
+2026-05-28 00:31:29.042259200+00:00,0,,Player Blocked Shots,shot,,,Edson Castillo,1.0
+2026-05-28 00:31:29.044914400+00:00,0,,PlayerFouls,foul,,,Edson Castillo,1.0
+2026-05-28 00:31:29.047613200+00:00,0,,Player Interceptions,player_stat,,,Edson Castillo,1.0
+2026-05-28 00:31:29.050207700+00:00,0,,Offsides,offside,,,Edson Castillo,1.0
+2026-05-28 00:31:29.052679800+00:00,0,,Player Total Shots (Raw),shot,,,Edson Castillo,1.0
+2026-05-28 00:31:29.055444300+00:00,0,,Player Crosses,player_stat,,,Edson Castillo,1.0
+2026-05-28 00:31:29.058326500+00:00,0,,Player Yellow Card,card_yellow,,,Edson Castillo,1.0
+2026-05-28 00:31:29.060909300+00:00,0,,PlayerShotsOnTarget,shot,,,Edson Castillo,1.0
+2026-05-28 00:31:29.063772100+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Edson Castillo,1.0
+2026-05-28 00:31:29.066459300+00:00,0,,Player Red Card,card_red,,,Edson Castillo,1.0
+2026-05-28 00:31:29.069024+00:00,0,,Player Goals,goal_stat,,,Edson Castillo,1.0
+2026-05-28 00:31:29.074173700+00:00,0,,Clearances,other,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.080235700+00:00,0,,PlayerShotsOffTarget,shot,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.082876600+00:00,0,,Player Assists,player_stat,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.086278700+00:00,0,,Player Blocked Shots,shot,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.088980+00:00,0,,PlayerFouls,foul,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.091669600+00:00,0,,Player Passes,player_stat,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.094438600+00:00,0,,Player Interceptions,player_stat,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.097070800+00:00,0,,Offsides,offside,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.099679500+00:00,0,,Player Completed Passes (Raw),player_stat,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.102487700+00:00,0,,Player Total Shots (Raw),shot,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.105276200+00:00,0,,Player Crosses,player_stat,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.107959800+00:00,0,,Player Yellow Card,card_yellow,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.110854900+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.113529700+00:00,0,,PlayerShotsOnTarget,shot,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.116378500+00:00,0,,Player Red Card,card_red,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.119193700+00:00,0,,Player Goals,goal_stat,,,Ezequiel Neira,1.0
+2026-05-28 00:31:29.124287100+00:00,0,,Clearances,other,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.126982800+00:00,0,,Player Assists,player_stat,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.130186600+00:00,0,,PlayerShotsOffTarget,shot,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.132646600+00:00,0,,Player Blocked Shots,shot,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.135315600+00:00,0,,PlayerFouls,foul,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.137946500+00:00,0,,Player Passes,player_stat,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.141127800+00:00,0,,Player Interceptions,player_stat,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.143734400+00:00,0,,Offsides,offside,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.146593500+00:00,0,,Player Completed Passes (Raw),player_stat,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.149476900+00:00,0,,Player Crosses,player_stat,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.152305100+00:00,0,,Player Total Shots (Raw),shot,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.154829500+00:00,0,,Player Yellow Card,card_yellow,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.157517500+00:00,0,,PlayerShotsOnTarget,shot,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.160406500+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.163485700+00:00,0,,Player Goals,goal_stat,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.169329300+00:00,0,,Player Red Card,card_red,,,Rodriguinho Huendra,1.0
+2026-05-28 00:31:29.172160100+00:00,0,,PlayerShotsOffTarget,shot,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.174855800+00:00,0,,Player Assists,player_stat,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.177628700+00:00,0,,Player Blocked Shots,shot,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.180493600+00:00,0,,Clearances,other,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.186826500+00:00,0,,Player Passes,player_stat,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.189819100+00:00,0,,PlayerFouls,foul,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.192622800+00:00,0,,Player Interceptions,player_stat,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.195183700+00:00,0,,Player Completed Passes (Raw),player_stat,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.197872500+00:00,0,,Offsides,offside,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.201547900+00:00,0,,Player Crosses,player_stat,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.204382100+00:00,0,,Player Yellow Card,card_yellow,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.207219900+00:00,0,,Player Total Shots (Raw),shot,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.210151400+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.213102600+00:00,0,,PlayerShotsOnTarget,shot,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.215690800+00:00,0,,Player Red Card,card_red,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.220596300+00:00,0,,Player Goals,goal_stat,,,Alix Vinicius de Souza Sampaio,1.0
+2026-05-28 00:31:29.223123700+00:00,0,,PlayerShotsOffTarget,shot,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.225727300+00:00,0,,Player Assists,player_stat,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.228383700+00:00,0,,Player Blocked Shots,shot,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.230793200+00:00,0,,Player Passes,player_stat,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.233441500+00:00,0,,Player Interceptions,player_stat,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.236115600+00:00,0,,PlayerFouls,foul,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.238749300+00:00,0,,Offsides,offside,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.241354400+00:00,0,,Player Completed Passes (Raw),player_stat,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.243983100+00:00,0,,Player Total Shots (Raw),shot,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.246722700+00:00,0,,Player Crosses,player_stat,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.249366300+00:00,0,,Player Yellow Card,card_yellow,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.251818400+00:00,0,,PlayerShotsOnTarget,shot,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.255109200+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.257758800+00:00,0,,Clearances,other,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.260463300+00:00,0,,Player Red Card,card_red,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.263057700+00:00,0,,Player Goals,goal_stat,,,Vinicius Mendonça Pereira,1.0
+2026-05-28 00:31:29.265623200+00:00,0,,Player Minutes Played,player_stat,,,Vinicius Mendonça Pereira,0.5
+2026-05-28 00:31:29.267954600+00:00,0,,Clearances,other,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.270632200+00:00,0,,PlayerShotsOffTarget,shot,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.273358+00:00,0,,Player Assists,player_stat,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.280698600+00:00,0,,Player Blocked Shots,shot,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.283541700+00:00,0,,PlayerFouls,foul,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.286193600+00:00,0,,Player Passes,player_stat,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.289045300+00:00,0,,Player Interceptions,player_stat,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.291784300+00:00,0,,Offsides,offside,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.294674900+00:00,0,,Player Completed Passes (Raw),player_stat,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.297470800+00:00,0,,Player Crosses,player_stat,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.300231500+00:00,0,,Player Total Shots (Raw),shot,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.302782800+00:00,0,,Player Yellow Card,card_yellow,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.305335300+00:00,0,,Player Goals,goal_stat,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.308063+00:00,0,,PlayerShotsOnTarget,shot,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.310963300+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.314522800+00:00,0,,Player Red Card,card_red,,,Gustavo Marques,1.0
+2026-05-28 00:31:29.317362400+00:00,0,,Player Assists,player_stat,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.320407100+00:00,0,,PlayerShotsOffTarget,shot,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.323086500+00:00,0,,Clearances,other,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.328285800+00:00,0,,Player Blocked Shots,shot,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.331287900+00:00,0,,PlayerFouls,foul,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.333893800+00:00,0,,Player Passes,player_stat,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.336681200+00:00,0,,Player Interceptions,player_stat,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.339483900+00:00,0,,Player Completed Passes (Raw),player_stat,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.342358+00:00,0,,Offsides,offside,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.345386500+00:00,0,,Player Crosses,player_stat,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.348136700+00:00,0,,Player Yellow Card,card_yellow,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.350870700+00:00,0,,PlayerShotsOnTarget,shot,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.353667700+00:00,0,,Player Total Shots (Raw),shot,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.356716700+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.359541500+00:00,0,,Player Red Card,card_red,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.362263100+00:00,0,,Player Goals,goal_stat,,,Leonardo Aponte,1.0
+2026-05-28 00:31:29.367997300+00:00,0,,Clearances,other,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.377283500+00:00,0,,PlayerShotsOffTarget,shot,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.379985100+00:00,0,,Player Blocked Shots,shot,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.382516+00:00,0,,Player Assists,player_stat,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.385034+00:00,0,,PlayerFouls,foul,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.387870300+00:00,0,,Player Passes,player_stat,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.390490600+00:00,0,,Player Interceptions,player_stat,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.393195800+00:00,0,,Offsides,offside,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.395796100+00:00,0,,Player Completed Passes (Raw),player_stat,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.398796500+00:00,0,,Player Crosses,player_stat,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.401415300+00:00,0,,Player Total Shots (Raw),shot,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.403998500+00:00,0,,Player Yellow Card,card_yellow,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.406732100+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.409554700+00:00,0,,PlayerShotsOnTarget,shot,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.412335800+00:00,0,,Player Goals,goal_stat,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.415086600+00:00,0,,Player Red Card,card_red,,,Alexander Gonzalez,1.0
+2026-05-28 00:31:29.420401700+00:00,0,,Clearances,other,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.423144800+00:00,0,,PlayerShotsOffTarget,shot,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.425699400+00:00,0,,Player Assists,player_stat,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.428433700+00:00,0,,Player Blocked Shots,shot,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.431907900+00:00,0,,PlayerFouls,foul,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.434625200+00:00,0,,Player Interceptions,player_stat,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.437195400+00:00,0,,Player Passes,player_stat,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.440001600+00:00,0,,Player Completed Passes (Raw),player_stat,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.442758+00:00,0,,Player Crosses,player_stat,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.445494200+00:00,0,,Offsides,offside,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.448026600+00:00,0,,Player Total Shots (Raw),shot,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.450793100+00:00,0,,PlayerShotsOnTarget,shot,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.453281300+00:00,0,,Player Yellow Card,card_yellow,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.455912400+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.458895600+00:00,0,,Player Red Card,card_red,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.465100900+00:00,0,,Player Goals,goal_stat,,,Loureins Martinez,1.0
+2026-05-28 00:31:29.468044+00:00,0,,Player Minutes Played,player_stat,,,Loureins Martinez,0.5
+2026-05-28 00:31:29.470440200+00:00,0,,Clearances,other,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.473096200+00:00,0,,PlayerShotsOffTarget,shot,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.475645200+00:00,0,,Player Blocked Shots,shot,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.478316200+00:00,0,,Player Assists,player_stat,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.480938800+00:00,0,,PlayerFouls,foul,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.483451600+00:00,0,,Player Passes,player_stat,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.485957+00:00,0,,Player Interceptions,player_stat,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.489256400+00:00,0,,Player Completed Passes (Raw),player_stat,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.492249100+00:00,0,,Player Crosses,player_stat,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.495227900+00:00,0,,Offsides,offside,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.498071400+00:00,0,,Player Total Shots (Raw),shot,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.500614+00:00,0,,Player Yellow Card,card_yellow,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.503198+00:00,0,,PlayerShotsOnTarget,shot,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.506110900+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.508869600+00:00,0,,Player Red Card,card_red,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.511655200+00:00,0,,Player Goals,goal_stat,,,Edson Tortolero,1.0
+2026-05-28 00:31:29.517167300+00:00,0,,Clearances,other,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.519910400+00:00,0,,PlayerShotsOffTarget,shot,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.522619800+00:00,0,,Player Assists,player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.525284400+00:00,0,,Player Blocked Shots,shot,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.528011200+00:00,0,,Player Passes,player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.530816200+00:00,0,,PlayerFouls,foul,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.533585300+00:00,0,,Offsides,offside,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.536711400+00:00,0,,Player Interceptions,player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.539829+00:00,0,,Player Completed Passes (Raw),player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.542510900+00:00,0,,Player Crosses,player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.550153800+00:00,0,,Player Total Shots (Raw),shot,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.553177500+00:00,0,,Player Yellow Card,card_yellow,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.555911900+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.558586+00:00,0,,PlayerShotsOnTarget,shot,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.561503600+00:00,0,,Player Red Card,card_red,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.564285400+00:00,0,,Player Goals,goal_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:29.569447900+00:00,0,,Clearances,other,,,Jose Duran,1.0
+2026-05-28 00:31:29.572176+00:00,0,,PlayerShotsOffTarget,shot,,,Jose Duran,1.0
+2026-05-28 00:31:29.574789900+00:00,0,,Player Assists,player_stat,,,Jose Duran,1.0
+2026-05-28 00:31:29.577323500+00:00,0,,Player Blocked Shots,shot,,,Jose Duran,1.0
+2026-05-28 00:31:29.579941400+00:00,0,,PlayerFouls,foul,,,Jose Duran,1.0
+2026-05-28 00:31:29.582655700+00:00,0,,Player Passes,player_stat,,,Jose Duran,1.0
+2026-05-28 00:31:29.585417300+00:00,0,,Player Interceptions,player_stat,,,Jose Duran,1.0
+2026-05-28 00:31:29.588217600+00:00,0,,Offsides,offside,,,Jose Duran,1.0
+2026-05-28 00:31:29.591066600+00:00,0,,Player Crosses,player_stat,,,Jose Duran,1.0
+2026-05-28 00:31:29.593731500+00:00,0,,Player Completed Passes (Raw),player_stat,,,Jose Duran,1.0
+2026-05-28 00:31:29.596482800+00:00,0,,Player Total Shots (Raw),shot,,,Jose Duran,1.0
+2026-05-28 00:31:29.599087700+00:00,0,,Player Yellow Card,card_yellow,,,Jose Duran,1.0
+2026-05-28 00:31:29.601696500+00:00,0,,PlayerShotsOnTarget,shot,,,Jose Duran,1.0
+2026-05-28 00:31:29.604825900+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Jose Duran,1.0
+2026-05-28 00:31:29.607734700+00:00,0,,Player Red Card,card_red,,,Jose Duran,1.0
+2026-05-28 00:31:29.610552100+00:00,0,,Player Goals,goal_stat,,,Jose Duran,1.0
+2026-05-28 00:31:29.613332200+00:00,0,,Player Minutes Played,player_stat,,,Jose Duran,0.5
+2026-05-28 00:31:29.615845400+00:00,0,,Clearances,other,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.618553700+00:00,0,,PlayerShotsOffTarget,shot,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.621119400+00:00,0,,Player Assists,player_stat,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.623687300+00:00,0,,Player Blocked Shots,shot,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.632469+00:00,0,,PlayerFouls,foul,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.635324300+00:00,0,,Player Passes,player_stat,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.637928500+00:00,0,,Player Interceptions,player_stat,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.640801600+00:00,0,,Offsides,offside,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.643593100+00:00,0,,Player Completed Passes (Raw),player_stat,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.646538600+00:00,0,,Player Crosses,player_stat,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.649406300+00:00,0,,Player Total Shots (Raw),shot,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.651943900+00:00,0,,PlayerShotsOnTarget,shot,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.654734500+00:00,0,,Player Yellow Card,card_yellow,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.657654200+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.660409700+00:00,0,,Player Red Card,card_red,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.663469600+00:00,0,,Player Minutes Played,player_stat,,,Gustavo Ribeiro Neves,0.5
+2026-05-28 00:31:29.666940700+00:00,0,,Player Goals,goal_stat,,,Gustavo Ribeiro Neves,1.0
+2026-05-28 00:31:29.669633200+00:00,0,,Player Passes,player_stat,,,Jean Fuentes,1.0
+2026-05-28 00:31:29.672302200+00:00,0,,Player Completed Passes (Raw),player_stat,,,Jean Fuentes,1.0
+2026-05-28 00:31:29.675163200+00:00,0,,Player Passes,player_stat,,,Edson Castillo,1.0
+2026-05-28 00:31:29.677901600+00:00,0,,Player Completed Passes (Raw),player_stat,,,Edson Castillo,1.0
+2026-05-28 00:31:29.680861900+00:00,0,,HasPlayed,other,,,Goncalves Pedro Henrique,0.5
+2026-05-28 00:31:29.683482800+00:00,0,,HasPlayed,other,,,Franner Xavier Lopez Castillo,0.5
+2026-05-28 00:31:29.693872300+00:00,0,,HasPlayed,other,,,Sebastian Mendoza,0.5
+2026-05-28 00:31:29.696548+00:00,0,,HasPlayed,other,,,Ignacio Sosa,0.5
+2026-05-28 00:31:29.821549+00:00,0,,HasPlayed,other,,,Loureins Martinez,0.5
+2026-05-28 00:31:29.830060700+00:00,0,,HasPlayed,other,,,Jose Duran,0.5
+2026-05-28 00:31:29.832978800+00:00,0,,HasPlayed,other,,,Gustavo Ribeiro Neves,0.5
+2026-05-28 00:31:32.697064600+00:00,75,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:32.884185200+00:00,75,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:33.817878100+00:00,75,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:34.903383+00:00,76,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:37.009834400+00:00,0,1st Half,ThrowIns,throwin,1.0,2.0,,0.3390326668593608
+2026-05-28 00:31:37.012879500+00:00,78,1st Half,Attacks,attack,0.0,3.0,,1.0
+2026-05-28 00:31:37.792289500+00:00,60,1st Half,ThrowIns,throwin,1.0,2.0,,0.3333333333333333
+2026-05-28 00:31:37.792289500+00:00,60,1st Half,ThrowIns,throwin,1.0,2.0,,1.0
+2026-05-28 00:31:37.795156600+00:00,0,,Clearances,other,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.797846300+00:00,0,,PlayerShotsOffTarget,shot,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.800441700+00:00,0,,Player Assists,player_stat,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.803159600+00:00,0,,PlayerFouls,foul,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.805797300+00:00,0,,Player Passes,player_stat,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.808328900+00:00,0,,Player Blocked Shots,shot,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.810825600+00:00,0,,Player Completed Passes (Raw),player_stat,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.813803500+00:00,0,,Offsides,offside,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.816270100+00:00,0,,Player Interceptions,player_stat,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.819419800+00:00,0,,Player Crosses,player_stat,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.822411600+00:00,0,,Player Total Shots (Raw),shot,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.825160400+00:00,0,,PlayerShotsOnTarget,shot,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.827935600+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.830839900+00:00,0,,Player Goals,goal_stat,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.833618800+00:00,0,,Player Yellow Card,card_yellow,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.839796900+00:00,0,,Player Red Card,card_red,,,Jhosuan Berrios,1.0
+2026-05-28 00:31:37.842582600+00:00,0,,Clearances,other,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.845398300+00:00,0,,PlayerShotsOffTarget,shot,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.848505300+00:00,0,,Player Passes,player_stat,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.851145200+00:00,0,,Player Blocked Shots,shot,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.853803+00:00,0,,Player Interceptions,player_stat,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.856546800+00:00,0,,Offsides,offside,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.859314600+00:00,0,,Player Completed Passes (Raw),player_stat,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.862061600+00:00,0,,PlayerFouls,foul,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.864810600+00:00,0,,Player Assists,player_stat,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.867454200+00:00,0,,Player Crosses,player_stat,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.870389800+00:00,0,,Player Total Shots (Raw),shot,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.873155500+00:00,0,,PlayerShotsOnTarget,shot,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.876041+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.878563100+00:00,0,,Player Yellow Card,card_yellow,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.881353800+00:00,0,,Player Red Card,card_red,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.884130400+00:00,0,,Player Goals,goal_stat,,,Da Silva Marcelinho Braz,1.0
+2026-05-28 00:31:37.887198+00:00,0,,Player Minutes Played,player_stat,,,Da Silva Marcelinho Braz,0.5
+2026-05-28 00:31:37.889841100+00:00,0,,Clearances,other,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.892602200+00:00,0,,PlayerShotsOffTarget,shot,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.895393800+00:00,0,,Player Assists,player_stat,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.898206100+00:00,0,,Player Blocked Shots,shot,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.900800600+00:00,0,,PlayerFouls,foul,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.903975400+00:00,0,,Player Passes,player_stat,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.906730200+00:00,0,,Offsides,offside,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.909945600+00:00,0,,Player Completed Passes (Raw),player_stat,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.912957900+00:00,0,,Player Interceptions,player_stat,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.915716100+00:00,0,,Player Total Shots (Raw),shot,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.922004300+00:00,0,,Player Crosses,player_stat,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.924709800+00:00,0,,Player Yellow Card,card_yellow,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.927343200+00:00,0,,PlayerShotsOnTarget,shot,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.930399500+00:00,0,,Player Red Card,card_red,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.933059400+00:00,0,,Player Goals,goal_stat,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.935822800+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Eric Ramirez,1.0
+2026-05-28 00:31:37.941275200+00:00,0,,Clearances,other,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.943863800+00:00,0,,PlayerShotsOffTarget,shot,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.946418200+00:00,0,,Player Assists,player_stat,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.949142800+00:00,0,,PlayerFouls,foul,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.951857700+00:00,0,,Player Blocked Shots,shot,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.954482900+00:00,0,,Player Passes,player_stat,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.957119100+00:00,0,,Player Interceptions,player_stat,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.960910600+00:00,0,,Offsides,offside,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.964256800+00:00,0,,Player Completed Passes (Raw),player_stat,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.966965600+00:00,0,,Player Crosses,player_stat,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.969632600+00:00,0,,Player Total Shots (Raw),shot,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.972309200+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.974934+00:00,0,,Player Yellow Card,card_yellow,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.977703300+00:00,0,,Player Red Card,card_red,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.980147900+00:00,0,,Player Goals,goal_stat,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.982724500+00:00,0,,Player Minutes Played,player_stat,,,Bruno Praxedes,0.5
+2026-05-28 00:31:37.985068200+00:00,0,,PlayerShotsOnTarget,shot,,,Bruno Praxedes,1.0
+2026-05-28 00:31:37.987675700+00:00,0,,Clearances,other,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:37.990489100+00:00,0,,PlayerShotsOffTarget,shot,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:37.993343500+00:00,0,,Player Assists,player_stat,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:37.995983300+00:00,0,,Player Blocked Shots,shot,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:37.998793800+00:00,0,,PlayerFouls,foul,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:38.001615100+00:00,0,,Player Interceptions,player_stat,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:38.004184200+00:00,0,,Player Passes,player_stat,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:38.006993200+00:00,0,,Offsides,offside,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:38.009765500+00:00,0,,Player Completed Passes (Raw),player_stat,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:38.012614800+00:00,0,,Player Crosses,player_stat,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:38.015381400+00:00,0,,Player Total Shots (Raw),shot,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:38.018319400+00:00,0,,Player Yellow Card,card_yellow,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:38.020865300+00:00,0,,PlayerShotsOnTarget,shot,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:38.023621200+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:38.026367200+00:00,0,,Player Red Card,card_red,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:38.028940900+00:00,0,,Player Goals,goal_stat,,,Ariel Agustin Sant'Anna Quintero,1.0
+2026-05-28 00:31:38.034683800+00:00,0,,Clearances,other,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.037285200+00:00,0,,PlayerShotsOffTarget,shot,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.039981200+00:00,0,,Player Assists,player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.042443800+00:00,0,,Player Blocked Shots,shot,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.045574500+00:00,0,,PlayerFouls,foul,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.048415700+00:00,0,,Player Interceptions,player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.051157600+00:00,0,,Player Passes,player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.054094300+00:00,0,,Player Completed Passes (Raw),player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.056858900+00:00,0,,Offsides,offside,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.059697700+00:00,0,,Player Crosses,player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.062392200+00:00,0,,Player Total Shots (Raw),shot,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.065094+00:00,0,,Player Yellow Card,card_yellow,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.068013900+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.074828500+00:00,0,,PlayerShotsOnTarget,shot,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.078218600+00:00,0,,Player Red Card,card_red,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.080863400+00:00,0,,Player Goals,goal_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:38.083486700+00:00,0,,Clearances,other,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.088861900+00:00,0,,Player Assists,player_stat,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.091640700+00:00,0,,PlayerShotsOffTarget,shot,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.094300400+00:00,0,,Player Blocked Shots,shot,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.096887600+00:00,0,,PlayerFouls,foul,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.099698700+00:00,0,,Offsides,offside,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.102473900+00:00,0,,Player Interceptions,player_stat,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.105105300+00:00,0,,Player Passes,player_stat,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.107852300+00:00,0,,Player Total Shots (Raw),shot,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.110719500+00:00,0,,Player Crosses,player_stat,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.113571700+00:00,0,,Player Yellow Card,card_yellow,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.116474800+00:00,0,,Player Completed Passes (Raw),player_stat,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.119231+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.121743800+00:00,0,,Player Red Card,card_red,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.124633600+00:00,0,,Player Goals,goal_stat,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.130360300+00:00,0,,PlayerShotsOnTarget,shot,,,Franco Gabriel,1.0
+2026-05-28 00:31:38.133738600+00:00,0,,Clearances,other,,,Eric Ramires,1.0
+2026-05-28 00:31:38.136467400+00:00,0,,Player Assists,player_stat,,,Eric Ramires,1.0
+2026-05-28 00:31:38.139268800+00:00,0,,PlayerShotsOffTarget,shot,,,Eric Ramires,1.0
+2026-05-28 00:31:38.142110500+00:00,0,,PlayerFouls,foul,,,Eric Ramires,1.0
+2026-05-28 00:31:38.144703+00:00,0,,Player Blocked Shots,shot,,,Eric Ramires,1.0
+2026-05-28 00:31:38.147523700+00:00,0,,Player Passes,player_stat,,,Eric Ramires,1.0
+2026-05-28 00:31:38.150250600+00:00,0,,Player Interceptions,player_stat,,,Eric Ramires,1.0
+2026-05-28 00:31:38.153041+00:00,0,,Offsides,offside,,,Eric Ramires,1.0
+2026-05-28 00:31:38.155820700+00:00,0,,Player Total Shots (Raw),shot,,,Eric Ramires,1.0
+2026-05-28 00:31:38.158766500+00:00,0,,Player Crosses,player_stat,,,Eric Ramires,1.0
+2026-05-28 00:31:38.161605700+00:00,0,,Player Completed Passes (Raw),player_stat,,,Eric Ramires,1.0
+2026-05-28 00:31:38.164498700+00:00,0,,Player Yellow Card,card_yellow,,,Eric Ramires,1.0
+2026-05-28 00:31:38.167127100+00:00,0,,PlayerShotsOnTarget,shot,,,Eric Ramires,1.0
+2026-05-28 00:31:38.170001400+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Eric Ramires,1.0
+2026-05-28 00:31:38.172715400+00:00,0,,Player Red Card,card_red,,,Eric Ramires,1.0
+2026-05-28 00:31:38.175633700+00:00,0,,Player Goals,goal_stat,,,Eric Ramires,1.0
+2026-05-28 00:31:38.181580500+00:00,0,,PlayerShotsOffTarget,shot,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.184560300+00:00,0,,Clearances,other,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.187585300+00:00,0,,Player Assists,player_stat,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.195051100+00:00,0,,Player Blocked Shots,shot,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.197714800+00:00,0,,PlayerFouls,foul,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.201452500+00:00,0,,Player Interceptions,player_stat,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.204043600+00:00,0,,Player Passes,player_stat,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.207174400+00:00,0,,Player Completed Passes (Raw),player_stat,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.210282900+00:00,0,,Offsides,offside,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.213854600+00:00,0,,Player Crosses,player_stat,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.216550900+00:00,0,,Player Total Shots (Raw),shot,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.219258800+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.222402200+00:00,0,,PlayerShotsOnTarget,shot,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.225098800+00:00,0,,Player Red Card,card_red,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.227645900+00:00,0,,Player Yellow Card,card_yellow,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.233426800+00:00,0,,Player Goals,goal_stat,,,Jose Maria Herrera,1.0
+2026-05-28 00:31:38.236275400+00:00,0,,Clearances,other,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.238947100+00:00,0,,PlayerShotsOffTarget,shot,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.241659100+00:00,0,,Player Assists,player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.244403600+00:00,0,,Player Blocked Shots,shot,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.247253600+00:00,0,,PlayerFouls,foul,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.249710800+00:00,0,,Player Passes,player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.253385500+00:00,0,,Player Interceptions,player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.256144100+00:00,0,,Player Completed Passes (Raw),player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.258839700+00:00,0,,Player Total Shots (Raw),shot,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.261761100+00:00,0,,Offsides,offside,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.264294500+00:00,0,,Player Crosses,player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.267382600+00:00,0,,Player Yellow Card,card_yellow,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.270183800+00:00,0,,PlayerShotsOnTarget,shot,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.273035700+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.275773100+00:00,0,,Player Goals,goal_stat,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.278524+00:00,0,,Player Red Card,card_red,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.284928900+00:00,0,,Goalkeeper Saves,save,,,Lucas Bruera,1.0
+2026-05-28 00:31:38.287671500+00:00,0,,Clearances,other,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.290407700+00:00,0,,PlayerShotsOffTarget,shot,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.293138400+00:00,0,,Player Assists,player_stat,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.295970700+00:00,0,,Player Blocked Shots,shot,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.298604200+00:00,0,,PlayerFouls,foul,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.303773+00:00,0,,Player Passes,player_stat,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.306339300+00:00,0,,Offsides,offside,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.309901100+00:00,0,,Player Completed Passes (Raw),player_stat,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.319271100+00:00,0,,Player Interceptions,player_stat,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.323287800+00:00,0,,Player Crosses,player_stat,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.326599600+00:00,0,,Player Total Shots (Raw),shot,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.330010200+00:00,0,,Player Yellow Card,card_yellow,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.333511600+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.336500800+00:00,0,,Player Red Card,card_red,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.339542200+00:00,0,,PlayerShotsOnTarget,shot,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.345401700+00:00,0,,Player Goals,goal_stat,,,Henry Mosquera,1.0
+2026-05-28 00:31:38.348385500+00:00,0,,Clearances,other,,,Matias Nunez,1.0
+2026-05-28 00:31:38.351361100+00:00,0,,PlayerShotsOffTarget,shot,,,Matias Nunez,1.0
+2026-05-28 00:31:38.354119900+00:00,0,,Player Blocked Shots,shot,,,Matias Nunez,1.0
+2026-05-28 00:31:38.357086300+00:00,0,,PlayerFouls,foul,,,Matias Nunez,1.0
+2026-05-28 00:31:38.359822900+00:00,0,,Player Passes,player_stat,,,Matias Nunez,1.0
+2026-05-28 00:31:38.362650400+00:00,0,,Player Assists,player_stat,,,Matias Nunez,1.0
+2026-05-28 00:31:38.365403700+00:00,0,,Offsides,offside,,,Matias Nunez,1.0
+2026-05-28 00:31:38.368360900+00:00,0,,Player Interceptions,player_stat,,,Matias Nunez,1.0
+2026-05-28 00:31:38.371314900+00:00,0,,Player Completed Passes (Raw),player_stat,,,Matias Nunez,1.0
+2026-05-28 00:31:38.374523500+00:00,0,,Player Crosses,player_stat,,,Matias Nunez,1.0
+2026-05-28 00:31:38.377539100+00:00,0,,Player Total Shots (Raw),shot,,,Matias Nunez,1.0
+2026-05-28 00:31:38.380687+00:00,0,,Player Yellow Card,card_yellow,,,Matias Nunez,1.0
+2026-05-28 00:31:38.383399500+00:00,0,,PlayerShotsOnTarget,shot,,,Matias Nunez,1.0
+2026-05-28 00:31:38.386341200+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Matias Nunez,1.0
+2026-05-28 00:31:38.389450500+00:00,0,,Player Red Card,card_red,,,Matias Nunez,1.0
+2026-05-28 00:31:38.392693700+00:00,0,,Player Goals,goal_stat,,,Matias Nunez,1.0
+2026-05-28 00:31:38.398324600+00:00,0,,PlayerShotsOffTarget,shot,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.401586600+00:00,0,,Clearances,other,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.404160400+00:00,0,,Player Assists,player_stat,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.406800200+00:00,0,,Player Blocked Shots,shot,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.409699700+00:00,0,,PlayerFouls,foul,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.412231400+00:00,0,,Player Passes,player_stat,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.415144100+00:00,0,,Player Interceptions,player_stat,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.417877400+00:00,0,,Offsides,offside,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.420698200+00:00,0,,Player Completed Passes (Raw),player_stat,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.423354100+00:00,0,,Player Crosses,player_stat,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.426194300+00:00,0,,Player Total Shots (Raw),shot,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.429107600+00:00,0,,Player Yellow Card,card_yellow,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.432025200+00:00,0,,PlayerShotsOnTarget,shot,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.438916+00:00,0,,Player Successes Tackles Percentage ,player_stat,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.442244+00:00,0,,Player Red Card,card_red,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.445036900+00:00,0,,Player Goals,goal_stat,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.451158700+00:00,0,,Goalkeeper Saves,save,,,Cleiton Schwengber,1.0
+2026-05-28 00:31:38.454262800+00:00,0,,HasPlayed,other,,,Ryan Augusto,0.5
+2026-05-28 00:31:38.459716800+00:00,0,,HasPlayed,other,,,Fabinho de Freitas,0.5
+2026-05-28 00:31:38.462809400+00:00,0,,HasPlayed,other,,,Matheus Fernandes,0.5
+2026-05-28 00:31:38.470841100+00:00,0,,HasPlayed,other,,,Fabrício,0.5
+2026-05-28 00:31:38.473244100+00:00,0,,HasPlayed,other,,,Bruno Praxedes,0.5
+2026-05-28 00:31:38.475918400+00:00,0,,HasPlayed,other,,,Eduardo Santos,0.5
+2026-05-28 00:31:38.481441400+00:00,0,,HasPlayed,other,,,Guzman Rodriguez,0.5
+2026-05-28 00:31:38.605708300+00:00,0,,HasPlayed,other,,,"Gomes De Alvarenga, Davi",0.5
+2026-05-28 00:31:38.608051+00:00,0,,Possession,other,30.0,70.0,,1.0
+2026-05-28 00:31:38.610523500+00:00,78,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:38.908117600+00:00,0,1st Half,DangerousAttacks,danger,0.0,1.0,,0.9387247618774047
+2026-05-28 00:31:40.336397700+00:00,76,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:44.621739100+00:00,77,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:45.737905700+00:00,78,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:45.741088100+00:00,97,1st Half,ThrowIns,throwin,1.0,3.0,,0.014242336578980852
+2026-05-28 00:31:47.554628500+00:00,79,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:48.400713+00:00,0,1st Half,Attacks,attack,0.0,4.0,,0.6745769648762124
+2026-05-28 00:31:54.721780900+00:00,0,1st Half,Attacks,attack,0.0,5.0,,0.6745769648762124
+2026-05-28 00:31:55.080007100+00:00,86,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:56.756211100+00:00,0,,Player Passes,player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:31:56.759194200+00:00,0,,Player Passes,player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:31:56.762042200+00:00,0,,Player Completed Passes (Raw),player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:31:56.764779100+00:00,0,,Player Passes,player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:31:56.767623600+00:00,0,,Player Passes,player_stat,,,Edson Castillo,1.0
+2026-05-28 00:31:57.291686400+00:00,87,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:31:57.294770800+00:00,109,1st Half,Attacks,attack,0.0,4.0,,1.0
+2026-05-28 00:32:00.778683700+00:00,94,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:00.781576400+00:00,0,,Player Passes,player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:32:00.784132700+00:00,0,,Player Passes,player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:32:00.786912200+00:00,0,,Player Completed Passes (Raw),player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:32:00.789773500+00:00,0,,Player Passes,player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:32:00.792473600+00:00,0,,Player Passes,player_stat,,,Edson Castillo,1.0
+2026-05-28 00:32:01.403120300+00:00,95,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:02.700370800+00:00,96,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:02.703689500+00:00,114,1st Half,Attacks,attack,0.0,5.0,,1.0
+2026-05-28 00:32:03.318791100+00:00,97,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:04.155115500+00:00,104,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:08.681106800+00:00,0,1st Half,Attacks,attack,0.0,6.0,,0.6745769648762124
+2026-05-28 00:32:09.126826600+00:00,0,1st Half,ThrowIns,throwin,1.0,3.0,,0.3390326668593608
+2026-05-28 00:32:09.481851800+00:00,97,1st Half,ThrowIns,throwin,1.0,3.0,,1.0
+2026-05-28 00:32:09.484231700+00:00,0,,Possession,other,20.0,80.0,,1.0
+2026-05-28 00:32:09.684250500+00:00,105,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:10.314191500+00:00,106,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:10.830226700+00:00,0,1st Half,ThrowIns,throwin,1.0,3.0,,0.3333333333333333
+2026-05-28 00:32:11.609485400+00:00,0,,Player Passes,player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:32:11.612244100+00:00,0,,Player Passes,player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:32:11.615032400+00:00,0,,Player Completed Passes (Raw),player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:32:11.617765400+00:00,0,,Player Passes,player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:32:11.620606500+00:00,0,,Player Passes,player_stat,,,Edson Castillo,1.0
+2026-05-28 00:32:12.303073300+00:00,0,1st Half,Attacks,attack,0.0,7.0,,0.6745769648762124
+2026-05-28 00:32:12.904927300+00:00,107,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:12.907482400+00:00,114,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:12.909747700+00:00,97,1st Half,ThrowIns,throwin,1.0,3.0,,1.0
+2026-05-28 00:32:13.822509500+00:00,125,1st Half,Attacks,attack,0.0,6.0,,1.0
+2026-05-28 00:32:14.538839900+00:00,0,,Player Passes,player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:32:14.541520300+00:00,0,,Player Passes,player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:32:14.544091700+00:00,0,,Player Completed Passes (Raw),player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:32:14.546761600+00:00,0,,Player Passes,player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:32:14.549575300+00:00,0,,Player Passes,player_stat,,,Edson Castillo,1.0
+2026-05-28 00:32:14.739527700+00:00,108,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:14.888807200+00:00,109,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:15.037013500+00:00,115,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:17.513907900+00:00,116,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:19.040635400+00:00,130,1st Half,DangerousAttacks,danger,0.0,1.0,,1.0
+2026-05-28 00:32:23.503484400+00:00,0,,Player Passes,player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:32:23.505957200+00:00,0,,Player Passes,player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:32:23.508758700+00:00,0,,Player Completed Passes (Raw),player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:32:23.511367700+00:00,0,,Player Passes,player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:32:23.514121100+00:00,0,,Player Passes,player_stat,,,Edson Castillo,1.0
+2026-05-28 00:32:23.519088800+00:00,135,1st Half,ThrowIns,throwin,1.0,4.0,,0.014242336578980852
+2026-05-28 00:32:26.836881900+00:00,0,,Player Passes,player_stat,,,Juan Camilo Perez,1.0
+2026-05-28 00:32:26.839418200+00:00,0,,Player Passes,player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:32:26.842152900+00:00,0,,Player Completed Passes (Raw),player_stat,,,Lucas Bruera,1.0
+2026-05-28 00:32:26.844777200+00:00,0,,Player Passes,player_stat,,,Luis Juninho Capixaba,1.0
+2026-05-28 00:32:26.847711300+00:00,0,,Player Passes,player_stat,,,Edson Castillo,1.0
+2026-05-28 00:32:28.555718900+00:00,0,1st Half,DangerousAttacks,danger,0.0,2.0,,0.6746014767669289
+2026-05-28 00:32:30.310331900+00:00,142,1st Half,Attacks,attack,0.0,7.0,,1.0
+2026-05-28 00:32:34.669671900+00:00,132,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:35.367298400+00:00,134,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:37.123530800+00:00,0,1st Half,ThrowIns,throwin,1.0,4.0,,0.3390326668593608
+2026-05-28 00:32:38.912257600+00:00,0,1st Half,DangerousAttacks,danger,0.0,3.0,,0.6746014767669289
+2026-05-28 00:32:39.388289+00:00,135,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:39.661394600+00:00,136,1st Half,Timer,timer,,,,1.0
+2026-05-28 00:32:40.719080100+00:00,0,1st Half,Attacks,attack,0.0,8.0,,0.6745769648762124
+2026-05-28 00:32:41.553486100+00:00,135,1st Half,ThrowIns,throwin,1.0,4.0,,1.0
