@@ -1,0 +1,33 @@
+﻿threshold,n_alerts,true_alerts,false_alerts,precision,goal_recall,bbo_preempt_alerts,unique_bbo_moves_preempted,mean_goal_lead_sec,fixture_id,n_goals,event_date,home,away,league_name
+0.6874,3,0,3,0.0,0.0,0,0,,18746260,3,2026-05-28,Red Bull Bragantino,Carabobo FC,Copa Sudamericana
+0.6874,4,0,4,0.0,0.0,0,0,,18746261,3,2026-05-28,Club Atletico River Plate Argentina,Blooming,Copa Sudamericana
+0.6874,5,0,5,0.0,0.0,0,0,,18962589,1,2026-05-28,Penarol de Montevideo,Independiente Santa Fe,CONMEBOL Copa Libertadores
+0.6874,0,0,0,,0.0,0,0,,18963491,5,2026-05-28,Paro FC,Transport United,Bhutan - Premier League
+0.6874,0,0,0,,0.0,0,0,,18963505,7,2026-05-28,ABC,Esporte Clube Vitoria,Copa do Nordeste
+0.6874,0,0,0,,0.0,0,0,,18963509,2,2026-05-28,Sport Club Recife PE,Fortaleza,Copa do Nordeste
+0.6874,3,1,2,0.3333333333333333,0.25,0,0,77.438641,18963516,4,2026-05-28,Fluminense FC,Deportivo La Guaira,CONMEBOL Copa Libertadores
+0.6874,0,0,0,,0.0,0,0,,18963519,5,2026-05-28,Stars Fc,Amsg Fc,USL League Two
+0.6874,0,0,0,,0.0,0,0,,18963521,5,2026-05-28,St. Croix SC,Minneapolis City,USL League Two
+0.6874,7,1,6,0.14285714285714285,0.5,0,0,75.108323,18969240,2,2026-05-28,Corinthians SP,Platense,CONMEBOL Copa Libertadores
+0.6874,2,0,2,0.0,0.0,0,0,,18979379,4,2026-05-28,Club Bolivar,Independiente Rivadavia,CONMEBOL Copa Libertadores
+0.6874,1,0,1,0.0,0.0,0,0,,18999021,4,2026-05-28,Okzhetpes,FK Aktobe,Premier League
+0.6874,0,0,0,,0.0,0,0,,19009072,3,2026-05-28,Oakville,International Fc,League 1 Ontario
+0.6874,0,0,0,,0.0,0,0,,19010303,1,2026-05-28,Midwest United,Kalamazoo,USL League Two
+0.6874,1,0,1,0.0,0.0,0,0,,19013983,2,2026-05-28,Sv Atlantico Deportivo,SV Deportivo Nacional,Division di Honor
+0.6874,0,0,0,,0.0,0,0,,19018309,2,2026-05-28,Athletic Boise,Sarasota Paradise,USL League One
+0.6874,0,0,0,,0.0,0,0,,19018402,2,2026-05-28,El Paso Locomotive,Av Alta Fc,USL League One Cup
+0.6874,0,0,0,,0.0,0,0,,19019085,3,2026-05-28,Brittons Hill United FC,Ellerton,Premier League
+0.6874,0,0,0,,0.0,0,0,,19019449,3,2026-05-28,Jinan Quansheng United,Shaanxi Lianteng,Champions League
+0.6874,0,0,0,,0.0,0,0,,19019450,1,2026-05-28,Beijing Smart Sky,Shandong Qiutan,Champions League
+0.6874,0,0,0,,0.0,0,0,,19021457,2,2026-05-28,PR Surf,Ponce,National League
+0.6874,1,0,1,0.0,0.0,0,0,,19021475,6,2026-05-28,Edusoccer,Academia Quintana,National League
+0.6874,0,0,0,,0.0,0,0,,19022088,8,2026-05-28,San Francisco City,Marin FC Legends,USL League Two
+0.6874,0,0,0,,0.0,0,0,,19024895,2,2026-05-28,Auckland FC Reserves,Auckland United,Northern League
+0.6874,0,0,0,,0.0,0,0,,19024896,1,2026-05-28,Melville United,Tauranga City United,Northern League
+0.6874,0,0,0,,0.0,0,0,,19024897,4,2026-05-28,Birkenhead United,East Coast Bays,Northern League
+0.6874,0,0,0,,0.0,0,0,,19025377,3,2026-05-28,Hanoi II FC,Da Nang II,Division 2
+0.6874,0,0,0,,0.0,0,0,,19025401,4,2026-05-28,Quang Ngai FC,Fico Tay Ninh,Division 2
+0.6874,0,0,0,,0.0,0,0,,19025767,3,2026-05-28,Phu Dong Youth,Hue FC,Division 2
+0.6874,1,1,0,1.0,0.16666666666666666,0,0,55.528778,19025796,6,2026-05-28,Kf Balkani U21,Kf Dukagjini U21,Super League U21
+0.6874,0,0,0,,0.0,0,0,,19026910,3,2026-05-28,Ukraine,Belgium,Minifootball 6X6 EMF Euro
+0.6874,0,0,0,,0.0,0,0,,19028971,5,2026-05-28,Fc Panama Norte,AF Chilibre,Liga de Futbol Nacional (LFN)

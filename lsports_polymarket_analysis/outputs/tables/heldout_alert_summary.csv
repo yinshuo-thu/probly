@@ -1,0 +1,3 @@
+﻿split,threshold,n_fixtures,n_goals,n_alerts,true_alerts,false_alerts,precision,goal_recall,alerts_per_fixture,false_alerts_per_fixture,mean_goal_lead_sec
+validation,0.6874,37,106,40,4,36,0.1,0.03773584905660377,1.0810810810810811,0.972972972972973,33.66372466666667
+test,0.6874,32,109,28,3,25,0.10714285714285714,0.027522935779816515,0.875,0.78125,69.35858066666667

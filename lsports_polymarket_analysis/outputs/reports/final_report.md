@@ -1,76 +1,124 @@
-# LSports × Polymarket 数据价值分析最终报告
+# LSports x Polymarket Data Value Report
 
 ## Executive Summary
 
-本项目已完成 LSports 事件流到 Polymarket 价格/BBO 研究的可复用 pipeline。当前最重要的实证结果分两层:
+This repository now contains a reproducible pipeline for studying whether LSports
+football event streams can improve Polymarket sports-market pricing, stale-price
+detection, and event-driven risk controls.
 
-1. **官方 CLOB `/prices-history` 价格层面**: 单重要赛事 `18746260` 中, LSports 三次进球均早于 Polymarket 可观测价格显著变动, 领先约 **9 / 44 / 51 秒**, 中位约 **44 秒**。
-2. **历史 BBO 层面**: 不能用官方 CLOB 赛后还原。官方 `/book` 是当前 orderbook, 已关闭市场无当前 book; 历史 BBO 需要 PMXT Archive 或 DomeAPI 这类归档服务。代码已实现 `PMXT_API_KEY` / `DOME_API_KEY` 接入, 当前环境未配置 key, 因此未产出 BBO 结论。
+The current evidence is split into three layers:
 
-批量 LSports 侧已扩展到 **5 日 × 每日 40 场 = 200 场**, 共识别 **596 个进球**。事件更新时间分辨率为秒级: 每场实时事件间隔中位数的中位约 **3.06 秒**, p90 的中位约 **9.05 秒**。
+1. **Official Polymarket `/prices-history` for one key match**: coarse price
+   history moved after LSports goal timestamps by about 9 / 44 / 51 seconds.
+2. **Historical BBO from PMXT for the same key match**: BBO mid moved before
+   the LSports goal timestamp by about 9.8 / 5.6 / 1.8 seconds. On this more
+   precise BBO benchmark, Polymarket BBO was faster than the LSports goal event
+   timestamp for the three observed goals.
+3. **LSports pre-goal alert model on held-out fixtures**: a simple logistic
+   hazard model trained on earlier fixtures has weak out-of-sample signal. On
+   a 32-fixture held-out test set, the conservative validation-selected alert
+   threshold produced 28 alert episodes, 3 true alerts, and 25 false alerts
+   (precision 10.7%, goal recall 2.8%). This is not yet usable as a direct
+   trading trigger.
 
-## 单重要赛事结论
+The important practical conclusion is:
+
+**Do not trade simply after an LSports goal event. In the key PMXT BBO case,
+BBO had already moved. The useful research direction is earlier than the goal:
+use LSports event-flow intensity as a risk filter or pre-goal warning signal,
+then require BBO/liquidity/spread confirmation before acting.**
+
+## Key Match BBO Result
 
 - Fixture: `18746260`
 - Match: Red Bull Bragantino vs Carabobo FC
-- Polymarket slug: `sud-bra-car-2026-05-27`
+- Event: Copa Sudamericana, kickoff `2026-05-28T00:30:00Z`
+- Polymarket event slug: `sud-bra-car-2026-05-27`
 - Market: Red Bull Bragantino win, Yes token
+- Historical BBO source: PMXT Archive
 
-| LSports goal time (UTC) | Scoring side | Base price | Polymarket reaction time | Lag |
-|---|---:|---:|---|---:|
-| 2026-05-28 00:46:54.967 | away | 0.705 | 2026-05-28 00:47:04 | 9.0s |
-| 2026-05-28 02:07:21.622 | home | 0.405 | 2026-05-28 02:08:06 | 44.4s |
-| 2026-05-28 02:24:12.788 | home | 0.965 | 2026-05-28 02:25:04 | 51.2s |
+| LSports goal UTC | BBO move UTC | BBO lag vs goal | Faster side |
+|---|---|---:|---|
+| 2026-05-28 00:46:54.967 | 2026-05-28 00:46:45.178 | -9.8s | BBO |
+| 2026-05-28 02:07:21.622 | 2026-05-28 02:07:16.022 | -5.6s | BBO |
+| 2026-05-28 02:24:12.788 | 2026-05-28 02:24:10.969 | -1.8s | BBO |
 
-Interpretation: 在官方历史价格序列上, LSports 明显先于市场价格调整。第一球是客队进球, Bragantino-win Yes 价格下跳; 后两球是主队进球, 价格上跳。
+Negative lag means the BBO move happened before the LSports goal timestamp.
 
-## BBO 状态
+Figures:
 
-已实现:
+- `outputs/figures/single_match_bbo_goal_windows.png`
+- `outputs/figures/single_match_bbo_latency_bars.png`
+- `outputs/figures/single_match_signal_vs_bbo.png`
 
-- `scripts/single_match_bbo_analysis.py`
-- `PolymarketPriceLoader.load_historical_bbo()`
-- PMXT Archive path: `PMXT_API_KEY`
-- DomeAPI path: `DOME_API_KEY`
+## Held-Out Alert Evaluation
 
-当前运行结果:
+The `alert` shown in the signal plot is **not** an official LSports abnormal-match
+flag. It is a model-derived warning score:
 
-- `PMXT_API_KEY present: False`
-- `DOME_API_KEY present: False`
-- 未检索到历史 BBO snapshots
+`y_t = 1{a goal occurs in (t, t + 120 seconds]}`
 
-因此, 对“LSports 进球 vs Polymarket BBO 变动谁更快”的严格答案是: **当前还不能下 BBO 结论**。对“LSports 进球 vs Polymarket 官方历史价格变动谁更快”的答案是: **单场证据显示 LSports 更快**。
+`hazard_t = sigmoid(beta_0 + sum_j beta_j * zscore(x_{t,j}))`
 
-## 批量 LSports 结果
+where `x_t` includes current score, match minute, period, cards, and rolling
+60/180/300/600 second event counts or xT-weighted sums for attacks, dangerous
+attacks, shots, corners, and live events.
 
-- 覆盖日期: 2026-05-24 至 2026-05-28
-- 每日样本: 40 场
-- 总比赛: 200 场
-- 总进球: 596
-- 平均每场进球: 2.98
-- 有进球比赛占比: 92.5%
-- 实时事件间隔中位数: 3.06 秒
-- 实时事件间隔 p90 中位: 9.05 秒
-- 归档延迟 p50 中位: 5982 秒, 这是批量归档延迟, 不是实时推送延迟
+Leakage control:
 
-跨场 goal-hazard 模型 held-out AUC 约 0.56, 说明事件强度有弱信号, 可作为风险过滤器雏形, 但不足以单独交易。
+- Train: 2026-05-24 to 2026-05-26
+- Validation threshold selection: 2026-05-27
+- Final test: 2026-05-28
+- Test fixtures were not used for model fitting or threshold choice.
 
-## 可复现命令
+Held-out result at the validation-selected conservative threshold `0.6874`:
+
+| split | fixtures | goals | alerts | true | false | precision | goal recall | false alerts / fixture |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| validation | 37 | 106 | 40 | 4 | 36 | 10.0% | 3.8% | 0.97 |
+| test | 32 | 109 | 28 | 3 | 25 | 10.7% | 2.8% | 0.78 |
+
+This means the simple alert formula has weak predictive power. It can be useful
+as an exploratory risk feature, but not as a standalone "goal is coming" signal.
+
+Figures:
+
+- `outputs/figures/heldout_alert_threshold_tradeoff.png`
+- `outputs/figures/heldout_alert_test_by_fixture.png`
+- `outputs/figures/heldout_alert_score_distribution.png`
+
+## Batch LSports Coverage
+
+- Sampled matches: 200
+- Goals identified: 596
+- Average goals per match: 2.98
+- Share of matches with at least one goal: 92.5%
+- Median live-event gap by match: 3.06 seconds
+- Median p90 live-event gap by match: 9.05 seconds
+- Archive lag is batch ingestion lag, not real-time feed latency.
+
+## Reproduction
 
 ```bash
 cd lsports_polymarket_analysis
 
-# LSports 数据
 python scripts/download_hf_data.py --docs --max 40
-python scripts/inspect_dataset.py
-python scripts/single_match_analysis.py
 python scripts/batch_event_analysis.py --max 40
 
-# 历史 BBO, 需至少一个历史 orderbook provider key
-export PMXT_API_KEY="<your_pmxt_key>"   # 或 DOME_API_KEY
-python scripts/single_match_bbo_analysis.py
+export PMXT_API_KEY="<your_pmxt_key>"
+python scripts/single_match_bbo_analysis.py --lookback-sec 10 --lookahead-sec 300
+python scripts/signal_strategy_analysis.py
+python scripts/heldout_alert_evaluation.py
 ```
 
-## 研究边界
+## Recommended Next Modeling Step
 
-本项目不伪造 Polymarket BBO。官方 Polymarket CLOB read endpoints 可读当前 orderbook、prices、midpoints、spreads 和 price history; 但历史 BBO/orderbook 对已关闭市场需要独立 archive。当前仓库已经把这条路径工程化, 缺的是 provider credential 或可下载的对应小时 archive。
+Move from "predict goal in the next N seconds" to "predict BBO repricing before
+the BBO reprices":
+
+- Target: future BBO mid move, e.g. `abs(mid_t+h - mid_t) >= 3c`.
+- Features: LSports event-flow intensity plus current BBO spread, depth, and
+  recent microprice movement.
+- Validation: grouped and chronological by fixture/date/league.
+- Action rule: alert only when the model score is high, BBO has not already
+  moved, spread is tradable, and liquidity is sufficient.

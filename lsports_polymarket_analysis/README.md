@@ -110,3 +110,43 @@ lsports_polymarket_analysis/
 - 比分/比赛时钟存在噪声, 已用 cummax 等启发式处理, 但极端场次可能漏判, 需扩样验证。
 
 更多结论见 `outputs/reports/{single_match_report,batch_statistics_report,final_report}.md`。
+ 
+---
+
+## 9. Current BBO And Held-Out Alert Results
+
+The latest PMXT historical BBO run for fixture `18746260` found that Polymarket
+BBO moved **before** the LSports goal timestamp for all three goals:
+
+- Goal 1: BBO moved 9.8 seconds before LSports goal timestamp.
+- Goal 2: BBO moved 5.6 seconds before LSports goal timestamp.
+- Goal 3: BBO moved 1.8 seconds before LSports goal timestamp.
+
+The `alert` signal in `single_match_signal_vs_bbo.png` is not an official
+LSports abnormal-match flag. It is a logistic goal-hazard score computed from
+rolling LSports event-flow features. The held-out evaluation avoids leakage:
+
+- Train dates: `2026-05-24,2026-05-25,2026-05-26`
+- Validation date for threshold selection: `2026-05-27`
+- Final test date: `2026-05-28`
+- Final test coverage: 32 fixtures, 109 goals
+
+At the conservative validation-selected threshold `0.6874`, the test set had
+28 alert episodes: 3 true alerts and 25 false alerts. Precision was 10.7% and
+goal recall was 2.8%. This simple alert is therefore useful as an exploratory
+risk feature, not as a standalone trading trigger.
+
+Re-run:
+
+```bash
+python scripts/heldout_alert_evaluation.py
+```
+
+Main outputs:
+
+- `outputs/reports/heldout_alert_evaluation_report.md`
+- `outputs/tables/heldout_alert_summary.csv`
+- `outputs/tables/heldout_alert_test_by_fixture.csv`
+- `outputs/figures/heldout_alert_threshold_tradeoff.png`
+- `outputs/figures/heldout_alert_test_by_fixture.png`
+- `outputs/figures/heldout_alert_score_distribution.png`
