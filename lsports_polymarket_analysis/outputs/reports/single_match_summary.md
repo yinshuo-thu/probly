@@ -9,32 +9,38 @@
 - Polymarket event slug: `sud-bra-car-2026-05-27`
 - Polymarket market analyzed: Red Bull Bragantino win, Yes token
 
-## LSports vs Polymarket
+## Key Answer
 
-本场已经完成 LSports 进球事件和 Polymarket 官方 CLOB `/prices-history` 的时间对齐。结论是: **LSports 三次进球均早于 Polymarket 可观测价格显著变动**。
+用更真实的 **PMXT historical BBO/orderbook** 口径看, 本场进球附近是 **Polymarket BBO 先动, LSports goal timestamp 后到**。
 
-| LSports goal time (UTC) | Scoring side | Base price | Polymarket reaction time | Lag |
-|---|---:|---:|---|---:|
-| 2026-05-28 00:46:54.967 | away | 0.705 | 2026-05-28 00:47:04 | 9.0s |
-| 2026-05-28 02:07:21.622 | home | 0.405 | 2026-05-28 02:08:06 | 44.4s |
-| 2026-05-28 02:24:12.788 | home | 0.965 | 2026-05-28 02:25:04 | 51.2s |
+| LSports goal time | BBO first significant move | BBO lead |
+|---|---:|---:|
+| 00:46:54.967 UTC | 00:46:45.178 UTC | 9.8s |
+| 02:07:21.622 UTC | 02:07:16.022 UTC | 5.6s |
+| 02:24:12.788 UTC | 02:24:10.969 UTC | 1.8s |
 
-中位价格反应滞后约 **44 秒**。第一球是 away goal, Bragantino-win Yes 价格从约 0.705 下跳; 后两球是 home goal, 价格上跳。
+口径: 进球前 10 秒 BBO mid 作为基准, 在进球前 1 秒到进球后 300 秒内寻找首次 `>=3c` 的 BBO mid 跳变。负延迟表示 BBO 早于 LSports 进球时间戳。
 
-## BBO Boundary
+## Why This Differs From `/prices-history`
 
-上述结果来自官方 CLOB `/prices-history`, 不是 tick-level BBO。对已关闭市场, 官方 `/book` 当前 orderbook 返回空, 因此无法赛后从官方 CLOB 重建历史 bid/ask。历史 BBO 需要:
+官方 CLOB `/prices-history` 的分钟级价格序列显示 LSports 领先可观测价格点约 9/44/51 秒。但该序列不是 BBO, 分辨率更粗。PMXT historical BBO 更接近可交易盘口, 因此对于“谁先反应”应优先采用 BBO 结论。
 
-- PMXT Archive 的 historical prices/orderbook feed, 或
-- 赛中运行 WebSocket/orderbook recorder 自己采样 best bid/ask。
+## Implication
+
+这场比赛里, 不能简单依赖“LSports 报进球后交易”来领先盘口。真正值得研究的是更早的阶段: 用 LSports 的危险进攻、射门、角球、事件强度等赛中流特征, 在进球前几十秒预测 BBO repricing 风险。
 
 ## Visuals
 
+- `outputs/figures/single_match_bbo_goal_windows.png`
+- `outputs/figures/single_match_bbo_latency_bars.png`
+- `outputs/figures/single_match_signal_vs_bbo.png`
 - `outputs/figures/single_match_polymarket_price_reaction.png`
-- `outputs/figures/single_match_timeline.png`
-- `outputs/figures/single_match_event_intensity.png`
-- `outputs/figures/single_match_goal_hazard.png`
 
-## Takeaway
+## Signal Prototype
 
-单场证据支持 LSports 对价格反应具有 faster-pricing 价值: 进球事件先到, Polymarket 价格随后调整。但交易级结论还需要扩大到多场、并用历史 BBO 或实时 BBO 采样验证 stale-window 是否可成交。
+单场 LSports hazard 原型显示, 通过 rolling event intensity 可以提前覆盖 3/3 个 BBO repricing moments, 但存在误报。较实用的下一步不是单场调阈值, 而是跨场训练:
+
+- target: future BBO mid jump, not just goal
+- model: calibrated gradient boosting / survival model / temporal sequence model
+- validation: grouped by fixture/date/league
+- execution filter: only alert when BBO has not moved, spread/liquidity still tradable

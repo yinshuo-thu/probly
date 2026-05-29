@@ -48,10 +48,21 @@ def main():
     market_slug = row["primary_market_slug"].iloc[0] \
         if "primary_market_slug" in row.columns else ""
 
-    start_ts = int(events["ts"].min().timestamp()) - 300
-    end_ts = int(events["ts"].max().timestamp()) + 300
     loader = PolymarketPriceLoader(cfg)
-    bbo = loader.load_historical_bbo(token_id, market_id, start_ts, end_ts)
+    frames = []
+    for _, g in goals.iterrows():
+        goal_ts = float(g["ts"].timestamp())
+        windows = [
+            (int(goal_ts) - args.lookback_sec, int(goal_ts) - 1),
+            (int(goal_ts) - 1, int(goal_ts) + args.lookahead_sec),
+        ]
+        for start_ts, end_ts in windows:
+            frames.append(loader.load_historical_bbo(token_id, market_id,
+                                                     start_ts, end_ts))
+    frames = [f for f in frames if f is not None and not f.empty]
+    bbo = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+    if not bbo.empty:
+        bbo = bbo.drop_duplicates(subset=["timestamp", "source"]).sort_values("timestamp")
 
     tdir = resolve_path(cfg["paths"]["table_dir"])
     rdir = resolve_path(cfg["paths"]["report_dir"])
@@ -86,10 +97,10 @@ def main():
         ]
     else:
         bbo.to_csv(out_bbo, index=False, encoding="utf-8-sig")
-        reaction = LA.goal_price_reaction(
+        reaction = LA.event_price_reaction_signed(
             goals, bbo[["timestamp", "price"]].copy(),
             jump_threshold=0.03,
-            lookback_sec=args.lookback_sec,
+            baseline_sec=args.lookback_sec,
             lookahead_sec=args.lookahead_sec,
         )
         reaction.to_csv(out_reaction, index=False, encoding="utf-8-sig")
@@ -98,7 +109,24 @@ def main():
             f"Historical BBO mid vs LSports goals | fixture {args.fixture}",
             f"{fdir}/single_match_bbo_reaction.png",
         )
+        V.plot_bbo_goal_windows(
+            bbo, reaction,
+            f"BBO mid around LSports goals | fixture {args.fixture}",
+            f"{fdir}/single_match_bbo_goal_windows.png",
+        )
+        V.plot_latency_bars(
+            reaction,
+            "BBO reaction latency vs LSports goal timestamp",
+            f"{fdir}/single_match_bbo_latency_bars.png",
+        )
         lat = reaction["reaction_latency_sec"].dropna()
+        table = reaction.copy()
+        table["goal_ts"] = pd.to_datetime(table["goal_ts"], utc=True,
+                                          format="mixed").dt.strftime("%H:%M:%S.%f").str[:-3]
+        table["reaction_ts"] = pd.to_datetime(table["reaction_ts"], utc=True,
+                                              format="mixed").dt.strftime("%H:%M:%S.%f").str[:-3]
+        table["reaction_latency_sec"] = pd.to_numeric(
+            table["reaction_latency_sec"], errors="coerce").round(3)
         status_lines += [
             "## Result",
             "",
@@ -106,7 +134,18 @@ def main():
             f"- BBO reaction table: `{out_reaction}`",
             f"- Median BBO reaction lag: **{lat.median():.1f}s**" if not lat.empty
             else "- No significant BBO reaction detected in the configured window.",
+            "",
+            "Negative lag means BBO moved before the LSports goal timestamp.",
+            "",
+            "| LSports goal | BBO move | lag seconds | BBO faster? |",
+            "|---|---|---:|---|",
         ]
+        for _, r in table.iterrows():
+            lag = r["reaction_latency_sec"]
+            faster = "yes" if pd.notna(lag) and lag < 0 else "no"
+            status_lines.append(
+                f"| {r['goal_ts']} | {r['reaction_ts']} | {lag} | {faster} |"
+            )
 
     out_report = f"{rdir}/single_match_bbo_report.md"
     with open(out_report, "w", encoding="utf-8") as f:

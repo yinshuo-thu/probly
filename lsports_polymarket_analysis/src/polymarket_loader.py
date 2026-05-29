@@ -181,7 +181,7 @@ class PolymarketPriceLoader:
             result = exchange.fetch_order_book(
                 market_id,
                 params={"since": int(start_ts_ms), "until": int(end_ts_ms),
-                        "outcome": outcome, "limit": int(limit)}
+                        "limit": int(limit)}
             )
         except Exception as e:  # noqa: BLE001
             print(f"[PolymarketPriceLoader] PMXT historical BBO 不可用 {market_id}: {e}")
@@ -193,14 +193,20 @@ class PolymarketPriceLoader:
             asks = getattr(book, "asks", None) or []
             if not bids or not asks:
                 continue
-            bid = max(bids, key=lambda x: float(getattr(x, "price", 0)))
-            ask = min(asks, key=lambda x: float(getattr(x, "price", 1)))
+            # PMXT returns sorted L2 levels; use the top level rather than
+            # re-sorting. Re-sorting can invert binary-market complement books.
+            bid = bids[0]
+            ask = asks[0]
             best_bid = pd.to_numeric(getattr(bid, "price", None), errors="coerce")
             best_ask = pd.to_numeric(getattr(ask, "price", None), errors="coerce")
+            ts = getattr(book, "timestamp", None)
+            if ts is not None and float(ts) > 10_000_000_000:
+                timestamp = pd.to_datetime(ts, unit="ms", utc=True, errors="coerce")
+            else:
+                timestamp = pd.to_datetime(ts, unit="s", utc=True, errors="coerce")
             rows.append({
                 "market_id": market_id,
-                "timestamp": pd.to_datetime(getattr(book, "dt", None), utc=True,
-                                            errors="coerce"),
+                "timestamp": timestamp,
                 "outcome": outcome,
                 "price": (best_bid + best_ask) / 2,
                 "volume": pd.NA,

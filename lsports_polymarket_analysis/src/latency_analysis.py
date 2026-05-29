@@ -98,6 +98,58 @@ def goal_price_reaction(goals: pd.DataFrame, prices: pd.DataFrame,
     return pd.DataFrame(rows, columns=cols)
 
 
+def event_price_reaction_signed(goals: pd.DataFrame, prices: pd.DataFrame,
+                                jump_threshold: float = 0.03,
+                                baseline_sec: int = 120,
+                                lookahead_sec: int = 600) -> pd.DataFrame:
+    """Signed reaction timing around goals.
+
+    Unlike goal_price_reaction(), this can detect a market move before the
+    LSports goal timestamp. Negative latency means the market/BBO moved first;
+    positive latency means LSports event timestamp came first.
+    """
+    cols = ["goal_ts", "base_ts", "base_price", "reaction_ts",
+            "reaction_latency_sec", "price_jump_magnitude", "lsports_leads"]
+    if goals is None or goals.empty or prices is None or prices.empty:
+        return pd.DataFrame(columns=cols)
+    pr = prices.dropna(subset=["price"]).sort_values("timestamp")
+    rows = []
+    for _, g in goals.iterrows():
+        gts = g["ts"]
+        base_cut = gts - pd.Timedelta(seconds=baseline_sec)
+        base_window = pr[pr["timestamp"] <= base_cut]
+        base_ts, base_price = pd.NaT, np.nan
+        if not base_window.empty:
+            base_ts = base_window["timestamp"].iloc[-1]
+            base_price = base_window["price"].iloc[-1]
+        else:
+            pre = pr[(pr["timestamp"] >= gts - pd.Timedelta(seconds=baseline_sec)) &
+                     (pr["timestamp"] <= gts)]
+            if not pre.empty:
+                base_ts = pre["timestamp"].iloc[0]
+                base_price = pre["price"].iloc[0]
+
+        reaction_ts, lat, jump = pd.NaT, np.nan, np.nan
+        if not np.isnan(base_price):
+            window = pr[(pr["timestamp"] > base_ts) &
+                        (pr["timestamp"] <= gts + pd.Timedelta(seconds=lookahead_sec))]
+            moved = window[(window["price"] - base_price).abs() >= jump_threshold]
+            if not moved.empty:
+                reaction_ts = moved["timestamp"].iloc[0]
+                lat = (reaction_ts - gts).total_seconds()
+                jump = float(moved["price"].iloc[0] - base_price)
+        rows.append({
+            "goal_ts": gts,
+            "base_ts": base_ts,
+            "base_price": base_price,
+            "reaction_ts": reaction_ts,
+            "reaction_latency_sec": lat,
+            "price_jump_magnitude": jump,
+            "lsports_leads": (lat > 0) if not np.isnan(lat) else np.nan,
+        })
+    return pd.DataFrame(rows, columns=cols)
+
+
 def detect_stale_window(goals: pd.DataFrame, prices: pd.DataFrame,
                         jump_threshold: float = 0.03) -> pd.DataFrame:
     """检测进球后 Polymarket 价格未更新的 "stale window" (滞后窗口)。
