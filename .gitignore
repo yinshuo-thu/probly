@@ -1,4 +1,14 @@
 data/
+!lsports_polymarket_analysis/data/
+lsports_polymarket_analysis/data/raw/**
+lsports_polymarket_analysis/data/processed/**
+!lsports_polymarket_analysis/data/raw/
+!lsports_polymarket_analysis/data/processed/
+!lsports_polymarket_analysis/data/sample/
+!lsports_polymarket_analysis/data/raw/.gitkeep
+!lsports_polymarket_analysis/data/processed/.gitkeep
+!lsports_polymarket_analysis/data/sample/.gitkeep
+!lsports_polymarket_analysis/data/sample/*.csv
 *.parquet
 *.pkl
 *.h5
@@ -8,3 +18,4 @@ __pycache__/
 outputs/models/
 *.egg-info/
 .env
+lsports_polymarket_analysis/config/.hf_token

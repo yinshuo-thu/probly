@@ -128,7 +128,7 @@ def main():
         allfr.to_parquet(resolve_path(cfg["paths"]["data_processed"]) +
                          "/batch_features.parquet", index=False)
 
-    _write_report(cfg, match_df, goal_df, lat_df, model_note)
+    _write_report(cfg, match_df, goal_df, lat_df, model_note, args.max, args.dates)
 
 
 def _stale_placeholder(lat_df, path):
@@ -179,11 +179,11 @@ def _fit_grouped(allfr: pd.DataFrame) -> str:
             f"held-out AUC={auc:.3f}, 正样本基率={base:.2%}。Top 系数: {top}")
 
 
-def _write_report(cfg, match_df, goal_df, lat_df, model_note):
+def _write_report(cfg, match_df, goal_df, lat_df, model_note, max_per_date, dates):
     lines = ["# 批量赛事统计报告 (2026-05-24 .. 05-28)", "",
              "## 1. 样本范围", "",
-             f"- 覆盖日期: {', '.join(cfg['dates'])}",
-             f"- 每日采样上限: {cfg['batch']['max_fixtures_per_date']} 场 (按 fixture_id 排序, 可复现)",
+             f"- 覆盖日期: {', '.join(dates)}",
+             f"- 每日采样上限: {max_per_date} 场 (按 fixture_id 排序, 可复现)",
              f"- 实际解析比赛数: **{len(match_df)}**, 进球事件数: **{len(goal_df)}**", ""]
     if not match_df.empty:
         lines += ["## 2. 进球与比赛统计", "",
@@ -194,7 +194,7 @@ def _write_report(cfg, match_df, goal_df, lat_df, model_note):
         lines.append("### 每日比赛/进球数")
         lines.append("| date | matches | goals |")
         lines.append("|---|---|---|")
-        for d in cfg["dates"]:
+        for d in dates:
             m = int((match_df["event_date"] == d).sum())
             g = int((goal_df["event_date"] == d).sum()) if not goal_df.empty else 0
             lines.append(f"| {d} | {m} | {g} |")

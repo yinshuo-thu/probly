@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import os
+import glob
 from typing import Optional
 
 import pandas as pd
@@ -54,10 +55,15 @@ def list_fixtures(cfg: dict, event_date: str) -> pd.DataFrame:
     base = f"{prefix}/event_date={event_date}"
     rows = []
     try:
-        fixture_dirs = api.list_repo_tree(repo, path_in_repo=base, repo_type="dataset",
-                                          recursive=False)
+        fixture_dirs = list(api.list_repo_tree(
+            repo, path_in_repo=base, repo_type="dataset", recursive=False
+        ))
     except Exception as e:  # noqa: BLE001
-        print(f"[list_fixtures] 无法列出 {base}: {e}")
+        print(f"[list_fixtures] 无法列出远程 {base}: {e}")
+        local = _list_cached_fixtures(cfg, event_date)
+        if not local.empty:
+            print(f"[list_fixtures] 回退到本地缓存: {len(local)} 场")
+            return local
         return pd.DataFrame(columns=["fixture_id", "event_date", "dir_path",
                                      "messages_bytes"])
     for fd in fixture_dirs:
@@ -67,6 +73,27 @@ def list_fixtures(cfg: dict, event_date: str) -> pd.DataFrame:
         fid = dname.split("=", 1)[1]
         rows.append({"fixture_id": fid, "event_date": event_date,
                      "dir_path": fd.path, "messages_bytes": None})
+    return pd.DataFrame(rows)
+
+
+def _list_cached_fixtures(cfg: dict, event_date: str) -> pd.DataFrame:
+    """远程不可用时, 从 data/raw 镜像目录列出已缓存 fixture。"""
+    raw_dir = resolve_path(cfg["paths"]["data_raw"])
+    prefix = cfg["huggingface"]["football_prefix"]
+    pattern = os.path.join(raw_dir, prefix, f"event_date={event_date}",
+                           "fixture_id=*")
+    rows = []
+    for path in glob.glob(pattern):
+        if not os.path.isdir(path):
+            continue
+        fid = os.path.basename(path).split("=", 1)[-1]
+        msg = os.path.join(path, "messages.parquet")
+        rows.append({
+            "fixture_id": fid,
+            "event_date": event_date,
+            "dir_path": os.path.relpath(path, raw_dir).replace(os.sep, "/"),
+            "messages_bytes": os.path.getsize(msg) if os.path.exists(msg) else None,
+        })
     return pd.DataFrame(rows)
 
 
