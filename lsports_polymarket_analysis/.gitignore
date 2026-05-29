@@ -1,0 +1,27 @@
+# 原始/中间大文件不入库
+data/raw/
+data/processed/
+data/cache/
+data/tmp/
+.cache/
+
+# 但保留目录占位与小样本
+!data/sample/
+!**/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# 环境与密钥
+.env
+config/.hf_token
+*.log
+
+# 系统
+.DS_Store

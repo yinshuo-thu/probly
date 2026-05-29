@@ -1,0 +1,13 @@
+# 核心依赖（已在 Python 3.14 环境验证）
+huggingface_hub>=0.20.0
+pandas>=2.0.0
+numpy>=1.24.0
+pyarrow>=12.0.0
+scikit-learn>=1.3.0
+matplotlib>=3.7.0
+pyyaml>=6.0
+requests>=2.31.0
+tqdm>=4.65.0
+
+# 可选（批量加速下载）
+hf_transfer>=0.1.5

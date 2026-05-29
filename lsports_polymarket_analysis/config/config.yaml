@@ -1,0 +1,84 @@
+# ======================================================================
+# LSports × Polymarket 价值分析 - 配置文件
+# 所有路径、日期、采样参数集中在此，代码中不要硬编码。
+# ======================================================================
+
+# Hugging Face 数据集设置
+huggingface:
+  repo_id: "probly/lsports-hyper-dataset"
+  repo_type: "dataset"
+  # football 分区前缀（HF 目录名用 '=' 而非 URL 编码的 %3D）
+  football_prefix: "sport_id=6046__sport=Football"
+  docs_prefix: "docs"
+  # token 优先从环境变量 HF_TOKEN 读取；为空时回退到代码中的临时开发 token
+  token_env: "HF_TOKEN"
+
+# 本地数据路径（相对于项目根目录 lsports_polymarket_analysis/）
+paths:
+  data_raw: "data/raw"
+  data_processed: "data/processed"
+  data_sample: "data/sample"
+  fig_dir: "outputs/figures"
+  table_dir: "outputs/tables"
+  report_dir: "outputs/reports"
+
+# 分析的目标日期（football event_date 分区）
+dates:
+  - "2026-05-24"
+  - "2026-05-25"
+  - "2026-05-26"
+  - "2026-05-27"
+  - "2026-05-28"
+
+# 批量分析的采样控制（数据集每天约 1400 场，全量约 28GB，必须采样）
+batch:
+  # 每个日期最多下载/分析多少场比赛（按 fixture_id 排序后取前 N，保证可复现）
+  max_fixtures_per_date: 40
+  # 只分析最终状态为已结束（status == 3）的比赛
+  require_finished: true
+  # messages.parquet 单文件体积上限（字节），超过则跳过，防止异常大文件
+  max_message_bytes: 12000000
+
+# 单赛事分析默认目标（若为空则脚本自动从已下载数据中挑选信息量最高的一场）
+single_match:
+  event_date: "2026-05-28"
+  # 默认选中 Copa Sudamericana: Red Bull Bragantino vs Carabobo FC (2-1, 1.6万事件)
+  # 设为 null 时脚本会自动从该日期挑选进球数>=2 且事件量充足的比赛
+  fixture_id: 18746260
+
+# 事件分类与建模相关参数
+analysis:
+  # 真正的"实时比赛事件"白名单（区别于赛前/累计型球员统计快照）
+  # 这些 incident_name 带有真实比赛时钟语义，用于时间线与建模
+  live_event_incidents:
+    - "Score"
+    - "Goal"
+    - "YellowCard"
+    - "RedCard"
+    - "Corners"
+    - "Attacks"
+    - "DangerousAttacks"
+    - "Fouls"
+    - "ThrowIns"
+    - "FreeKicks"
+    - "Offsides"
+    - "Total Shots"
+    - "Substitutions"
+    - "Penalty"
+    - "Timer"
+  # rolling 事件强度窗口（秒）
+  intensity_windows_sec: [60, 180, 300, 600]
+  # goal hazard 标签：未来多少秒内发生进球记为正样本
+  hazard_horizon_sec: 120
+  # 特征帧重采样步长（秒）
+  feature_step_sec: 30
+
+# Polymarket 接入设置（本数据集本身不含 Polymarket 价格，需外部接入）
+polymarket:
+  enabled: true            # 是否尝试实时拉取 CLOB 价格（离线/无映射时自动降级）
+  clob_base_url: "https://clob.polymarket.com"
+  gamma_base_url: "https://gamma-api.polymarket.com"
+  prices_history_fidelity: 1   # 分钟级 K 线
+  # fixture -> polymarket market 的人工/自动映射表（若存在）
+  mapping_file: "data/processed/fixture_market_map.parquet"
+  request_timeout_sec: 15
