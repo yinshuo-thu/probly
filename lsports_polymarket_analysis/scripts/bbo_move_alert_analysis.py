@@ -211,7 +211,7 @@ def main():
         mapping = mapping[mapping["fixture_id"].astype(str).isin(keep)].copy()
     loader = PolymarketPriceLoader(cfg)
 
-    all_reactions, all_alerts, all_features, fixture_rows = [], [], [], []
+    all_reactions, all_alerts, all_features, all_bbo, fixture_rows = [], [], [], [], []
     for _, row in mapping.iterrows():
         fid = str(row["fixture_id"])
         print(f"[bbo-alert] fixture={fid}")
@@ -227,6 +227,9 @@ def main():
         if feat.empty:
             fixture_rows.append({"fixture_id": fid, "status": "no_bbo"})
             continue
+        bbo_out = bbo.copy()
+        bbo_out.insert(0, "fixture_id", fid)
+        all_bbo.append(bbo_out)
         feat.insert(0, "fixture_id", fid)
         all_features.append(feat)
         reaction = LA.event_price_reaction_signed(
@@ -272,6 +275,7 @@ def main():
 
     reactions = pd.concat(all_reactions, ignore_index=True) if all_reactions else pd.DataFrame()
     features = pd.concat(all_features, ignore_index=True) if all_features else pd.DataFrame()
+    bbo_snapshots = pd.concat(all_bbo, ignore_index=True) if all_bbo else pd.DataFrame()
     alerts = pd.DataFrame(all_alerts)
     summary = pd.DataFrame(fixture_rows)
 
@@ -284,6 +288,8 @@ def main():
                   index=False, encoding="utf-8-sig")
     summary.to_csv(f"{tdir}/batch_bbo_fixture_summary.csv",
                    index=False, encoding="utf-8-sig")
+    bbo_snapshots.to_csv(f"{tdir}/batch_bbo_compact_snapshots.csv",
+                         index=False, encoding="utf-8-sig")
 
     _plot_latency(reactions, f"{fdir}/batch_bbo_move_latency.png")
     _plot_signal_leads(alerts, f"{fdir}/batch_bbo_micro_alert_leads.png")

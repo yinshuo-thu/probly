@@ -1,0 +1,7 @@
+﻿n_alerts,true_alerts,false_alerts,precision,covered_moves,move_recall,median_lead_sec,strategy
+6,2,4,0.3333333333333333,2,0.5,7.4955,mid1c
+5,2,3,0.4,2,0.5,6.9955,mid1c_and_spread2c
+2,0,2,0.0,0,0.0,,mid1c_and_depth50
+4,2,2,0.5,2,0.5,4.4955,mid1c_and_update10
+6,2,4,0.3333333333333333,2,0.5,6.9955,mid1c_and_any_liquidity_stress
+6,3,3,0.5,3,0.75,5.022,spread2c_or_depth50_update10
