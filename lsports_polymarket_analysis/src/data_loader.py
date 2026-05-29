@@ -81,7 +81,11 @@ def list_fixtures(cfg: dict, event_date: str) -> pd.DataFrame:
         fid = dname.split("=", 1)[1]
         rows.append({"fixture_id": fid, "event_date": event_date,
                      "dir_path": fd.path, "messages_bytes": None})
-    return pd.DataFrame(rows)
+    out = pd.DataFrame(rows)
+    if not local.empty and not out.empty:
+        sizes = local.set_index("fixture_id")["messages_bytes"].to_dict()
+        out["messages_bytes"] = out["fixture_id"].map(sizes)
+    return out
 
 
 def _list_cached_fixtures(cfg: dict, event_date: str) -> pd.DataFrame:

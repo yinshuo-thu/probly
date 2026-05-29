@@ -42,7 +42,7 @@ Player Red Card,44,card_red
 ShotsOffTarget,41,shot
 ShotsOnTarget,41,shot
 Crosses,40,other
-Player Shots On Target From Outside Penalty Area,39,penalty
+Player Shots On Target From Outside Penalty Area,39,shot
 Shots inside the box,36,other
 Player Tackles (Raw),32,player_stat
 Player Header Shots On Target,31,shot
@@ -64,10 +64,10 @@ Right Foot Goals,3,goal_stat
 Penalties Saved (Raw),3,penalty
 MissedPenalty,3,penalty
 Free Kick Goals (Raw),3,freekick
-Goals From Outside the Penalty Area,3,penalty
+Goals From Outside the Penalty Area,3,goal_stat
 PassAttempts,3,other
 DangerousFreeKicks,3,freekick
 Header Goals (Raw),3,goal_stat
-Player Goals Inside the Penalty Area (Raw),2,penalty
+Player Goals Inside the Penalty Area (Raw),2,goal_stat
 Player Left Foot Goal,2,goal_stat
 BreakTime,1,other

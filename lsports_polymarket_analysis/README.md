@@ -60,6 +60,11 @@ python scripts/single_match_analysis.py            # 默认 fixture 18746260
 # (4) 批量统计 -> outputs/tables + figures + reports/batch_statistics_report.md
 python scripts/batch_event_analysis.py --max 40
 
+# (5) 单赛事 Polymarket 历史 BBO 验证 (可选)
+# 需要历史 orderbook 供应商 key; 官方 CLOB 赛后不提供历史 BBO
+export PMXT_API_KEY="<your_pmxt_key>"      # 或 DOME_API_KEY
+python scripts/single_match_bbo_analysis.py
+
 # (可选) 为指定比赛导出特征帧
 python scripts/build_features.py --fixture 18746260 --date 2026-05-28
 ```
@@ -99,6 +104,8 @@ lsports_polymarket_analysis/
 **已知问题 / 下一步**
 - **缺 Polymarket 价格历史** → 无法直接给"LSports 领先 Polymarket"的交易级结论;
   已实现 `PolymarketPriceLoader` (真实 CLOB 客户端) + fixture→market 映射 schema, 接入即可算。
+- 单赛事已接入官方 CLOB `/prices-history`: fixture `18746260` 的三次进球领先可观测价格显著变动
+  约 9/44/51 秒; 但这不是 BBO。历史 BBO 需 `PMXT_API_KEY` 或 `DOME_API_KEY`。
 - 数据是**小时归档**, `ingested_at_utc` 非实时延迟; 端到端推送延迟需实时流验证。
 - 比分/比赛时钟存在噪声, 已用 cummax 等启发式处理, 但极端场次可能漏判, 需扩样验证。
 

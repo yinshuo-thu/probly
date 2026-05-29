@@ -9,5 +9,6 @@ pyyaml>=6.0
 requests>=2.31.0
 tqdm>=4.65.0
 
-# 可选（批量加速下载）
+# 可选（批量加速下载 / 历史 BBO 接入）
 hf_transfer>=0.1.5
+pmxt>=2.46.0

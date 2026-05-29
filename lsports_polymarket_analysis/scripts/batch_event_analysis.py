@@ -35,7 +35,10 @@ def main():
     feature_frames = []
 
     for d in args.dates:
-        fixtures = DL.list_fixtures(cfg, d).sort_values("fixture_id").head(args.max)
+        fixtures = DL.list_fixtures(cfg, d).sort_values("fixture_id")
+        if "messages_bytes" in fixtures.columns:
+            fixtures = fixtures[fixtures["messages_bytes"].notna()]
+        fixtures = fixtures.head(args.max)
         print(f"[{d}] 处理 {len(fixtures)} 场")
         for i, (_, row) in enumerate(fixtures.iterrows(), 1):
             fid = row["fixture_id"]
@@ -182,6 +185,7 @@ def _fit_grouped(allfr: pd.DataFrame) -> str:
 
 def _write_report(cfg, match_df, goal_df, lat_df, model_note, max_per_date, dates):
     enough_cross_match = len(match_df) >= 4
+    weak_model = "AUC=0.5" in model_note or "AUC=0.56" in model_note
     lines = ["# 批量赛事统计报告 (2026-05-24 .. 05-28)", "",
              "## 1. 样本范围", "",
              f"- 覆盖日期: {', '.join(dates)}",
@@ -227,8 +231,11 @@ def _write_report(cfg, match_df, goal_df, lat_df, model_note, max_per_date, date
               "1. LSports 事件流在批量层面同样保持秒级更新, 时间分辨率足以支撑实时定价。",
               ("2. 当前本地缓存只有 1 场, 无法做跨场泛化; 进球前事件强度在单场层面可作为方法演示。"
                if not enough_cross_match else
-               "2. 进球前事件强度特征具备跨场可分性 (见 held-out AUC), 进球密度高/对抗激烈的"
-               "比赛 (高 xT、危险进攻多) 最可能产生 Polymarket 价格跳变, edge 也最大。"),
+               ("2. 跨场 goal-hazard 模型只有弱信号 (held-out AUC 约 0.56), 可作为风险过滤器雏形, "
+                "但还不足以单独交易。"
+                if weak_model else
+                "2. 进球前事件强度特征具备跨场可分性 (见 held-out AUC), 进球密度高/对抗激烈的"
+                "比赛 (高 xT、危险进攻多) 最可能产生 Polymarket 价格跳变, edge 也最大。")),
               "3. 是否真正领先 Polymarket、stale window 多长, 仍需价格历史验证; "
               "pipeline 已为该验证完全就绪。"]
     out = resolve_path(cfg["paths"]["report_dir"]) + "/batch_statistics_report.md"

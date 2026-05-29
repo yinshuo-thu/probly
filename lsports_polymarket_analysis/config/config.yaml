@@ -80,5 +80,5 @@ polymarket:
   gamma_base_url: "https://gamma-api.polymarket.com"
   prices_history_fidelity: 1   # 分钟级 K 线
   # fixture -> polymarket market 的人工/自动映射表（若存在）
-  mapping_file: "data/processed/fixture_market_map.parquet"
+  mapping_file: "config/polymarket_fixture_map.csv"
   request_timeout_sec: 15

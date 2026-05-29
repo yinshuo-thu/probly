@@ -39,7 +39,7 @@
 | player_stat | 11 | 8956 |
 | timer | 1 | 2043 |
 | other | 19 | 1704 |
-| shot | 9 | 1011 |
+| shot | 10 | 1050 |
 | attack | 1 | 388 |
 | foul | 2 | 340 |
 | danger | 1 | 296 |
@@ -47,13 +47,13 @@
 | save | 2 | 221 |
 | throwin | 1 | 162 |
 | card_yellow | 2 | 145 |
-| goal_stat | 6 | 121 |
+| goal_stat | 8 | 126 |
 | freekick | 4 | 109 |
 | corner | 1 | 68 |
 | score | 1 | 62 |
 | sub | 1 | 56 |
-| penalty | 6 | 55 |
 | card_red | 2 | 48 |
+| penalty | 3 | 11 |
 
 ## 归档延迟 与 事件节奏
 

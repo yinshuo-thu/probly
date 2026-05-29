@@ -19,7 +19,7 @@ plt.rcParams.update({"figure.dpi": 110, "font.size": 9,
                      "axes.grid": True, "grid.alpha": 0.3})
 
 _KIND_STYLE = {
-    "goal": ("⚽", "#d62728"), "red_card": ("R", "#b30000"),
+    "goal": ("G", "#d62728"), "red_card": ("R", "#b30000"),
     "yellow_card": ("Y", "#e6b800"), "penalty": ("P", "#9467bd"),
 }
 
@@ -118,6 +118,31 @@ def plot_goal_hazard(frame: pd.DataFrame, pred: np.ndarray, goals: pd.DataFrame,
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
     ax.set_xlabel("UTC time"); ax.set_ylabel("P(goal in next window)")
     ax.set_title(title); ax.legend(loc="upper left")
+    return _save(fig, out_path)
+
+
+def plot_price_reaction(prices: pd.DataFrame, goals: pd.DataFrame,
+                        title: str, out_path: str):
+    """Polymarket price history with LSports goal timestamps."""
+    fig, ax = plt.subplots(figsize=(11, 3.8))
+    if prices is not None and not prices.empty:
+        pr = prices.sort_values("timestamp")
+        ax.plot(pr["timestamp"], pr["price"], color="#ff7f0e", lw=1.5,
+                label="Polymarket price")
+        ax.scatter(pr["timestamp"], pr["price"], color="#ff7f0e", s=10, alpha=0.55)
+    if goals is not None and not goals.empty:
+        for _, g in goals.iterrows():
+            label = f"{g.get('scoring_side', '')} goal"
+            ax.axvline(g["ts"], color="#d62728", ls="--", lw=1.0, alpha=0.75)
+            ax.annotate(label, (g["ts"], 0.98), xycoords=("data", "axes fraction"),
+                        rotation=90, va="top", ha="right", fontsize=8,
+                        color="#d62728")
+        ax.axvline(goals["ts"].iloc[0], color="#d62728", ls="--",
+                   lw=1.0, alpha=0.75, label="LSports goal")
+    ax.set_ylim(0, 1)
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    ax.set_xlabel("UTC time"); ax.set_ylabel("price / implied probability")
+    ax.set_title(title); ax.legend(loc="best")
     return _save(fig, out_path)
 
 

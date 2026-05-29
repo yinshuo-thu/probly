@@ -34,7 +34,7 @@
 2026-05-28 00:30:12.878005500+00:00,0,1st Half,MissedPenalty,penalty,0.0,0.0,,1.0
 2026-05-28 00:30:12.882231100+00:00,0,1st Half,Free Kick Goals (Raw),freekick,0.0,0.0,,1.0
 2026-05-28 00:30:12.984607100+00:00,0,1st Half,WoodworkShots,other,0.0,0.0,,1.0
-2026-05-28 00:30:12.988809200+00:00,0,1st Half,Goals From Outside the Penalty Area,penalty,0.0,0.0,,1.0
+2026-05-28 00:30:12.988809200+00:00,0,1st Half,Goals From Outside the Penalty Area,goal_stat,0.0,0.0,,1.0
 2026-05-28 00:30:12.993065200+00:00,0,1st Half,PassAttempts,other,0.0,0.0,,1.0
 2026-05-28 00:30:12.996158700+00:00,0,1st Half,RedCard,card_red,0.0,0.0,,1.0
 2026-05-28 00:30:13.000194500+00:00,0,1st Half,DangerousFreeKicks,freekick,0.0,0.0,,1.0
